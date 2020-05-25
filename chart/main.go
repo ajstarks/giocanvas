@@ -53,7 +53,7 @@ func main() {
 	width := float32(w)
 	height := float32(h)
 	size := app.Size(unit.Dp(width), unit.Dp(height))
-	title := app.Title("barchart")
+	title := app.Title("sine and cosine")
 
 	var (
 		sinedata   []ChartData
