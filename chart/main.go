@@ -89,7 +89,7 @@ func main() {
 
 				chart(canvas, chleft, chbottom, chwidth, chheight, sinedata, 5, "red")
 				chart(canvas, chleft, chbottom, chwidth, chheight, cosinedata, 0, "blue")
-				canvas.Grid(width, height, 2, 20, color.RGBA{0, 0, 0, 128})
+				//canvas.Grid(width, height, 2, 20, color.RGBA{0, 0, 0, 128})
 				e.Frame(canvas.Context.Ops)
 			}
 		}
