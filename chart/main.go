@@ -64,10 +64,6 @@ func main() {
 		d.name = fmt.Sprintf("%.1f", x)
 		d.value = math.Sin(x)
 		sinedata = append(sinedata, d)
-	}
-
-	for x := 0.0; x <= 2*math.Pi; x += math.Pi / 32 {
-		d.name = fmt.Sprintf("%.1f", x)
 		d.value = math.Cos(x)
 		cosinedata = append(cosinedata, d)
 	}
