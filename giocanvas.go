@@ -37,6 +37,11 @@ func NewCanvas(width, height float32) *Canvas {
 	return canvas
 }
 
+// MapRange -- given a value between low1 and high1, return the corresponding value between low2 and high2
+func MapRange(value, low1, high1, low2, high2 float64) float64 {
+	return low2 + (high2-low2)*(value-low1)/(high1-low1)
+}
+
 // textops places text
 func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string, color color.RGBA) {
 	offset := x
