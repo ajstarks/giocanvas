@@ -60,7 +60,7 @@ func main() {
 		cosinedata []ChartData
 		d          ChartData
 	)
-	for x := 0.0; x <= 2*math.Pi; x += math.Pi / 32 {
+	for x := 0.0; x <= 2*math.Pi; x += math.Pi / 64 {
 		d.name = fmt.Sprintf("%.1f", x)
 		d.value = math.Sin(x)
 		sinedata = append(sinedata, d)
@@ -87,7 +87,7 @@ func main() {
 				canvas.Text(chleft, labely, 30, "cos(x)", color.RGBA{128, 128, 128, 255})
 				canvas.HLine(chleft+width*0.10, labely+20, 15, 15, color.RGBA{0, 0, 255, 255})
 
-				chart(canvas, chleft, chbottom, chwidth, chheight, sinedata, 5, "red")
+				chart(canvas, chleft, chbottom, chwidth, chheight, sinedata, 10, "red")
 				chart(canvas, chleft, chbottom, chwidth, chheight, cosinedata, 0, "blue")
 				//canvas.Grid(width, height, 2, 20, color.RGBA{0, 0, 0, 128})
 				e.Frame(canvas.Context.Ops)
