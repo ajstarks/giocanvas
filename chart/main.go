@@ -38,8 +38,20 @@ func chart(canvas *giocanvas.Canvas, x, y, width, height float32, data []ChartDa
 	for i, d := range data {
 		xp := float32(giocanvas.MapRange(float64(i), 0, float64(len(data)-1), float64(x), float64(width)))
 		yp := float32(giocanvas.MapRange(d.value, min, max, float64(y), float64(height)))
-
 		canvas.CenterRect(xp, yp, 0.3, 0.3, datacolor)
+		if interval > 0 && i%interval == 0 {
+			canvas.TextMid(xp, y-3, 1.5, d.name, color.RGBA{0, 0, 0, 255})
+		}
+	}
+}
+
+func barchart(canvas *giocanvas.Canvas, x, y, width, height float32, data []ChartData, interval int, datacolor color.RGBA) {
+	min, max := minmax(data)
+	canvas.Rect(x, height, width-x, height-y, color.RGBA{0, 0, 0, 10})
+	for i, d := range data {
+		xp := float32(giocanvas.MapRange(float64(i), 0, float64(len(data)-1), float64(x), float64(width)))
+		yp := float32(giocanvas.MapRange(d.value, min, max, float64(y), float64(height)))
+		canvas.VLine(xp, y, yp-y, 0.1, datacolor)
 		if interval > 0 && i%interval == 0 {
 			canvas.TextMid(xp, y-3, 1.5, d.name, color.RGBA{0, 0, 0, 255})
 		}
@@ -75,7 +87,7 @@ func main() {
 		black := color.RGBA{0, 0, 0, 255}
 		red := color.RGBA{255, 0, 0, 255}
 		blue := color.RGBA{0, 0, 255, 255}
-		gcolor := color.RGBA{0, 0, 0, 100}
+		gcolor := color.RGBA{0, 0, 0, 75}
 		for e := range w.Events() {
 			if e, ok := e.(system.FrameEvent); ok {
 				canvas.Context.Reset(e.Queue, e.Config, e.Size)
