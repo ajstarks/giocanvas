@@ -111,7 +111,7 @@ func (c *Canvas) Grid(x, y, w, h, size, interval float32, linecolor color.RGBA) 
 	}
 }
 
-// MapRange -- given a value between low1 and high1, return the corresponding value between low2 and high2
+// MapRange maps a value between low1 and high1, return the corresponding value between low2 and high2
 func MapRange(value, low1, high1, low2, high2 float64) float64 {
 	return low2 + (high2-low2)*(value-low1)/(high1-low1)
 }

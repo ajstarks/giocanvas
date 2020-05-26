@@ -26,9 +26,9 @@ func main() {
 		for e := range w.Events() {
 			if e, ok := e.(system.FrameEvent); ok {
 				canvas.Context.Reset(e.Queue, e.Config, e.Size)
-				canvas.Rect(0, 0, width, height, color.RGBA{0, 0, 0, 255})
-				canvas.TextMid(width/2, height*.15, width/10, "hello, world", color.RGBA{255, 255, 255, 0})
-				canvas.CenterImage("earth.jpg", width/2, height*0.60, 1000, 1000, 50)
+				canvas.CenterRect(50, 50, 100, 100, color.RGBA{0, 0, 0, 255})
+				canvas.TextMid(50, 80, 10, "hello, world", color.RGBA{255, 255, 255, 0})
+				canvas.CenterImage("earth.jpg", 50, 40, 1000, 1000, 50)
 				e.Frame(canvas.Context.Ops)
 			}
 		}
