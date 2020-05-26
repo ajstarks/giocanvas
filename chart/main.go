@@ -34,10 +34,11 @@ func minmax(data []ChartData) (float64, float64) {
 
 func chart(canvas *giocanvas.Canvas, x, y, width, height float32, data []ChartData, interval int, datacolor color.RGBA) {
 	min, max := minmax(data)
+	canvas.Rect(x, height, width-x, height-y, color.RGBA{0, 0, 0, 10})
 	for i, d := range data {
 		xp := float32(giocanvas.MapRange(float64(i), 0, float64(len(data)-1), float64(x), float64(width)))
 		yp := float32(giocanvas.MapRange(d.value, min, max, float64(y), float64(height)))
-		canvas.Rect(x, y, width-x, 0.1, color.RGBA{0, 0, 0, 128})
+
 		canvas.CenterRect(xp, yp, 0.3, 0.5, datacolor)
 		if interval > 0 && i%interval == 0 {
 			canvas.TextMid(xp, y-3, 1.5, d.name, color.RGBA{0, 0, 0, 255})
@@ -85,7 +86,7 @@ func main() {
 				canvas.HLine(20, 80, 2, 1, blue)
 				chart(canvas, 10, 15, 90, 70, sinedata, 16, red)
 				chart(canvas, 10, 15, 90, 70, cosinedata, 0, blue)
-				canvas.Grid(0, 0, 100, 100, 0.1, 5, gcolor)
+				canvas.Grid(10, 15, 80, 55, 0.1, 5, gcolor)
 				e.Frame(canvas.Context.Ops)
 			}
 		}
