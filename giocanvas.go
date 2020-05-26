@@ -102,12 +102,12 @@ func (c *Canvas) CenterImage(name string, x, y float32, w, h int, scale float32)
 }
 
 // Grid makes vertical and horizontal grid lines
-func (c *Canvas) Grid(x, y, w, h, size, interval float32, color color.RGBA) {
-	for x := float32(0); x <= w; x += interval {
-		c.Rect(x, y+h, size, h, color)
+func (c *Canvas) Grid(x, y, w, h, size, interval float32, linecolor color.RGBA) {
+	for xp := x; xp <= x+w; xp += interval {
+		c.Rect(xp, y+h, size, h, linecolor)
 	}
-	for y := float32(0); y <= h; y += interval {
-		c.Rect(0, y, x+w, size, color)
+	for yp := y; yp <= y+h; yp += interval {
+		c.Rect(x, yp, w, size, linecolor)
 	}
 }
 
