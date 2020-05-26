@@ -39,7 +39,7 @@ func chart(canvas *giocanvas.Canvas, x, y, width, height float32, data []ChartDa
 		xp := float32(giocanvas.MapRange(float64(i), 0, float64(len(data)-1), float64(x), float64(width)))
 		yp := float32(giocanvas.MapRange(d.value, min, max, float64(y), float64(height)))
 
-		canvas.CenterRect(xp, yp, 0.3, 0.5, datacolor)
+		canvas.CenterRect(xp, yp, 0.3, 0.3, datacolor)
 		if interval > 0 && i%interval == 0 {
 			canvas.TextMid(xp, y-3, 1.5, d.name, color.RGBA{0, 0, 0, 255})
 		}
