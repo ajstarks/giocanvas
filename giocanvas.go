@@ -37,6 +37,80 @@ func NewCanvas(width, height float32) *Canvas {
 	return canvas
 }
 
+func pct(p float32, m float32) float32 {
+	return ((p / 100.0) * m)
+}
+
+// dimen returns canvas dimensions from percentages (converting from x increasing left-right, y increasing top-bottom)
+func dimen(xp, yp, w, h float32) (float32, float32) {
+	return pct(xp, w), pct(100-yp, h)
+}
+
+// Text places text using percentage-based measures
+func (c *Canvas) Text(x, y, size float32, s string, color color.RGBA) {
+	x, y = dimen(x, y, c.Width, c.Height)
+	size = pct(size, c.Width)
+	c.textops(x, y, size, text.Start, s, color)
+}
+
+// TextEnd places text using percentage-based measures
+func (c *Canvas) TextEnd(x, y, size float32, s string, color color.RGBA) {
+	x, y = dimen(x, y, c.Width, c.Height)
+	size = pct(size, c.Width)
+	c.textops(x, y, size, text.End, s, color)
+}
+
+// TextMid places text using percentage-based measures
+func (c *Canvas) TextMid(x, y, size float32, s string, color color.RGBA) {
+	x, y = dimen(x, y, c.Width, c.Height)
+	size = pct(size, c.Width)
+	c.textops(x, y, size, text.Middle, s, color)
+}
+
+// Rect makes a rectangle with upper left corner at (x,y), with sized at (w,h)
+func (c *Canvas) Rect(x, y, w, h float32, color color.RGBA) {
+	x, y = dimen(x, y, c.Width, c.Height)
+	w = pct(w, c.Width)
+	h = pct(h, c.Height)
+	c.AbsRect(x, y, w, h, color)
+}
+
+// CenterRect makes a rectangle with upper left corner at (x,y), with sized at (w,h)
+func (c *Canvas) CenterRect(x, y, w, h float32, color color.RGBA) {
+	x, y = dimen(x, y, c.Width, c.Height)
+	w = pct(w, c.Width)
+	h = pct(h, c.Height)
+	c.AbsCenterRect(x, y, w, h, color)
+}
+
+// VLine makes a vertical line beginning at (x,y) with dimension (w, h)
+// half of the width is left of x, the other half is the to right of x
+func (c *Canvas) VLine(x, y, lineheight, size float32, color color.RGBA) {
+	c.Rect(x-(size/2), y+lineheight, size, lineheight, color)
+}
+
+// HLine makes a horizontal line starting at (x, y), with dimensions (w, h)
+// half of the height is above y, the other below
+func (c *Canvas) HLine(x, y, linewidth, size float32, color color.RGBA) {
+	c.Rect(x, y+(size/2), linewidth, size, color)
+}
+
+// CenterImage places a scaled images centered at (x,y)
+func (c *Canvas) CenterImage(name string, x, y float32, w, h int, scale float32) {
+	x, y = dimen(x, y, c.Width, c.Height)
+	c.AbsCenterImage(name, x, y, w, h, scale)
+}
+
+// Grid makes vertical and horizontal grid lines
+func (c *Canvas) Grid(x, y, w, h, size, interval float32, color color.RGBA) {
+	for x := float32(0); x <= w; x += interval {
+		c.Rect(x, y+h, size, h, color)
+	}
+	for y := float32(0); y <= h; y += interval {
+		c.Rect(0, y, x+w, size, color)
+	}
+}
+
 // MapRange -- given a value between low1 and high1, return the corresponding value between low2 and high2
 func MapRange(value, low1, high1, low2, high2 float64) float64 {
 	return low2 + (high2-low2)*(value-low1)/(high1-low1)
@@ -54,7 +128,7 @@ func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string,
 	}
 	var stack op.StackOp
 	stack.Push(c.Context.Ops)
-	op.TransformOp{}.Offset(f32.Point{X: offset, Y: y}).Add(c.Context.Ops)
+	op.TransformOp{}.Offset(f32.Point{X: offset, Y: y - size}).Add(c.Context.Ops) // shift to use baseline
 	l := material.Label(th, unit.Dp(size), s)
 	l.Color = color
 	l.Alignment = alignment
@@ -62,63 +136,63 @@ func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string,
 	stack.Pop()
 }
 
-// Text places text at (x,y)
-func (c *Canvas) Text(x, y, size float32, s string, color color.RGBA) {
+// AbsText places text at (x,y)
+func (c *Canvas) AbsText(x, y, size float32, s string, color color.RGBA) {
 	c.textops(x, y, size, text.Start, s, color)
 }
 
-// TextMid places text centered at (x,y)
-func (c *Canvas) TextMid(x, y, size float32, s string, color color.RGBA) {
+// AbsTextMid places text centered at (x,y)
+func (c *Canvas) AbsTextMid(x, y, size float32, s string, color color.RGBA) {
 	c.textops(x, y, size, text.Middle, s, color)
 }
 
-// TextEnd places text aligned to the end
-func (c *Canvas) TextEnd(x, y, size float32, s string, color color.RGBA) {
+// AbsTextEnd places text aligned to the end
+func (c *Canvas) AbsTextEnd(x, y, size float32, s string, color color.RGBA) {
 	c.textops(x, y, size, text.End, s, color)
 }
 
-// Rect makes a filled Rectangle; left corner at (x, y), with dimensions (w,h)
-func (c *Canvas) Rect(x, y, w, h float32, color color.RGBA) {
+// AbsRect makes a filled Rectangle; left corner at (x, y), with dimensions (w,h)
+func (c *Canvas) AbsRect(x, y, w, h float32, color color.RGBA) {
 	ops := c.Context.Ops
 	r := f32.Rect(x, y+h, x+w, y)
 	paint.ColorOp{Color: color}.Add(ops)
 	paint.PaintOp{Rect: r}.Add(ops)
 }
 
-// CenterRect makes a filled rectangle centered at (x, y), with dimensions (w,h)
-func (c *Canvas) CenterRect(x, y, w, h float32, color color.RGBA) {
+// AbsCenterRect makes a filled rectangle centered at (x, y), with dimensions (w,h)
+func (c *Canvas) AbsCenterRect(x, y, w, h float32, color color.RGBA) {
 	ops := c.Context.Ops
 	r := f32.Rect(x-(w/2), y+(h/2), x+(w/2), y-(h/2))
 	paint.ColorOp{Color: color}.Add(ops)
 	paint.PaintOp{Rect: r}.Add(ops)
 }
 
-// VLine makes a vertical line beginning at (x,y) with dimension (w, h)
+// AbsVLine makes a vertical line beginning at (x,y) with dimension (w, h)
 // half of the width is left of x, the other half is the to right of x
-func (c *Canvas) VLine(x, y, w, h float32, color color.RGBA) {
-	c.Rect(x-(w/2), y, w, h, color)
+func (c *Canvas) AbsVLine(x, y, w, h float32, color color.RGBA) {
+	c.AbsRect(x-(w/2), y, w, h, color)
 }
 
-// HLine makes a horizontal line starting at (x, y), with dimensions (w, h)
+// AbsHLine makes a horizontal line starting at (x, y), with dimensions (w, h)
 // half of the height is above y, the other below
-func (c *Canvas) HLine(x, y, w, h float32, color color.RGBA) {
-	c.Rect(x, y-(h/2), w, h, color)
+func (c *Canvas) AbsHLine(x, y, w, h float32, color color.RGBA) {
+	c.AbsRect(x, y-(h/2), w, h, color)
 }
 
-// Grid uses horizontal and vertical lines to make a grid
-func (c *Canvas) Grid(width, height, size, interval float32, color color.RGBA) {
+// AbsGrid uses horizontal and vertical lines to make a grid
+func (c *Canvas) AbsGrid(width, height, size, interval float32, color color.RGBA) {
 	var x, y float32
 	for y = 0; y <= height; y += height / interval {
-		c.HLine(0, y, width, size, color)
+		c.AbsHLine(0, y, width, size, color)
 	}
 	for x = 0; x <= width; x += width / interval {
-		c.VLine(x, 0, size, height, color)
+		c.AbsVLine(x, 0, size, height, color)
 	}
 }
 
-// CenterImage places a named image centered at (x, y)
+// AbsCenterImage places a named image centered at (x, y)
 // scaled using the specified dimensions (w, h)
-func (c *Canvas) CenterImage(name string, x, y float32, w, h int, scale float32) {
+func (c *Canvas) AbsCenterImage(name string, x, y float32, w, h int, scale float32) {
 	r, err := os.Open(name)
 	if err != nil {
 		return
