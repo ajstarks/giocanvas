@@ -70,6 +70,15 @@ func (c *Canvas) Polygon(x, y []float32, color color.RGBA) {
 	c.AbsPolygon(nx, ny, color)
 }
 
+// Curve makes a quadric Bezier curve, using percentage-based measures
+// starting at (x, y), control point at (cx, cy), end point (ex, ey)
+func (c *Canvas) Curve(x, y, cx, cy, ex, ey, size float32, color color.RGBA) {
+	x, y = dimen(x, y, c.Width, c.Height)
+	cx, cy = dimen(cx, cy, c.Width, c.Height)
+	ex, ey = dimen(ex, ey, c.Width, c.Height)
+	c.AbsCurve(x, y, cx, cy, ex, ey, size, color)
+}
+
 // Text places text using percentage-based measures
 func (c *Canvas) Text(x, y, size float32, s string, color color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
@@ -316,6 +325,23 @@ func (c *Canvas) AbsLine(x0, y0, x1, y1, lw float32, color color.RGBA) {
 		p2.Y = y1 - l2
 		p3.Y = y1 + l2
 	}
-
 	c.quadline(p0, p1, p2, p3, color)
+}
+
+// AbsCurve makes a quadratic curve
+// starting at (x, y), control point at (cx, cy), end point (ex, ey)
+func (c *Canvas) AbsCurve(x, y, cx, cy, ex, ey, size float32, color color.RGBA) {
+	path := new(clip.Path)
+	ops := c.Context.Ops
+	r := f32.Rect(0, 0, c.Width, c.Height)
+	var stack op.StackOp
+	defer stack.Pop()
+	stack.Push(c.Context.Ops)
+	path.Begin(ops)
+	path.Move(f32.Point{X: x, Y: y})
+	// quad ops are relative to the starting point
+	path.Quad(f32.Point{X: cx - x, Y: cy - y}, f32.Point{X: ex - x, Y: ey - y})
+	path.End().Add(ops)
+	paint.ColorOp{Color: color}.Add(ops)
+	paint.PaintOp{Rect: r}.Add(ops)
 }
