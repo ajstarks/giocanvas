@@ -45,8 +45,10 @@ func randrect(c *giocanvas.Canvas, n int) {
 
 func main() {
 	var w, h int
-	flag.IntVar(&w, "width", 1000, "canvas width")
+	var showgrid bool
+	flag.IntVar(&w, "width", 1600, "canvas width")
 	flag.IntVar(&h, "height", 1000, "canvas height")
+	flag.BoolVar(&showgrid, "grid", false, "show grid")
 	flag.Parse()
 	width := float32(w)
 	height := float32(h)
@@ -54,8 +56,11 @@ func main() {
 	title := app.Title("Gio Canvas")
 	tcolor := color.RGBA{128, 0, 0, 255}
 	fcolor := color.RGBA{0, 0, 128, 255}
+	bgcolor := color.RGBA{255, 255, 255, 255}
 	labelcolor := color.RGBA{0, 0, 0, 255}
-	labelsize := float32(2.5)
+	labelsize := float32(2)
+	titlesize := labelsize * 2
+	subsize := labelsize / 2
 
 	go func() {
 		w := app.NewWindow(title, size)
@@ -67,43 +72,53 @@ func main() {
 
 				canvas.Context.Reset(e.Queue, e.Config, e.Size)
 
-				canvas.TextMid(90, 90, labelsize, "Rectangle", labelcolor)
-				canvas.Rect(85, 85, 5, 20, tcolor)
-				canvas.CenterRect(90, 65, 10, 10, fcolor)
+				// Title
+				canvas.CenterRect(50, 50, 100, 100, bgcolor)
+				canvas.TextMid(50, 92, titlesize, "Gio Canvas API", labelcolor)
 
-				canvas.TextMid(90, 50, labelsize, "Image", labelcolor)
-				canvas.CenterImage("follow.jpg", 90, 35, 816, 612, 30)
+				// Lines
+				fcolor.A = 255
+				tcolor.A = 255
+				lw := float32(0.1)
+				canvas.TextMid(25, 85, labelsize, "Line", labelcolor)
+				for y := float32(20); y <= 80; y += 5 {
+					canvas.Line(25, 50, 40, y, lw, fcolor)
+					canvas.Line(10, y, 25, 50, lw, fcolor)
+				}
 
 				// Curve
-				canvas.TextMid(60, 90, labelsize, "Curve", labelcolor)
+				fcolor.A = 200
+				tcolor.A = 200
+				canvas.TextMid(60, 85, labelsize, "Curve", labelcolor)
 				canvas.Curve(45, 65, 75, 85, 75, 65, 0, tcolor)
-				canvas.TextMid(45, 60, 1.2, "(45, 65)", fcolor)
-				canvas.TextMid(75, 80, 1.2, "(75, 85)", fcolor)
-				canvas.TextMid(75, 60, 1.2, "(75, 65)", fcolor)
+				canvas.TextMid(45, 65, subsize, "(45, 65)", fcolor)
+				canvas.TextMid(75, 85, subsize, "(75, 85)", fcolor)
+				canvas.TextMid(75, 65, subsize, "(75, 65)", fcolor)
 
 				// Polygon
-				fcolor.A = 150
 				canvas.TextMid(60, 50, labelsize, "Polygon", labelcolor)
 				xp := []float32{50, 60, 70, 70, 60, 50}
 				yp := []float32{50, 40, 50, 25, 30, 25}
 				canvas.Polygon(xp, yp, fcolor)
 
-				// Lines
-				fcolor.A = 255
-				canvas.TextMid(25, 90, labelsize, "Line", labelcolor)
-				for y := float32(5); y <= 90; y += 10 {
-					canvas.Line(10, 50, 40, y, 0.2, fcolor)
-				}
+				// Rectangles
+				canvas.TextMid(90, 85, labelsize, "Rectangle", labelcolor)
+				canvas.Rect(85, 80, 5, 20, tcolor)
+				canvas.CenterRect(90, 65, 10, 10, fcolor)
+
+				// Image
+				canvas.TextMid(90, 50, labelsize, "Image", labelcolor)
+				canvas.CenterImage("follow.jpg", 90, 35, 816, 612, 35)
 
 				// Grid
-				tcolor.A = 255
-				for x := float32(5); x <= 95; x += 5 {
-					v := fmt.Sprintf("%v", x)
-					canvas.TextMid(x, 2, 1.5, v, color.RGBA{0, 0, 0, 200})
-					canvas.TextMid(2, x-0.75, 1.5, v, color.RGBA{0, 0, 0, 200})
+				if showgrid {
+					for x := float32(5); x <= 95; x += 5 {
+						v := fmt.Sprintf("%v", x)
+						canvas.TextMid(x, 2, 1.5, v, color.RGBA{0, 0, 0, 200})
+						canvas.TextMid(2, x-0.75, 1.5, v, color.RGBA{0, 0, 0, 200})
+					}
+					canvas.Grid(0, 0, 100, 100, 0.1, 5, color.RGBA{0, 0, 0, 100})
 				}
-				canvas.Grid(0, 0, 100, 100, 0.1, 5, color.RGBA{0, 0, 0, 100})
-
 				e.Frame(canvas.Context.Ops)
 			}
 		}
