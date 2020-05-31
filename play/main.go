@@ -8,6 +8,7 @@ import (
 
 	"gioui.org/app"
 	"gioui.org/f32"
+	"gioui.org/font/gofont"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
@@ -48,13 +49,13 @@ func main() {
 	labelsize := float32(2)
 	titlesize := labelsize * 2
 	subsize := labelsize * 0.7
+	gofont.Register()
 
 	go func() {
 		w := app.NewWindow(title, size)
-		canvas := giocanvas.NewCanvas(width, height)
 		for e := range w.Events() {
 			if e, ok := e.(system.FrameEvent); ok {
-				canvas.Context.Reset(e.Queue, e.Config, e.Size)
+				canvas := giocanvas.NewCanvas(width, height, e.Config, e.Queue, e.Size)
 
 				col1x := float32(20)
 				// Title

@@ -37,10 +37,9 @@ func main() {
 
 	go func() {
 		w := app.NewWindow(title, size)
-		canvas := giocanvas.NewCanvas(width, height)
 		for e := range w.Events() {
 			if e, ok := e.(system.FrameEvent); ok {
-				canvas.Context.Reset(e.Queue, e.Config, e.Size)
+				canvas := giocanvas.NewCanvas(width, height, e.Config, e.Queue, e.Size)
 
 				canvas.Rect(0, 100, 100, 100, white)                // white background
 				canvas.CenterRect(halft, halft, third, third, blue) // lower left blue square

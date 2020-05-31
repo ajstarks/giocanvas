@@ -7,6 +7,7 @@ import (
 	"math"
 
 	"gioui.org/app"
+	"gioui.org/font/gofont"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
@@ -80,17 +81,16 @@ func main() {
 		d.value = math.Cos(x)
 		cosinedata = append(cosinedata, d)
 	}
-
+	gofont.Register()
 	go func() {
 		w := app.NewWindow(title, size)
-		canvas := giocanvas.NewCanvas(width, height)
 		black := color.RGBA{0, 0, 0, 255}
 		red := color.RGBA{255, 0, 0, 255}
 		blue := color.RGBA{0, 0, 255, 255}
 		gcolor := color.RGBA{0, 0, 0, 75}
 		for e := range w.Events() {
 			if e, ok := e.(system.FrameEvent); ok {
-				canvas.Context.Reset(e.Queue, e.Config, e.Size)
+				canvas := giocanvas.NewCanvas(width, height, e.Config, e.Queue, e.Size)
 				canvas.Text(10, 90, 3, "Sine and Cosine", black)
 				canvas.Text(10, 84, 2.5, "sin(x)", red)
 				canvas.Text(10, 79, 2.5, "cos(x)", blue)

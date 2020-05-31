@@ -10,7 +10,8 @@ import (
 	"os"
 
 	"gioui.org/f32"
-	"gioui.org/font/gofont"
+	"gioui.org/io/event"
+	"gioui.org/io/system"
 	"gioui.org/layout"
 	"gioui.org/op"
 	"gioui.org/op/clip"
@@ -24,17 +25,16 @@ import (
 type Canvas struct {
 	Width, Height float32
 	TextColor     color.RGBA
-	Context       *layout.Context
+	Context       layout.Context
 }
 
 // NewCanvas initializes a Canvas
-func NewCanvas(width, height float32) *Canvas {
-	gofont.Register()
+func NewCanvas(width, height float32, cfg system.Config, q event.Queue, size image.Point) *Canvas {
 	canvas := new(Canvas)
 	canvas.Width = width
 	canvas.Height = height
 	canvas.TextColor = color.RGBA{0, 0, 0, 255}
-	canvas.Context = new(layout.Context)
+	canvas.Context = layout.NewContext(new(op.Ops), q, cfg, size)
 	return canvas
 }
 
@@ -212,7 +212,7 @@ func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string,
 	var stack op.StackOp
 	stack.Push(c.Context.Ops)
 	op.TransformOp{}.Offset(f32.Point{X: offset, Y: y - size}).Add(c.Context.Ops) // shift to use baseline
-	l := material.Label(th, unit.Dp(size), s)
+	l := material.Label(th, unit.Px(size), s)
 	l.Color = color
 	l.Alignment = alignment
 	l.Layout(c.Context)
