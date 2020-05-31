@@ -47,7 +47,7 @@ func main() {
 	labelcolor := color.RGBA{0, 0, 0, 255}
 	labelsize := float32(2)
 	titlesize := labelsize * 2
-	subsize := labelsize / 2
+	subsize := labelsize * 0.7
 
 	go func() {
 		w := app.NewWindow(title, size)
@@ -55,34 +55,42 @@ func main() {
 		for e := range w.Events() {
 			if e, ok := e.(system.FrameEvent); ok {
 				canvas.Context.Reset(e.Queue, e.Config, e.Size)
+
+				col1x := float32(20)
 				// Title
 				canvas.CenterRect(50, 50, 100, 100, bgcolor)
 				canvas.TextMid(50, 92, titlesize, "Gio Canvas API", labelcolor)
 
 				// Lines
 				lw := float32(0.2)
-				canvas.TextMid(25, 80, labelsize, "Line", labelcolor)
-				canvas.Line(10, 75, 35, 65, lw, tcolor)
+				canvas.TextMid(col1x, 80, labelsize, "Line", labelcolor)
+				canvas.Line(10, 75, col1x, 65, lw, tcolor)
 				coord(canvas, 10, 75, subsize, labelcolor)
-				coord(canvas, 35, 65, subsize, labelcolor)
+				coord(canvas, col1x, 65, subsize, labelcolor)
 
-				canvas.Line(10, 65, 35, 75, lw, fcolor)
-				coord(canvas, 10, 65, subsize, labelcolor)
+				canvas.Line(col1x, 70, 35, 75, lw, fcolor)
+				coord(canvas, col1x, 70, subsize, labelcolor)
 				coord(canvas, 35, 75, subsize, labelcolor)
 
 				fcolor.A = 100
 				tcolor.A = 100
 
 				// Circle
-				canvas.TextMid(25, 55, labelsize, "Circle", labelcolor)
-				canvas.Circle(25, 35, 10, fcolor)
-				canvas.Circle(25, 35, 5, tcolor)
-				coord(canvas, 25, 35, subsize, labelcolor)
+				canvas.TextMid(col1x, 55, labelsize, "Circle", labelcolor)
+				canvas.Circle(col1x, 45, 5, fcolor)
+				coord(canvas, col1x, 45, subsize, labelcolor)
+
+				// Ellipse
+				canvas.TextMid(col1x, 30, labelsize, "Ellipse", labelcolor)
+				ex := (col1x / 100) * width
+				canvas.AbsEllipse(ex, height*0.85, width*0.05, height*0.10, tcolor)
+				canvas.AbsEllipse(ex, height*0.85, width*0.10, height*0.05, fcolor)
+				coord(canvas, col1x, 15, subsize, labelcolor)
 
 				// Quadradic Bezier
 				start := f32.Point{X: 45, Y: 65}
-				c1 := f32.Point{X: 75, Y: 85}
-				end := f32.Point{X: 75, Y: 65}
+				c1 := f32.Point{X: 70, Y: 85}
+				end := f32.Point{X: 70, Y: 65}
 				canvas.TextMid(60, 80, labelsize, "Quadratic Bezier Curve", labelcolor)
 				canvas.Curve(start.X, start.Y, c1.X, c1.Y, end.X, end.Y, tcolor)
 				coord(canvas, start.X, start.Y, subsize, labelcolor)
@@ -93,31 +101,36 @@ func main() {
 				start = f32.Point{X: 45, Y: 40}
 				c1 = f32.Point{X: 45, Y: 55}
 				c2 := f32.Point{X: 60, Y: 50}
-				end = f32.Point{X: 75, Y: 40}
+				end = f32.Point{X: 70, Y: 40}
 				canvas.TextMid(60, 55, labelsize, "Cubic Bezier Curve", labelcolor)
 				canvas.CubeCurve(start.X, start.Y, c1.X, c1.Y, c2.X, c2.Y, end.X, end.Y, fcolor)
-				coord(canvas, start.X, start.Y, 1, labelcolor)
+				coord(canvas, start.X, start.Y, subsize, labelcolor)
 				coord(canvas, end.X, end.Y, subsize, labelcolor)
 				coord(canvas, c1.X, c1.Y, subsize, labelcolor)
 				coord(canvas, c2.X, c2.Y, subsize, labelcolor)
 
 				// Polygon
 				canvas.TextMid(60, 30, labelsize, "Polygon", labelcolor)
-				xp := []float32{45, 60, 75, 75, 60, 45}
+				xp := []float32{45, 60, 70, 70, 60, 45}
 				yp := []float32{25, 20, 25, 5, 10, 5}
 				for i := 0; i < len(xp); i++ {
-					coord(canvas, xp[i], yp[i], 1, labelcolor)
+					coord(canvas, xp[i], yp[i], subsize, labelcolor)
 				}
 				canvas.Polygon(xp, yp, fcolor)
 
 				// Rectangles
 				canvas.TextMid(90, 80, labelsize, "Rectangle", labelcolor)
-				canvas.Rect(85, 75, 5, 20, tcolor)
-				canvas.CenterRect(90, 60, 10, 10, fcolor)
+				canvas.CenterRect(90, 70, 10, 5, fcolor)
+
+				// Square
+				canvas.TextMid(90, 55, labelsize, "Square", labelcolor)
+				canvas.Square(90, 45, 10, tcolor)
+				coord(canvas, 90, 45, subsize, labelcolor)
 
 				// Image
-				canvas.TextMid(90, 45, labelsize, "Image", labelcolor)
-				canvas.Image("follow.jpg", 90, 30, 816, 612, 30)
+				canvas.TextMid(90, 30, labelsize, "Image", labelcolor)
+				canvas.Image("earth.jpg", 90, 15, 1000, 1000, 20)
+				coord(canvas, 90, 15, subsize, color.RGBA{255, 255, 255, 255})
 
 				// Grid
 				if showgrid {

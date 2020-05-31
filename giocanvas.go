@@ -99,7 +99,6 @@ func (c *Canvas) Circle(x, y, r float32, color color.RGBA) {
 
 // Ellipse makes a filled circle, using percentage-based measures
 // center is (x,y), radii (w, h)
-// TODO: placeholder only
 func (c *Canvas) Ellipse(x, y, w, h float32, color color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	w = pct(w, c.Width)
@@ -431,18 +430,33 @@ func (c *Canvas) AbsCircle(x, y, radius float32, color color.RGBA) {
 	stack.Push(c.Context.Ops)
 	path.Begin(ops)
 	path.Move(f32.Point{X: x + radius, Y: y})
-	path.Cube(f32.Point{X: 0, Y: radius * k}, f32.Point{X: -radius + radius*k, Y: radius}, f32.Point{X: -radius, Y: radius})
-	path.Cube(f32.Point{X: -radius * k, Y: 0}, f32.Point{X: -radius, Y: -radius + radius*k}, f32.Point{X: -radius, Y: -radius})
-	path.Cube(f32.Point{X: 0, Y: -radius * k}, f32.Point{X: radius - radius*k, Y: -radius}, f32.Point{X: radius, Y: -radius})
-	path.Cube(f32.Point{X: radius * k, Y: 0}, f32.Point{X: radius, Y: radius - radius*k}, f32.Point{X: radius, Y: radius})
+	path.Cube(f32.Point{X: 0, Y: radius * k}, f32.Point{X: -radius + radius*k, Y: radius}, f32.Point{X: -radius, Y: radius})    // SE
+	path.Cube(f32.Point{X: -radius * k, Y: 0}, f32.Point{X: -radius, Y: -radius + radius*k}, f32.Point{X: -radius, Y: -radius}) // SW
+	path.Cube(f32.Point{X: 0, Y: -radius * k}, f32.Point{X: radius - radius*k, Y: -radius}, f32.Point{X: radius, Y: -radius})   // NW
+	path.Cube(f32.Point{X: radius * k, Y: 0}, f32.Point{X: radius, Y: radius - radius*k}, f32.Point{X: radius, Y: radius})      // NE
 	path.End().Add(ops)
 	paint.ColorOp{Color: color}.Add(ops)
 	paint.PaintOp{Rect: r}.Add(ops)
 }
 
 // AbsEllipse makes a ellipse centered at (x, y) radii (w, h)
-// TODO: placeholder only
 func (c *Canvas) AbsEllipse(x, y, w, h float32, color color.RGBA) {
+	path := new(clip.Path)
+	ops := c.Context.Ops
+	const k = 0.551915024494 // http://spencermortensen.com/articles/bezier-circle/
+	r := f32.Rect(0, 0, c.Width, c.Height)
+	var stack op.StackOp
+	defer stack.Pop()
+	stack.Push(c.Context.Ops)
+	path.Begin(ops)
+	path.Move(f32.Point{X: x + w, Y: y})
+	path.Cube(f32.Point{X: 0, Y: h * k}, f32.Point{X: -w + w*k, Y: h}, f32.Point{X: -w, Y: h})    // SE
+	path.Cube(f32.Point{X: -w * k, Y: 0}, f32.Point{X: -w, Y: -h + h*k}, f32.Point{X: -w, Y: -h}) // SW
+	path.Cube(f32.Point{X: 0, Y: -h * k}, f32.Point{X: w - w*k, Y: -h}, f32.Point{X: w, Y: -h})   // NW
+	path.Cube(f32.Point{X: w * k, Y: 0}, f32.Point{X: w, Y: h - h*k}, f32.Point{X: w, Y: h})      // NE
+	path.End().Add(ops)
+	paint.ColorOp{Color: color}.Add(ops)
+	paint.PaintOp{Rect: r}.Add(ops)
 }
 
 // AbsArc makes an arc centered at (x, y), through angles a1 and a2
