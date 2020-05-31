@@ -30,6 +30,63 @@ func coord(canvas *giocanvas.Canvas, x, y, size float32, color color.RGBA) {
 	canvas.TextMid(x, y+size, size, fmt.Sprintf("(%v,%v)", x, y), color)
 }
 
+const k = 0.551915024494 // http://spencermortensen.com/articles/bezier-circle/
+
+func circle(canvas *giocanvas.Canvas, x, y, r float32, fill color.RGBA) {
+	var p0, p1, p2, p3 f32.Point
+	black := color.RGBA{0, 0, 0, 255}
+	red := color.RGBA{128, 0, 0, 255}
+	ls := float32(1)
+	coord(canvas, x, y, ls, red)
+
+	// NE
+	p0.X, p0.Y = x, y+r
+	p1.X, p1.Y = x+(k*r), y+r
+	p2.X, p2.Y = x+r, y+(k*r)
+	p3.X, p3.Y = x+r, y
+
+	canvas.CubeCurve(p0.X, p0.Y, p1.X, p1.Y, p2.X, p2.Y, p3.X, p3.Y, fill)
+	coord(canvas, p0.X, p0.Y, ls, black)
+	coord(canvas, p1.X, p1.Y, ls, black)
+	coord(canvas, p2.X, p2.Y, ls, black)
+	coord(canvas, p3.X, p3.Y, ls, black)
+
+	// SE
+	p0.X, p0.Y = x+r, y
+	p1.X, p1.Y = x+r, y-(k*r)
+	p2.X, p2.Y = x+(k*r), y-r
+	p3.X, p3.Y = x, y-r
+
+	canvas.CubeCurve(p0.X, p0.Y, p1.X, p1.Y, p2.X, p2.Y, p3.X, p3.Y, fill)
+	coord(canvas, p0.X, p0.Y, ls, black)
+	coord(canvas, p1.X, p1.Y, ls, black)
+	coord(canvas, p2.X, p2.Y, ls, black)
+	coord(canvas, p3.X, p3.Y, ls, black)
+
+	// SW
+	p0.X, p0.Y = x, y-r
+	p1.X, p1.Y = x-(k*r), y-r
+	p2.X, p2.Y = x-r, y-(k*r)
+	p3.X, p3.Y = x-r, y
+	canvas.CubeCurve(p0.X, p0.Y, p1.X, p1.Y, p2.X, p2.Y, p3.X, p3.Y, fill)
+	coord(canvas, p0.X, p0.Y, ls, black)
+	coord(canvas, p1.X, p1.Y, ls, black)
+	coord(canvas, p2.X, p2.Y, ls, black)
+	coord(canvas, p3.X, p3.Y, ls, black)
+
+	// NW
+	p0.X, p0.Y = x-r, y
+	p1.X, p1.Y = x-r, y+(k*r)
+	p2.X, p2.Y = x-(k*r), y+r
+	p3.X, p3.Y = x, y+r
+	canvas.CubeCurve(p0.X, p0.Y, p1.X, p1.Y, p2.X, p2.Y, p3.X, p3.Y, fill)
+	coord(canvas, p0.X, p0.Y, ls, black)
+	coord(canvas, p1.X, p1.Y, ls, black)
+	coord(canvas, p2.X, p2.Y, ls, black)
+	coord(canvas, p3.X, p3.Y, ls, black)
+
+}
+
 func main() {
 	var w, h int
 	var showgrid bool
@@ -72,6 +129,9 @@ func main() {
 					canvas.Line(25, 60, 40, y, lw, fcolor)
 					canvas.Line(10, y, 25, 60, lw, fcolor)
 				}
+
+				fcolor.A = 50
+				circle(canvas, 25, 20, 10, fcolor)
 
 				// Curve
 				fcolor.A = 100

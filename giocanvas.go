@@ -147,7 +147,7 @@ func (c *Canvas) Rect(x, y, w, h float32, color color.RGBA) {
 	c.AbsRect(x, y, w, h, color)
 }
 
-// Square makes a square shape, centered at (x, y), accounts for screen aspect ratio.
+// Square makes a square shape, centered at (x, y), accounts for screen aspect
 func (c *Canvas) Square(x, y, w float32, color color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	w = pct(w, c.Height)
