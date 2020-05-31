@@ -120,7 +120,8 @@ func main() {
 
 				// Rectangles
 				canvas.TextMid(90, 80, labelsize, "Rectangle", labelcolor)
-				canvas.CenterRect(90, 70, 10, 5, fcolor)
+				canvas.CenterRect(90, 70, 5, 15, fcolor)
+				coord(canvas, 90, 70, subsize, labelcolor)
 
 				// Square
 				canvas.TextMid(90, 55, labelsize, "Square", labelcolor)
