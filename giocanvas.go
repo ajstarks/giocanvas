@@ -91,7 +91,6 @@ func (c *Canvas) CubeCurve(x, y, cx1, cy1, cx2, cy2, ex, ey float32, color color
 
 // Circle makes a filled circle, using percentage-based measures
 // center is (x,y), radius r
-// TODO: placeholder only
 func (c *Canvas) Circle(x, y, r float32, color color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	r = pct(r, c.Width)
@@ -421,12 +420,24 @@ func (c *Canvas) AbsCubicBezier(x, y, cx1, cy1, cx2, cy2, ex, ey, size float32, 
 	paint.PaintOp{Rect: r}.Add(ops)
 }
 
-const kappa = 0.5522847498
-
-// AbsCircle makes a circle centered at (x, y) radius r
-// TODO: placeholder only
+// AbsCircle makes a circle centered at (x, y), radius r
 func (c *Canvas) AbsCircle(x, y, radius float32, color color.RGBA) {
-	c.AbsEllipse(x, y, radius, radius, color)
+	path := new(clip.Path)
+	ops := c.Context.Ops
+	const k = 0.551915024494 // http://spencermortensen.com/articles/bezier-circle/
+	r := f32.Rect(0, 0, c.Width, c.Height)
+	var stack op.StackOp
+	defer stack.Pop()
+	stack.Push(c.Context.Ops)
+	path.Begin(ops)
+	path.Move(f32.Point{X: x + radius, Y: y})
+	path.Cube(f32.Point{X: 0, Y: radius * k}, f32.Point{X: -radius + radius*k, Y: radius}, f32.Point{X: -radius, Y: radius})
+	path.Cube(f32.Point{X: -radius * k, Y: 0}, f32.Point{X: -radius, Y: -radius + radius*k}, f32.Point{X: -radius, Y: -radius})
+	path.Cube(f32.Point{X: 0, Y: -radius * k}, f32.Point{X: radius - radius*k, Y: -radius}, f32.Point{X: radius, Y: -radius})
+	path.Cube(f32.Point{X: radius * k, Y: 0}, f32.Point{X: radius, Y: radius - radius*k}, f32.Point{X: radius, Y: radius})
+	path.End().Add(ops)
+	paint.ColorOp{Color: color}.Add(ops)
+	paint.PaintOp{Rect: r}.Add(ops)
 }
 
 // AbsEllipse makes a ellipse centered at (x, y) radii (w, h)

@@ -30,63 +30,6 @@ func coord(canvas *giocanvas.Canvas, x, y, size float32, color color.RGBA) {
 	canvas.TextMid(x, y+size, size, fmt.Sprintf("(%v,%v)", x, y), color)
 }
 
-const k = 0.551915024494 // http://spencermortensen.com/articles/bezier-circle/
-
-func circle(canvas *giocanvas.Canvas, x, y, r float32, fill color.RGBA) {
-	var p0, p1, p2, p3 f32.Point
-	black := color.RGBA{0, 0, 0, 255}
-	red := color.RGBA{128, 0, 0, 255}
-	ls := float32(1)
-	coord(canvas, x, y, ls, red)
-
-	// NE
-	p0.X, p0.Y = x, y+r
-	p1.X, p1.Y = x+(k*r), y+r
-	p2.X, p2.Y = x+r, y+(k*r)
-	p3.X, p3.Y = x+r, y
-
-	canvas.CubeCurve(p0.X, p0.Y, p1.X, p1.Y, p2.X, p2.Y, p3.X, p3.Y, fill)
-	coord(canvas, p0.X, p0.Y, ls, black)
-	coord(canvas, p1.X, p1.Y, ls, black)
-	coord(canvas, p2.X, p2.Y, ls, black)
-	coord(canvas, p3.X, p3.Y, ls, black)
-
-	// SE
-	p0.X, p0.Y = x+r, y
-	p1.X, p1.Y = x+r, y-(k*r)
-	p2.X, p2.Y = x+(k*r), y-r
-	p3.X, p3.Y = x, y-r
-
-	canvas.CubeCurve(p0.X, p0.Y, p1.X, p1.Y, p2.X, p2.Y, p3.X, p3.Y, fill)
-	coord(canvas, p0.X, p0.Y, ls, black)
-	coord(canvas, p1.X, p1.Y, ls, black)
-	coord(canvas, p2.X, p2.Y, ls, black)
-	coord(canvas, p3.X, p3.Y, ls, black)
-
-	// SW
-	p0.X, p0.Y = x, y-r
-	p1.X, p1.Y = x-(k*r), y-r
-	p2.X, p2.Y = x-r, y-(k*r)
-	p3.X, p3.Y = x-r, y
-	canvas.CubeCurve(p0.X, p0.Y, p1.X, p1.Y, p2.X, p2.Y, p3.X, p3.Y, fill)
-	coord(canvas, p0.X, p0.Y, ls, black)
-	coord(canvas, p1.X, p1.Y, ls, black)
-	coord(canvas, p2.X, p2.Y, ls, black)
-	coord(canvas, p3.X, p3.Y, ls, black)
-
-	// NW
-	p0.X, p0.Y = x-r, y
-	p1.X, p1.Y = x-r, y+(k*r)
-	p2.X, p2.Y = x-(k*r), y+r
-	p3.X, p3.Y = x, y+r
-	canvas.CubeCurve(p0.X, p0.Y, p1.X, p1.Y, p2.X, p2.Y, p3.X, p3.Y, fill)
-	coord(canvas, p0.X, p0.Y, ls, black)
-	coord(canvas, p1.X, p1.Y, ls, black)
-	coord(canvas, p2.X, p2.Y, ls, black)
-	coord(canvas, p3.X, p3.Y, ls, black)
-
-}
-
 func main() {
 	var w, h int
 	var showgrid bool
@@ -97,7 +40,7 @@ func main() {
 	width := float32(w)
 	height := float32(h)
 	size := app.Size(unit.Dp(width), unit.Dp(height))
-	title := app.Title("Gio Canvas")
+	title := app.Title("Gio Canvas API")
 	tcolor := color.RGBA{128, 0, 0, 255}
 	fcolor := color.RGBA{0, 0, 128, 255}
 	bgcolor := color.RGBA{255, 255, 255, 255}
@@ -109,33 +52,34 @@ func main() {
 	go func() {
 		w := app.NewWindow(title, size)
 		canvas := giocanvas.NewCanvas(width, height)
-		tcolor.A = 150
-		fcolor.A = 150
 		for e := range w.Events() {
 			if e, ok := e.(system.FrameEvent); ok {
-
 				canvas.Context.Reset(e.Queue, e.Config, e.Size)
-
 				// Title
 				canvas.CenterRect(50, 50, 100, 100, bgcolor)
 				canvas.TextMid(50, 92, titlesize, "Gio Canvas API", labelcolor)
 
 				// Lines
-				fcolor.A = 255
-				tcolor.A = 255
-				lw := float32(0.1)
+				lw := float32(0.2)
 				canvas.TextMid(25, 80, labelsize, "Line", labelcolor)
-				for y := float32(40); y <= 80; y += 5 {
-					canvas.Line(25, 60, 40, y, lw, fcolor)
-					canvas.Line(10, y, 25, 60, lw, fcolor)
-				}
+				canvas.Line(10, 75, 35, 65, lw, tcolor)
+				coord(canvas, 10, 75, subsize, labelcolor)
+				coord(canvas, 35, 65, subsize, labelcolor)
 
-				fcolor.A = 50
-				circle(canvas, 25, 20, 10, fcolor)
+				canvas.Line(10, 65, 35, 75, lw, fcolor)
+				coord(canvas, 10, 65, subsize, labelcolor)
+				coord(canvas, 35, 75, subsize, labelcolor)
 
-				// Curve
 				fcolor.A = 100
 				tcolor.A = 100
+
+				// Circle
+				canvas.TextMid(25, 55, labelsize, "Circle", labelcolor)
+				canvas.Circle(25, 35, 10, fcolor)
+				canvas.Circle(25, 35, 5, tcolor)
+				coord(canvas, 25, 35, subsize, labelcolor)
+
+				// Quadradic Bezier
 				start := f32.Point{X: 45, Y: 65}
 				c1 := f32.Point{X: 75, Y: 85}
 				end := f32.Point{X: 75, Y: 65}
@@ -150,7 +94,6 @@ func main() {
 				c1 = f32.Point{X: 45, Y: 55}
 				c2 := f32.Point{X: 60, Y: 50}
 				end = f32.Point{X: 75, Y: 40}
-
 				canvas.TextMid(60, 55, labelsize, "Cubic Bezier Curve", labelcolor)
 				canvas.CubeCurve(start.X, start.Y, c1.X, c1.Y, c2.X, c2.Y, end.X, end.Y, fcolor)
 				coord(canvas, start.X, start.Y, 1, labelcolor)
