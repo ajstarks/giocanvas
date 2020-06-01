@@ -33,15 +33,16 @@ func minmax(data []ChartData) (float64, float64) {
 	return min, max
 }
 
-func chart(canvas *giocanvas.Canvas, x, y, width, height float32, data []ChartData, interval int, datacolor color.RGBA) {
+func dotchart(canvas *giocanvas.Canvas, x, y, width, height float32, data []ChartData, interval int, datacolor color.RGBA) {
 	min, max := minmax(data)
 	canvas.Rect(x, height, width-x, height-y, color.RGBA{0, 0, 0, 10})
 	for i, d := range data {
 		xp := float32(giocanvas.MapRange(float64(i), 0, float64(len(data)-1), float64(x), float64(width)))
 		yp := float32(giocanvas.MapRange(d.value, min, max, float64(y), float64(height)))
-		canvas.CenterRect(xp, yp, 0.3, 0.3, datacolor)
+		canvas.Circle(xp, yp, 0.3, datacolor)
 		if interval > 0 && i%interval == 0 {
 			canvas.TextMid(xp, y-3, 1.5, d.name, color.RGBA{0, 0, 0, 255})
+			canvas.Line(xp, y, xp, height, 0.1, color.RGBA{0, 0, 0, 128})
 		}
 	}
 }
@@ -87,7 +88,6 @@ func main() {
 		black := color.RGBA{0, 0, 0, 255}
 		red := color.RGBA{255, 0, 0, 255}
 		blue := color.RGBA{0, 0, 255, 255}
-		gcolor := color.RGBA{0, 0, 0, 75}
 		for e := range w.Events() {
 			if e, ok := e.(system.FrameEvent); ok {
 				canvas := giocanvas.NewCanvas(width, height, e.Config, e.Queue, e.Size)
@@ -96,9 +96,8 @@ func main() {
 				canvas.Text(10, 79, 2.5, "cos(x)", blue)
 				canvas.HLine(20, 85, 2, 1, red)
 				canvas.HLine(20, 80, 2, 1, blue)
-				chart(canvas, 10, 15, 90, 70, sinedata, 16, red)
-				chart(canvas, 10, 15, 90, 70, cosinedata, 0, blue)
-				canvas.Grid(10, 15, 80, 55, 0.1, 5, gcolor)
+				dotchart(canvas, 10, 15, 90, 70, sinedata, 16, red)
+				dotchart(canvas, 10, 15, 90, 70, cosinedata, 0, blue)
 				e.Frame(canvas.Context.Ops)
 			}
 		}
