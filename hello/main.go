@@ -27,8 +27,9 @@ func main() {
 			if e, ok := e.(system.FrameEvent); ok {
 				canvas := giocanvas.NewCanvas(width, height, e.Config, e.Queue, e.Size)
 				canvas.CenterRect(50, 50, 100, 100, color.RGBA{0, 0, 0, 255})
-				canvas.TextMid(50, 80, 10, "hello, world", color.RGBA{255, 255, 255, 0})
-				canvas.CenterImage("earth.jpg", 50, 40, 1000, 1000, 50)
+				canvas.Circle(50, 0, 50, color.RGBA{0, 0, 255, 255})
+				canvas.TextMid(50, 20, 10, "hello, world", color.RGBA{255, 255, 255, 0})
+				canvas.CenterImage("earth.jpg", 50, 70, 1000, 1000, 30)
 				e.Frame(canvas.Context.Ops)
 			}
 		}
