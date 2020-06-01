@@ -1,5 +1,2 @@
-# gio helloground
-
-## testing the API
-
+# gio canvas hello, world
 ![hello](hello.png)
