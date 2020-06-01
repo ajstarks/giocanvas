@@ -1,10 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"image/color"
-	"math"
+	"io"
+	"os"
+	"strconv"
+	"strings"
 
 	"gioui.org/app"
 	"gioui.org/font/gofont"
@@ -13,20 +17,21 @@ import (
 	gc "github.com/ajstarks/giocanvas"
 )
 
-// ChartData defines data
-type ChartData struct {
+// NameValue defines data
+type NameValue struct {
 	name  string
+	note  string
 	value float64
 }
 
 // ChartOptions define all the components of a chart
 type ChartOptions struct {
-	showtitle, showscatter, showarea, showframe, showlegend bool
-	title                                                   string
-	xlabelInterval                                          int
+	showtitle, showscatter, showarea, showframe, showlegend, showbar bool
+	title, legend, color                                             string
+	xlabelInterval                                                   int
 }
 
-func minmax(data []ChartData) (float64, float64) {
+func minmax(data []NameValue) (float64, float64) {
 	min := data[0].value
 	max := data[0].value
 	for _, d := range data {
@@ -40,7 +45,42 @@ func minmax(data []ChartData) (float64, float64) {
 	return min, max
 }
 
-func xaxis(canvas *gc.Canvas, x, y, width, height float32, interval int, data []ChartData) {
+// DataRead reads tab separated values into a NameValue slice
+func DataRead(r io.Reader) ([]NameValue, error) {
+	var d NameValue
+	var data []NameValue
+	var err error
+	scanner := bufio.NewScanner(r)
+	for scanner.Scan() {
+		t := scanner.Text()
+		if len(t) == 0 { // skip blank lines
+			continue
+		}
+		if t[0] == '#' && len(t) > 2 { // process titles
+			// title = strings.TrimSpace(t[1:])
+			continue
+		}
+		fields := strings.Split(t, "\t")
+		if len(fields) < 2 {
+			continue
+		}
+		if len(fields) == 3 {
+			d.note = fields[2]
+		} else {
+			d.note = ""
+		}
+		d.name = fields[0]
+		d.value, err = strconv.ParseFloat(fields[1], 64)
+		if err != nil {
+			d.value = 0
+		}
+		data = append(data, d)
+	}
+	err = scanner.Err()
+	return data, err
+}
+
+func xaxis(canvas *gc.Canvas, x, y, width, height float32, interval int, data []NameValue) {
 	for i, d := range data {
 		xp := float32(gc.MapRange(float64(i), 0, float64(len(data)-1), float64(x), float64(width)))
 		if interval > 0 && i%interval == 0 {
@@ -48,13 +88,15 @@ func xaxis(canvas *gc.Canvas, x, y, width, height float32, interval int, data []
 			canvas.Line(xp, y, xp, height, 0.1, color.RGBA{0, 0, 0, 128})
 		}
 	}
+	canvas.Line(x, height, width, height, 0.1, color.RGBA{0, 0, 0, 128})
+	canvas.Line(width, height, width, y, 0.1, color.RGBA{0, 0, 0, 128})
 }
 
 func frame(canvas *gc.Canvas, x, y, width, height float32, color color.RGBA) {
 	canvas.Rect(x, height, width-x, height-y, color)
 }
 
-func dotchart(canvas *gc.Canvas, x, y, width, height float32, data []ChartData, datacolor color.RGBA) {
+func dotchart(canvas *gc.Canvas, x, y, width, height float32, data []NameValue, datacolor color.RGBA) {
 	min, max := minmax(data)
 	for i, d := range data {
 		xp := float32(gc.MapRange(float64(i), 0, float64(len(data)-1), float64(x), float64(width)))
@@ -63,7 +105,7 @@ func dotchart(canvas *gc.Canvas, x, y, width, height float32, data []ChartData, 
 	}
 }
 
-func barchart(canvas *gc.Canvas, x, y, width, height float32, data []ChartData, interval int, datacolor color.RGBA) {
+func barchart(canvas *gc.Canvas, x, y, width, height float32, data []NameValue, datacolor color.RGBA) {
 	min, max := minmax(data)
 	for i, d := range data {
 		xp := float32(gc.MapRange(float64(i), 0, float64(len(data)-1), float64(x), float64(width)))
@@ -72,7 +114,7 @@ func barchart(canvas *gc.Canvas, x, y, width, height float32, data []ChartData, 
 	}
 }
 
-func areachart(canvas *gc.Canvas, x, y, width, height float32, data []ChartData, datacolor color.RGBA) {
+func areachart(canvas *gc.Canvas, x, y, width, height float32, data []NameValue, datacolor color.RGBA) {
 	min, max := minmax(data)
 	l := len(data)
 
@@ -92,29 +134,15 @@ func areachart(canvas *gc.Canvas, x, y, width, height float32, data []ChartData,
 	canvas.Polygon(ax, ay, datacolor)
 }
 
-func chart(s string, w, h int, chartopts ChartOptions) {
+func chart(s string, w, h int, data []NameValue, chartopts ChartOptions) {
 	width := float32(w)
 	height := float32(h)
 	size := app.Size(unit.Dp(width), unit.Dp(height))
-	title := app.Title("sine and cosine")
-
-	var (
-		sinedata   []ChartData
-		cosinedata []ChartData
-		d          ChartData
-	)
-	for x := 0.0; x <= 2*math.Pi; x += 0.05 {
-		d.name = fmt.Sprintf("%.2f", x)
-		d.value = math.Sin(x)
-		sinedata = append(sinedata, d)
-		d.value = math.Cos(x)
-		cosinedata = append(cosinedata, d)
-	}
+	title := app.Title(s)
 	gofont.Register()
 	win := app.NewWindow(title, size)
 	black := color.RGBA{0, 0, 0, 255}
-	red := color.RGBA{255, 0, 0, 255}
-	blue := color.RGBA{0, 0, 255, 255}
+	datacolor := gc.ColorLookup(chartopts.color)
 	framecolor := color.RGBA{0, 0, 0, 20}
 	for e := range win.Events() {
 		if e, ok := e.(system.FrameEvent); ok {
@@ -123,26 +151,23 @@ func chart(s string, w, h int, chartopts ChartOptions) {
 				canvas.Text(10, 90, 3, chartopts.title, black)
 			}
 			if chartopts.showlegend {
-				canvas.Text(10, 84, 2.5, "sin(x)", red)
-				canvas.Text(10, 79, 2.5, "cos(x)", blue)
-				canvas.HLine(20, 85, 2, 1, red)
-				canvas.HLine(20, 80, 2, 1, blue)
+				canvas.Text(10, 84, 2.5, chartopts.legend, datacolor)
+				canvas.HLine(20, 85, 2, 1, datacolor)
 			}
 			if chartopts.xlabelInterval > 0 {
-				xaxis(canvas, 10, 15, 90, 70, chartopts.xlabelInterval, sinedata)
+				xaxis(canvas, 10, 15, 90, 70, chartopts.xlabelInterval, data)
 			}
 			if chartopts.showframe {
 				frame(canvas, 10, 15, 90, 70, framecolor)
 			}
 			if chartopts.showscatter {
-				dotchart(canvas, 10, 15, 90, 70, sinedata, red)
-				dotchart(canvas, 10, 15, 90, 70, cosinedata, blue)
+				dotchart(canvas, 10, 15, 90, 70, data, datacolor)
 			}
 			if chartopts.showarea {
-				red.A = 100
-				areachart(canvas, 10, 15, 90, 70, sinedata, red)
-				blue.A = 100
-				areachart(canvas, 10, 15, 90, 70, cosinedata, blue)
+				areachart(canvas, 10, 15, 90, 70, data, datacolor)
+			}
+			if chartopts.showbar {
+				barchart(canvas, 10, 15, 90, 70, data, datacolor)
 			}
 			e.Frame(canvas.Context.Ops)
 		}
@@ -155,13 +180,24 @@ func main() {
 	flag.IntVar(&w, "width", 1200, "canvas width")
 	flag.IntVar(&h, "height", 900, "canvas height")
 	flag.IntVar(&opts.xlabelInterval, "xlabel", 0, "show x axis")
-	flag.StringVar(&opts.title, "chartitle", "Sine and Cosine", "chart title")
+
+	flag.StringVar(&opts.title, "chartitle", "", "chart title")
+	flag.StringVar(&opts.legend, "chartlegend", "", "chart legend")
+	flag.StringVar(&opts.color, "color", "lightsteelblue", "chart data color")
+
 	flag.BoolVar(&opts.showtitle, "title", true, "show title")
-	flag.BoolVar(&opts.showlegend, "legend", true, "show legend")
+	flag.BoolVar(&opts.showlegend, "legend", false, "show legend")
+	flag.BoolVar(&opts.showbar, "bar", false, "show bar chart")
 	flag.BoolVar(&opts.showarea, "area", false, "show area chart")
 	flag.BoolVar(&opts.showscatter, "scatter", false, "show scatter chart")
 	flag.BoolVar(&opts.showframe, "frame", false, "show frame")
 	flag.Parse()
-	go chart("chart", w, h, opts)
+
+	data, err := DataRead(os.Stdin)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return
+	}
+	go chart("charts", w, h, data, opts)
 	app.Main()
 }
