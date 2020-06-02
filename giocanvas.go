@@ -211,14 +211,12 @@ func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string,
 	case text.Middle:
 		offset = x - c.Width/2
 	}
-	var stack op.StackOp
-	stack.Push(c.Context.Ops)
+	defer op.Push(c.Context.Ops).Pop()
 	op.TransformOp{}.Offset(f32.Point{X: offset, Y: y - size}).Add(c.Context.Ops) // shift to use baseline
 	l := material.Label(th, unit.Px(size), s)
 	l.Color = fillcolor
 	l.Alignment = alignment
 	l.Layout(c.Context)
-	stack.Pop()
 }
 
 // AbsText places text at (x,y)
@@ -312,10 +310,8 @@ func (c *Canvas) AbsPolygon(x, y []float32, fillcolor color.RGBA) {
 	path := new(clip.Path)
 	ops := c.Context.Ops
 	r := f32.Rect(0, 0, c.Width, c.Height)
-	var stack op.StackOp
-	defer stack.Pop()
-	stack.Push(c.Context.Ops)
 
+	defer op.Push(c.Context.Ops).Pop()
 	path.Begin(ops)
 	path.Move(f32.Point{X: x[0], Y: y[0]})
 
@@ -336,9 +332,8 @@ func (c *Canvas) quadline(p0, p1, p2, p3 f32.Point, fillcolor color.RGBA) {
 	path := new(clip.Path)
 	ops := c.Context.Ops
 	r := f32.Rect(0, 0, c.Width, c.Height)
-	var stack op.StackOp
-	defer stack.Pop()
-	stack.Push(c.Context.Ops)
+
+	defer op.Push(c.Context.Ops).Pop()
 	path.Begin(ops)
 	path.Move(p0)
 	path.Line(f32.Point{X: p1.X - p0.X, Y: p1.Y - p0.Y})
@@ -389,9 +384,8 @@ func (c *Canvas) AbsQuadBezier(x, y, cx, cy, ex, ey, size float32, fillcolor col
 	// control and endpoints are relative to the starting point
 	ctrl := f32.Point{X: cx - x, Y: cy - y}
 	to := f32.Point{X: ex - x, Y: ey - y}
-	var stack op.StackOp
-	defer stack.Pop()
-	stack.Push(c.Context.Ops)
+
+	defer op.Push(c.Context.Ops).Pop()
 	path.Begin(ops)
 	path.Move(f32.Point{X: x, Y: y})
 	path.Quad(ctrl, to)
@@ -410,9 +404,8 @@ func (c *Canvas) AbsCubicBezier(x, y, cx1, cy1, cx2, cy2, ex, ey, size float32, 
 	cp0 := f32.Point{X: cx1 - x, Y: cy1 - y}
 	cp1 := f32.Point{X: cx2 - x, Y: cy2 - y}
 	ep := f32.Point{X: ex - x, Y: ey - y}
-	var stack op.StackOp
-	defer stack.Pop()
-	stack.Push(c.Context.Ops)
+
+	defer op.Push(c.Context.Ops).Pop()
 	path.Begin(ops)
 	path.Move(sp)
 	path.Cube(cp0, cp1, ep)
@@ -427,9 +420,8 @@ func (c *Canvas) AbsCircle(x, y, radius float32, fillcolor color.RGBA) {
 	ops := c.Context.Ops
 	const k = 0.551915024494 // http://spencermortensen.com/articles/bezier-circle/
 	r := f32.Rect(0, 0, c.Width, c.Height)
-	var stack op.StackOp
-	defer stack.Pop()
-	stack.Push(c.Context.Ops)
+
+	defer op.Push(c.Context.Ops).Pop()
 	path.Begin(ops)
 	path.Move(f32.Point{X: x + radius, Y: y})
 	path.Cube(f32.Point{X: 0, Y: radius * k}, f32.Point{X: -radius + radius*k, Y: radius}, f32.Point{X: -radius, Y: radius})    // SE
@@ -447,9 +439,7 @@ func (c *Canvas) AbsEllipse(x, y, w, h float32, fillcolor color.RGBA) {
 	ops := c.Context.Ops
 	const k = 0.551915024494 // http://spencermortensen.com/articles/bezier-circle/
 	r := f32.Rect(0, 0, c.Width, c.Height)
-	var stack op.StackOp
-	defer stack.Pop()
-	stack.Push(c.Context.Ops)
+	defer op.Push(c.Context.Ops).Pop()
 	path.Begin(ops)
 	path.Move(f32.Point{X: x + w, Y: y})
 	path.Cube(f32.Point{X: 0, Y: h * k}, f32.Point{X: -w + w*k, Y: h}, f32.Point{X: -w, Y: h})    // SE
