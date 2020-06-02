@@ -131,6 +131,7 @@ func areachart(canvas *gc.Canvas, x, y, width, height float32, data []NameValue,
 		ax[i+1] = xp
 		ay[i+1] = yp
 	}
+	datacolor.A = 128
 	canvas.Polygon(ax, ay, datacolor)
 }
 

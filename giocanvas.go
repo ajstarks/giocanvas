@@ -52,15 +52,15 @@ func dimen(xp, yp, w, h float32) (float32, float32) {
 }
 
 // Line makes a stroked line from (x0, y0) to (x1, y1) using percentage-based measures
-func (c *Canvas) Line(x0, y0, x1, y1, size float32, color color.RGBA) {
+func (c *Canvas) Line(x0, y0, x1, y1, size float32, fillcolor color.RGBA) {
 	x0, y0 = dimen(x0, y0, c.Width, c.Height)
 	x1, y1 = dimen(x1, y1, c.Width, c.Height)
 	size = pct(size, c.Width)
-	c.AbsLine(x0, y0, x1, y1, size, color)
+	c.AbsLine(x0, y0, x1, y1, size, fillcolor)
 }
 
 // Polygon makes a filled polygon with vertices in x and y, using percentage-based measures
-func (c *Canvas) Polygon(x, y []float32, color color.RGBA) {
+func (c *Canvas) Polygon(x, y []float32, fillcolor color.RGBA) {
 	if len(x) != len(y) || len(x) < 3 {
 		return
 	}
@@ -69,110 +69,110 @@ func (c *Canvas) Polygon(x, y []float32, color color.RGBA) {
 	for i := 0; i < len(x); i++ {
 		nx[i], ny[i] = dimen(x[i], y[i], c.Width, c.Height)
 	}
-	c.AbsPolygon(nx, ny, color)
+	c.AbsPolygon(nx, ny, fillcolor)
 }
 
 // Curve makes a quadric Bezier curve, using percentage-based measures
 // starting at (x, y), control point at (cx, cy), end point (ex, ey)
-func (c *Canvas) Curve(x, y, cx, cy, ex, ey float32, color color.RGBA) {
+func (c *Canvas) Curve(x, y, cx, cy, ex, ey float32, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	cx, cy = dimen(cx, cy, c.Width, c.Height)
 	ex, ey = dimen(ex, ey, c.Width, c.Height)
-	c.AbsQuadBezier(x, y, cx, cy, ex, ey, 0, color)
+	c.AbsQuadBezier(x, y, cx, cy, ex, ey, 0, fillcolor)
 }
 
 // CubeCurve makes a cubic Bezier curve, using percentage-based measures
 // starting at (x, y), control points at (cx1, cy1), (cx2, cy2), end point (ex, ey)
-func (c *Canvas) CubeCurve(x, y, cx1, cy1, cx2, cy2, ex, ey float32, color color.RGBA) {
+func (c *Canvas) CubeCurve(x, y, cx1, cy1, cx2, cy2, ex, ey float32, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	cx1, cy1 = dimen(cx1, cy1, c.Width, c.Height)
 	cx2, cy2 = dimen(cx2, cy2, c.Width, c.Height)
 	ex, ey = dimen(ex, ey, c.Width, c.Height)
-	c.AbsCubicBezier(x, y, cx1, cy1, cx2, cy2, ex, ey, 0, color)
+	c.AbsCubicBezier(x, y, cx1, cy1, cx2, cy2, ex, ey, 0, fillcolor)
 }
 
 // Circle makes a filled circle, using percentage-based measures
 // center is (x,y), radius r
-func (c *Canvas) Circle(x, y, r float32, color color.RGBA) {
+func (c *Canvas) Circle(x, y, r float32, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	r = pct(r, c.Width)
-	c.AbsCircle(x, y, r, color)
+	c.AbsCircle(x, y, r, fillcolor)
 }
 
 // Ellipse makes a filled circle, using percentage-based measures
 // center is (x,y), radii (w, h)
-func (c *Canvas) Ellipse(x, y, w, h float32, color color.RGBA) {
+func (c *Canvas) Ellipse(x, y, w, h float32, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	w = pct(w, c.Width)
 	h = pct(h, c.Height)
-	c.AbsEllipse(x, y, w, h, color)
+	c.AbsEllipse(x, y, w, h, fillcolor)
 }
 
 // Arc makes a filled arc, using percentage-based measures
 // center is (x, y) the arc begins at angle a1, and ends at a2
 // TODO: placeholder only
-func (c *Canvas) Arc(x, y, a1, a2 float32, color color.RGBA) {
+func (c *Canvas) Arc(x, y, a1, a2 float32, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	a1 = pct(a1, c.Width)
 	a2 = pct(a2, c.Width)
-	c.AbsArc(x, y, a1, a2, color)
+	c.AbsArc(x, y, a1, a2, fillcolor)
 }
 
 // Text places text using percentage-based measures
-func (c *Canvas) Text(x, y, size float32, s string, color color.RGBA) {
+func (c *Canvas) Text(x, y, size float32, s string, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	size = pct(size, c.Width)
-	c.textops(x, y, size, text.Start, s, color)
+	c.textops(x, y, size, text.Start, s, fillcolor)
 }
 
 // TextEnd places text using percentage-based measures
-func (c *Canvas) TextEnd(x, y, size float32, s string, color color.RGBA) {
+func (c *Canvas) TextEnd(x, y, size float32, s string, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	size = pct(size, c.Width)
-	c.textops(x, y, size, text.End, s, color)
+	c.textops(x, y, size, text.End, s, fillcolor)
 }
 
 // TextMid places text using percentage-based measures
-func (c *Canvas) TextMid(x, y, size float32, s string, color color.RGBA) {
+func (c *Canvas) TextMid(x, y, size float32, s string, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	size = pct(size, c.Width)
-	c.textops(x, y, size, text.Middle, s, color)
+	c.textops(x, y, size, text.Middle, s, fillcolor)
 }
 
 // Rect makes a rectangle with upper left corner at (x,y), with sized at (w,h)
-func (c *Canvas) Rect(x, y, w, h float32, color color.RGBA) {
+func (c *Canvas) Rect(x, y, w, h float32, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	w = pct(w, c.Width)
 	h = pct(h, c.Height)
-	c.AbsRect(x, y, w, h, color)
+	c.AbsRect(x, y, w, h, fillcolor)
 }
 
 // Square makes a square shape, centered at (x, y), accounts for screen aspect
-func (c *Canvas) Square(x, y, w float32, color color.RGBA) {
+func (c *Canvas) Square(x, y, w float32, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	w = pct(w, c.Height)
 	h := pct(100, w)
-	c.AbsCenterRect(x, y, w, h, color)
+	c.AbsCenterRect(x, y, w, h, fillcolor)
 }
 
 // CenterRect makes a rectangle with upper left corner at (x,y), with sized at (w,h)
-func (c *Canvas) CenterRect(x, y, w, h float32, color color.RGBA) {
+func (c *Canvas) CenterRect(x, y, w, h float32, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	w = pct(w, c.Width)
 	h = pct(h, c.Height)
-	c.AbsCenterRect(x, y, w, h, color)
+	c.AbsCenterRect(x, y, w, h, fillcolor)
 }
 
 // VLine makes a vertical line beginning at (x,y) with dimension (w, h)
 // half of the width is left of x, the other half is the to right of x
-func (c *Canvas) VLine(x, y, lineheight, size float32, color color.RGBA) {
-	c.Rect(x-(size/2), y+lineheight, size, lineheight, color)
+func (c *Canvas) VLine(x, y, lineheight, size float32, linecolor color.RGBA) {
+	c.Rect(x-(size/2), y+lineheight, size, lineheight, linecolor)
 }
 
 // HLine makes a horizontal line starting at (x, y), with dimensions (w, h)
 // half of the height is above y, the other below
-func (c *Canvas) HLine(x, y, linewidth, size float32, color color.RGBA) {
-	c.Rect(x, y+(size/2), linewidth, size, color)
+func (c *Canvas) HLine(x, y, linewidth, size float32, linecolor color.RGBA) {
+	c.Rect(x, y+(size/2), linewidth, size, linecolor)
 }
 
 // Image places a scaled image centered at (x,y)
@@ -202,7 +202,7 @@ func MapRange(value, low1, high1, low2, high2 float64) float64 {
 }
 
 // textops places text
-func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string, color color.RGBA) {
+func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string, fillcolor color.RGBA) {
 	offset := x
 	th := material.NewTheme()
 	switch alignment {
@@ -215,63 +215,63 @@ func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string,
 	stack.Push(c.Context.Ops)
 	op.TransformOp{}.Offset(f32.Point{X: offset, Y: y - size}).Add(c.Context.Ops) // shift to use baseline
 	l := material.Label(th, unit.Px(size), s)
-	l.Color = color
+	l.Color = fillcolor
 	l.Alignment = alignment
 	l.Layout(c.Context)
 	stack.Pop()
 }
 
 // AbsText places text at (x,y)
-func (c *Canvas) AbsText(x, y, size float32, s string, color color.RGBA) {
-	c.textops(x, y, size, text.Start, s, color)
+func (c *Canvas) AbsText(x, y, size float32, s string, fillcolor color.RGBA) {
+	c.textops(x, y, size, text.Start, s, fillcolor)
 }
 
 // AbsTextMid places text centered at (x,y)
-func (c *Canvas) AbsTextMid(x, y, size float32, s string, color color.RGBA) {
-	c.textops(x, y, size, text.Middle, s, color)
+func (c *Canvas) AbsTextMid(x, y, size float32, s string, fillcolor color.RGBA) {
+	c.textops(x, y, size, text.Middle, s, fillcolor)
 }
 
 // AbsTextEnd places text aligned to the end
-func (c *Canvas) AbsTextEnd(x, y, size float32, s string, color color.RGBA) {
-	c.textops(x, y, size, text.End, s, color)
+func (c *Canvas) AbsTextEnd(x, y, size float32, s string, fillcolor color.RGBA) {
+	c.textops(x, y, size, text.End, s, fillcolor)
 }
 
 // AbsRect makes a filled Rectangle; left corner at (x, y), with dimensions (w,h)
-func (c *Canvas) AbsRect(x, y, w, h float32, color color.RGBA) {
+func (c *Canvas) AbsRect(x, y, w, h float32, fillcolor color.RGBA) {
 	ops := c.Context.Ops
 	r := f32.Rect(x, y+h, x+w, y)
-	paint.ColorOp{Color: color}.Add(ops)
+	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{Rect: r}.Add(ops)
 }
 
 // AbsCenterRect makes a filled rectangle centered at (x, y), with dimensions (w,h)
-func (c *Canvas) AbsCenterRect(x, y, w, h float32, color color.RGBA) {
+func (c *Canvas) AbsCenterRect(x, y, w, h float32, fillcolor color.RGBA) {
 	ops := c.Context.Ops
 	r := f32.Rect(x-(w/2), y+(h/2), x+(w/2), y-(h/2))
-	paint.ColorOp{Color: color}.Add(ops)
+	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{Rect: r}.Add(ops)
 }
 
 // AbsVLine makes a vertical line beginning at (x,y) with dimension (w, h)
 // half of the width is left of x, the other half is the to right of x
-func (c *Canvas) AbsVLine(x, y, w, h float32, color color.RGBA) {
-	c.AbsRect(x-(w/2), y, w, h, color)
+func (c *Canvas) AbsVLine(x, y, w, h float32, fillcolor color.RGBA) {
+	c.AbsRect(x-(w/2), y, w, h, fillcolor)
 }
 
 // AbsHLine makes a horizontal line starting at (x, y), with dimensions (w, h)
 // half of the height is above y, the other below
-func (c *Canvas) AbsHLine(x, y, w, h float32, color color.RGBA) {
-	c.AbsRect(x, y-(h/2), w, h, color)
+func (c *Canvas) AbsHLine(x, y, w, h float32, fillcolor color.RGBA) {
+	c.AbsRect(x, y-(h/2), w, h, fillcolor)
 }
 
 // AbsGrid uses horizontal and vertical lines to make a grid
-func (c *Canvas) AbsGrid(width, height, size, interval float32, color color.RGBA) {
+func (c *Canvas) AbsGrid(width, height, size, interval float32, fillcolor color.RGBA) {
 	var x, y float32
 	for y = 0; y <= height; y += height / interval {
-		c.AbsHLine(0, y, width, size, color)
+		c.AbsHLine(0, y, width, size, fillcolor)
 	}
 	for x = 0; x <= width; x += width / interval {
-		c.AbsVLine(x, 0, size, height, color)
+		c.AbsVLine(x, 0, size, height, fillcolor)
 	}
 }
 
@@ -305,7 +305,7 @@ func (c *Canvas) AbsCenterImage(name string, x, y float32, w, h int, scale float
 }
 
 // AbsPolygon makes a closed, filled polygon with vertices in x and y
-func (c *Canvas) AbsPolygon(x, y []float32, color color.RGBA) {
+func (c *Canvas) AbsPolygon(x, y []float32, fillcolor color.RGBA) {
 	if len(x) != len(y) {
 		return
 	}
@@ -327,12 +327,12 @@ func (c *Canvas) AbsPolygon(x, y []float32, color color.RGBA) {
 	path.Line(f32.Point{X: x[0] - x[l-1], Y: y[0] - y[l-1]})
 	path.Line(point)
 	path.End().Add(ops)
-	paint.ColorOp{Color: color}.Add(ops)
+	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{Rect: r}.Add(ops)
 }
 
 // quadline makes a four-sided polygon with vertices at (p0, p1, p2, p3) forming a line
-func (c *Canvas) quadline(p0, p1, p2, p3 f32.Point, color color.RGBA) {
+func (c *Canvas) quadline(p0, p1, p2, p3 f32.Point, fillcolor color.RGBA) {
 	path := new(clip.Path)
 	ops := c.Context.Ops
 	r := f32.Rect(0, 0, c.Width, c.Height)
@@ -346,22 +346,22 @@ func (c *Canvas) quadline(p0, p1, p2, p3 f32.Point, color color.RGBA) {
 	path.Line(f32.Point{X: p3.X - p2.X, Y: p3.Y - p2.Y})
 	path.Line(f32.Point{X: p0.X - p3.X, Y: p0.Y - p3.Y})
 	path.End().Add(ops)
-	paint.ColorOp{Color: color}.Add(ops)
+	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{Rect: r}.Add(ops)
 }
 
 // AbsLine makes a line from (x0,y0) to (x1, y1) using absolute coordinates
-func (c *Canvas) AbsLine(x0, y0, x1, y1, lw float32, color color.RGBA) {
+func (c *Canvas) AbsLine(x0, y0, x1, y1, lw float32, fillcolor color.RGBA) {
 	l2 := lw / 2
 
 	// vertical line
 	if x0 == x1 {
-		c.AbsRect(x0, y0, lw, y1-y0, color)
+		c.AbsRect(x0, y0, lw, y1-y0, fillcolor)
 		return
 	}
 	// horizontal line
 	if y0 == y1 {
-		c.AbsRect(x0, y0-l2, x1-x0, lw, color)
+		c.AbsRect(x0, y0-l2, x1-x0, lw, fillcolor)
 		return
 	}
 	// init for positive sloped line
@@ -377,12 +377,12 @@ func (c *Canvas) AbsLine(x0, y0, x1, y1, lw float32, color color.RGBA) {
 		p2.Y = y1 - l2
 		p3.Y = y1 + l2
 	}
-	c.quadline(p0, p1, p2, p3, color)
+	c.quadline(p0, p1, p2, p3, fillcolor)
 }
 
 // AbsQuadBezier makes a quadratic curve
 // starting at (x, y), control point at (cx, cy), end point (ex, ey)
-func (c *Canvas) AbsQuadBezier(x, y, cx, cy, ex, ey, size float32, color color.RGBA) {
+func (c *Canvas) AbsQuadBezier(x, y, cx, cy, ex, ey, size float32, fillcolor color.RGBA) {
 	path := new(clip.Path)
 	ops := c.Context.Ops
 	r := f32.Rect(0, 0, c.Width, c.Height)
@@ -396,12 +396,12 @@ func (c *Canvas) AbsQuadBezier(x, y, cx, cy, ex, ey, size float32, color color.R
 	path.Move(f32.Point{X: x, Y: y})
 	path.Quad(ctrl, to)
 	path.End().Add(ops)
-	paint.ColorOp{Color: color}.Add(ops)
+	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{Rect: r}.Add(ops)
 }
 
 // AbsCubicBezier makes a cubic bezier curve
-func (c *Canvas) AbsCubicBezier(x, y, cx1, cy1, cx2, cy2, ex, ey, size float32, color color.RGBA) {
+func (c *Canvas) AbsCubicBezier(x, y, cx1, cy1, cx2, cy2, ex, ey, size float32, fillcolor color.RGBA) {
 	path := new(clip.Path)
 	ops := c.Context.Ops
 	r := f32.Rect(0, 0, c.Width, c.Height)
@@ -417,12 +417,12 @@ func (c *Canvas) AbsCubicBezier(x, y, cx1, cy1, cx2, cy2, ex, ey, size float32, 
 	path.Move(sp)
 	path.Cube(cp0, cp1, ep)
 	path.End().Add(ops)
-	paint.ColorOp{Color: color}.Add(ops)
+	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{Rect: r}.Add(ops)
 }
 
 // AbsCircle makes a circle centered at (x, y), radius r
-func (c *Canvas) AbsCircle(x, y, radius float32, color color.RGBA) {
+func (c *Canvas) AbsCircle(x, y, radius float32, fillcolor color.RGBA) {
 	path := new(clip.Path)
 	ops := c.Context.Ops
 	const k = 0.551915024494 // http://spencermortensen.com/articles/bezier-circle/
@@ -437,12 +437,12 @@ func (c *Canvas) AbsCircle(x, y, radius float32, color color.RGBA) {
 	path.Cube(f32.Point{X: 0, Y: -radius * k}, f32.Point{X: radius - radius*k, Y: -radius}, f32.Point{X: radius, Y: -radius})   // NW
 	path.Cube(f32.Point{X: radius * k, Y: 0}, f32.Point{X: radius, Y: radius - radius*k}, f32.Point{X: radius, Y: radius})      // NE
 	path.End().Add(ops)
-	paint.ColorOp{Color: color}.Add(ops)
+	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{Rect: r}.Add(ops)
 }
 
 // AbsEllipse makes a ellipse centered at (x, y) radii (w, h)
-func (c *Canvas) AbsEllipse(x, y, w, h float32, color color.RGBA) {
+func (c *Canvas) AbsEllipse(x, y, w, h float32, fillcolor color.RGBA) {
 	path := new(clip.Path)
 	ops := c.Context.Ops
 	const k = 0.551915024494 // http://spencermortensen.com/articles/bezier-circle/
@@ -457,11 +457,11 @@ func (c *Canvas) AbsEllipse(x, y, w, h float32, color color.RGBA) {
 	path.Cube(f32.Point{X: 0, Y: -h * k}, f32.Point{X: w - w*k, Y: -h}, f32.Point{X: w, Y: -h})   // NW
 	path.Cube(f32.Point{X: w * k, Y: 0}, f32.Point{X: w, Y: h - h*k}, f32.Point{X: w, Y: h})      // NE
 	path.End().Add(ops)
-	paint.ColorOp{Color: color}.Add(ops)
+	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{Rect: r}.Add(ops)
 }
 
 // AbsArc makes an arc centered at (x, y), through angles a1 and a2
 // TODO: placeholder only
-func (c *Canvas) AbsArc(x, y, a1, a2 float32, color color.RGBA) {
+func (c *Canvas) AbsArc(x, y, a1, a2 float32, fillcolor color.RGBA) {
 }
