@@ -2,11 +2,13 @@
 package giocanvas
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	_ "image/gif" // needed by image
 	_ "image/jpeg"
 	_ "image/png"
+	"math"
 	"os"
 
 	"gioui.org/f32"
@@ -49,6 +51,11 @@ func pct(p float32, m float32) float32 {
 // (converting from x increasing left-right, y increasing top-bottom)
 func dimen(xp, yp, w, h float32) (float32, float32) {
 	return pct(xp, w), pct(100-yp, h)
+}
+
+// Background makes a filled rectangle covering the whole canvas
+func (c *Canvas) Background(fillcolor color.RGBA) {
+	c.CenterRect(50, 50, 100, 100, fillcolor)
 }
 
 // Line makes a stroked line from (x0, y0) to (x1, y1) using percentage-based measures
@@ -111,11 +118,10 @@ func (c *Canvas) Ellipse(x, y, w, h float32, fillcolor color.RGBA) {
 // Arc makes a filled arc, using percentage-based measures
 // center is (x, y) the arc begins at angle a1, and ends at a2
 // TODO: placeholder only
-func (c *Canvas) Arc(x, y, a1, a2 float32, fillcolor color.RGBA) {
+func (c *Canvas) Arc(x, y, r float32, a1, a2 float64, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
-	a1 = pct(a1, c.Width)
-	a2 = pct(a2, c.Width)
-	c.AbsArc(x, y, a1, a2, fillcolor)
+	pr := pct(r, c.Width)
+	c.AbsArc(float64(x), float64(y), float64(pr), float64(a1), float64(a2), fillcolor)
 }
 
 // Text places text using percentage-based measures
@@ -418,7 +424,7 @@ func (c *Canvas) AbsCubicBezier(x, y, cx1, cy1, cx2, cy2, ex, ey, size float32, 
 func (c *Canvas) AbsCircle(x, y, radius float32, fillcolor color.RGBA) {
 	path := new(clip.Path)
 	ops := c.Context.Ops
-	const k = 0.551915024494 // http://spencermortensen.com/articles/bezier-circle/
+	const k = 0.5522847498 //  0.551915024494 // http://spencermortensen.com/articles/bezier-circle/
 	r := f32.Rect(0, 0, c.Width, c.Height)
 
 	defer op.Push(c.Context.Ops).Pop()
@@ -451,7 +457,78 @@ func (c *Canvas) AbsEllipse(x, y, w, h float32, fillcolor color.RGBA) {
 	paint.PaintOp{Rect: r}.Add(ops)
 }
 
+func anglebetweenpoints(p0x, p0y, p1x, p1y float64) float64 {
+	return math.Atan2(p1y-p0y, p1x-p0x)
+}
+
+func polar(r, theta float64) (float64, float64) {
+	return (r * math.Cos(theta)), (r * math.Sin(theta))
+}
+
+func radians(degrees float64) float64 {
+	return degrees * (math.Pi / 180)
+}
+
+func degrees(radians float64) float64 {
+	deg := radians * (180 / math.Pi)
+	return deg
+}
+
+func controls(Ax, Ay, R float64) (float64, float64, float64, float64) {
+	Aprimex := ((4 * R) - Ax) / 3
+	Aprimey := (R - Ax) * ((3 * R) - Ax) / (3 * Ay)
+	return Aprimex, Aprimey, Aprimex, -Aprimey
+}
+
 // AbsArc makes an arc centered at (x, y), through angles a1 and a2
-// TODO: placeholder only
-func (c *Canvas) AbsArc(x, y, a1, a2 float32, fillcolor color.RGBA) {
+func (c *Canvas) AbsArc(x, y, radius, a1, a2 float64, fillcolor color.RGBA) {
+
+	c.AbsCircle(float32(x), float32(y), float32(radius), color.RGBA{0, 0, 0, 100})
+
+	p0x, p0y := polar(radius, a1)
+	p1x, p1y := polar(radius, a2)
+	theta := anglebetweenpoints(p0x, p0y, p1x, p1y)
+
+	c.AbsTextMid(500, 100, 15, fmt.Sprintf("a1 = %.1f a2 = %.1f theta = %.1f", degrees(a1), degrees(a2), degrees(theta)), color.RGBA{0, 0, 0, 255})
+	fmt.Fprintf(os.Stderr, "begin: a1=%.1f, a2=%.1f\n", a1, a2)
+
+	x0 := (radius * math.Cos(theta/2))
+	y0 := (radius * math.Sin(theta/2))
+
+	x1, y1, x2, y2 := controls(x0, y0, radius)
+
+	x3 := x0
+	y3 := -y0
+
+	c.coord(x, y, 15, "center", color.RGBA{0, 0, 0, 255})
+	c.coord(x+p0x, y+p0y, 15, "start", color.RGBA{128, 0, 0, 128})
+	c.coord(x+p1x, y+p1y, 15, "end", color.RGBA{0, 128, 0, 128})
+
+	c.coord(x+x0, y+y0, 10, "X0", color.RGBA{0, 0, 0, 255})
+	c.coord(x+x1, y+y1, 15, "C1", color.RGBA{0, 0, 0, 255})
+	c.coord(x+x2, y+y2, 15, "C2", color.RGBA{0, 0, 0, 255})
+	c.coord(x+x3, y+y3, 10, "X3", color.RGBA{0, 0, 0, 255})
+
+	c.AbsPolygon(
+		[]float32{float32(x), float32(x + x0), float32(x + x0)},
+		[]float32{float32(y), float32(y + y0), float32(y + y3)},
+		color.RGBA{128, 0, 0, 100})
+
+	c.AbsCubicBezier(
+		float32(x+x0), float32(y+y0),
+		float32(x+x1), float32(y+y1),
+		float32(x+x2), float32(y+y2),
+		float32(x+x3), float32(y+y3),
+		float32(radius), color.RGBA{128, 0, 0, 100})
+
+}
+
+func (c *Canvas) coord(x, y, size float64, s string, fillcolor color.RGBA) {
+	px := float32(x)
+	py := float32(y)
+	ls := float32(size)
+
+	c.AbsCircle(px, py, ls, fillcolor)
+	c.AbsTextMid(px, py+ls*2, ls, s, fillcolor)
+	c.AbsTextMid(px, py-ls, ls, fmt.Sprintf("(%.1f, %.1f)", px, py), fillcolor)
 }
