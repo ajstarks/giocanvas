@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"image/color"
-	"math/rand"
 
 	"gioui.org/app"
 	"gioui.org/f32"
@@ -13,18 +12,6 @@ import (
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
-
-func fade(c *giocanvas.Canvas, y, width, size, interval float32, fint uint8, color color.RGBA) {
-	for x := float32(0); x <= width; x += width / interval {
-		c.CenterRect(x, y, size, size, color)
-		c.TextMid(x, y+10, size, fmt.Sprintf("%v", color.A), c.TextColor)
-		color.A -= fint
-	}
-}
-
-func rn(n int) float32 {
-	return float32(rand.Intn(n))
-}
 
 func coord(canvas *giocanvas.Canvas, x, y, size float32, color color.RGBA) {
 	canvas.Square(x, y, size/2, color)
