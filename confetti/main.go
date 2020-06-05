@@ -33,7 +33,13 @@ func confetti(s string, w, h, nshapes, maxsize int) {
 			canvas.CenterRect(50, 50, 100, 100, color.RGBA{0, 0, 0, 255})
 			for i := 0; i < nshapes; i++ {
 				color := color.RGBA{rn8(255), rn8(255), rn8(255), rn8(255)}
-				canvas.CenterRect(rn(100), rn(100), rn(maxsize), rn(maxsize), color)
+				x, y := rn(100), rn(100)
+				w, h := rn(maxsize), rn(maxsize)
+				if i%2 == 0 {
+					canvas.Ellipse(x, y, w, h, color)
+				} else {
+					canvas.CenterRect(x, y, w, h, color)
+				}
 			}
 			e.Frame(canvas.Context.Ops)
 		}
