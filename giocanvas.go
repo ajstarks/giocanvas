@@ -42,23 +42,45 @@ func NewCanvas(width, height float32, cfg system.Config, q event.Queue, size ima
 	return canvas
 }
 
-// pct returns the percentage of its input
-func pct(p float32, m float32) float32 {
-	return ((p / 100.0) * m)
-}
+// Convenience functions
 
-// dimen returns canvas dimensions from percentages
-// (converting from x increasing left-right, y increasing top-bottom)
-func dimen(xp, yp, w, h float32) (float32, float32) {
-	return pct(xp, w), pct(100-yp, h)
+// MapRange maps a value between low1 and high1, return the corresponding value between low2 and high2
+func MapRange(value, low1, high1, low2, high2 float64) float64 {
+	return low2 + (high2-low2)*(value-low1)/(high1-low1)
 }
 
 // Background makes a filled rectangle covering the whole canvas
 func (c *Canvas) Background(fillcolor color.RGBA) {
-	c.CenterRect(50, 50, 100, 100, fillcolor)
+	c.AbsRect(0, 0, c.Width, c.Height, fillcolor)
 }
 
-// Line makes a stroked line from (x0, y0) to (x1, y1) using percentage-based measures
+// Coord shows the specified coordinate, using percentage-based coordinates
+// the (x, y) label is above the point, with a label below
+func (c *Canvas) Coord(x, y, size float32, s string, fillcolor color.RGBA) {
+	c.Square(x, y, size/2, fillcolor)
+	c.TextMid(x, y+size, size, fmt.Sprintf("(%g, %g)", x, y), fillcolor)
+	if len(s) > 0 {
+		c.CText(x, y-(size*1.33), size*0.66, s, fillcolor)
+	}
+}
+
+// Grid makes vertical and horizontal grid lines, percentage-based coordinates
+func (c *Canvas) Grid(x, y, w, h, size, interval float32, linecolor color.RGBA) {
+	for xp := x; xp <= x+w; xp += interval {
+		c.Rect(xp, y+h, size, h, linecolor)
+	}
+	for yp := y; yp <= y+h; yp += interval {
+		c.Rect(x, yp, w, size, linecolor)
+	}
+}
+
+// Methods using percentage-based, classical coordinate system
+// (x increasing left to right, y increasing bottom to top)
+
+// Lines and shapes
+
+// Line makes a stroked line using percentage-based measures
+// from (x0, y0) to (x1, y1), stroke width size
 func (c *Canvas) Line(x0, y0, x1, y1, size float32, fillcolor color.RGBA) {
 	x0, y0 = dimen(x0, y0, c.Width, c.Height)
 	x1, y1 = dimen(x1, y1, c.Width, c.Height)
@@ -66,7 +88,20 @@ func (c *Canvas) Line(x0, y0, x1, y1, size float32, fillcolor color.RGBA) {
 	c.AbsLine(x0, y0, x1, y1, size, fillcolor)
 }
 
-// Polygon makes a filled polygon with vertices in x and y, using percentage-based measures
+// VLine makes a vertical line beginning at (x,y) with dimension (w, h)
+// half of the width is left of x, the other half is the to right of x
+func (c *Canvas) VLine(x, y, lineheight, size float32, linecolor color.RGBA) {
+	c.Rect(x-(size/2), y+lineheight, size, lineheight, linecolor)
+}
+
+// HLine makes a horizontal line starting at (x, y), with dimensions (w, h)
+// half of the height is above y, the other below
+func (c *Canvas) HLine(x, y, linewidth, size float32, linecolor color.RGBA) {
+	c.Rect(x, y+(size/2), linewidth, size, linecolor)
+}
+
+// Polygon makes a filled polygon using percentage-based measures
+// vertices in x and y,
 func (c *Canvas) Polygon(x, y []float32, fillcolor color.RGBA) {
 	if len(x) != len(y) || len(x) < 3 {
 		return
@@ -117,14 +152,17 @@ func (c *Canvas) Ellipse(x, y, w, h float32, fillcolor color.RGBA) {
 
 // Arc makes a filled arc, using percentage-based measures
 // center is (x, y) the arc begins at angle a1, and ends at a2
-// TODO: placeholder only
+// TODO: Still buggy
 func (c *Canvas) Arc(x, y, r float32, a1, a2 float64, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	pr := pct(r, c.Width)
 	c.AbsArc(float64(x), float64(y), float64(pr), float64(a1), float64(a2), fillcolor)
 }
 
+// Text methods
+
 // Text places text using percentage-based measures
+// left at x, baseline at y, at the specified size and color
 func (c *Canvas) Text(x, y, size float32, s string, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	size = pct(size, c.Width)
@@ -132,6 +170,7 @@ func (c *Canvas) Text(x, y, size float32, s string, fillcolor color.RGBA) {
 }
 
 // TextEnd places text using percentage-based measures
+// x is the end of the string, baseline at y, using specified size and color
 func (c *Canvas) TextEnd(x, y, size float32, s string, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	size = pct(size, c.Width)
@@ -139,13 +178,25 @@ func (c *Canvas) TextEnd(x, y, size float32, s string, fillcolor color.RGBA) {
 }
 
 // TextMid places text using percentage-based measures
+// text is centered at x, baseline y, using specied size and color
 func (c *Canvas) TextMid(x, y, size float32, s string, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	size = pct(size, c.Width)
 	c.textops(x, y, size, text.Middle, s, fillcolor)
 }
 
-// Rect makes a rectangle with upper left corner at (x,y), with sized at (w,h)
+// EText - alternative name for TextEnd
+func (c *Canvas) EText(x, y, size float32, s string, fillcolor color.RGBA) {
+	c.TextEnd(x, y, size, s, fillcolor)
+}
+
+// CText - alternarive name for TextMid
+func (c *Canvas) CText(x, y, size float32, s string, fillcolor color.RGBA) {
+	c.TextMid(x, y, size, s, fillcolor)
+}
+
+// Rect makes a rectangle using percentage-based measures
+// upper left corner at (x,y), with size at (w,h)
 func (c *Canvas) Rect(x, y, w, h float32, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	w = pct(w, c.Width)
@@ -153,7 +204,17 @@ func (c *Canvas) Rect(x, y, w, h float32, fillcolor color.RGBA) {
 	c.AbsRect(x, y, w, h, fillcolor)
 }
 
-// Square makes a square shape, centered at (x, y), accounts for screen aspect
+// CornerRect makes a rectangle using percentage-based measures
+// upper left corner at (x,y), with sized at (w,h)
+func (c *Canvas) CornerRect(x, y, w, h float32, fillcolor color.RGBA) {
+	x, y = dimen(x, y, c.Width, c.Height)
+	w = pct(w, c.Width)
+	h = pct(h, c.Height)
+	c.AbsRect(x, y, w, h, fillcolor)
+}
+
+// Square makes a square shape, using percentage based measures
+// centered at (x, y), sides are w. Accounts for screen aspect
 func (c *Canvas) Square(x, y, w float32, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	w = pct(w, c.Height)
@@ -161,7 +222,8 @@ func (c *Canvas) Square(x, y, w float32, fillcolor color.RGBA) {
 	c.AbsCenterRect(x, y, w, h, fillcolor)
 }
 
-// CenterRect makes a rectangle with upper left corner at (x,y), with sized at (w,h)
+// CenterRect makes a rectangle using percentage-based measures
+// with upper left corner at (x,y), with sized at (w,h)
 func (c *Canvas) CenterRect(x, y, w, h float32, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	w = pct(w, c.Width)
@@ -169,17 +231,7 @@ func (c *Canvas) CenterRect(x, y, w, h float32, fillcolor color.RGBA) {
 	c.AbsCenterRect(x, y, w, h, fillcolor)
 }
 
-// VLine makes a vertical line beginning at (x,y) with dimension (w, h)
-// half of the width is left of x, the other half is the to right of x
-func (c *Canvas) VLine(x, y, lineheight, size float32, linecolor color.RGBA) {
-	c.Rect(x-(size/2), y+lineheight, size, lineheight, linecolor)
-}
-
-// HLine makes a horizontal line starting at (x, y), with dimensions (w, h)
-// half of the height is above y, the other below
-func (c *Canvas) HLine(x, y, linewidth, size float32, linecolor color.RGBA) {
-	c.Rect(x, y+(size/2), linewidth, size, linecolor)
-}
+// Images
 
 // Image places a scaled image centered at (x,y)
 func (c *Canvas) Image(name string, x, y float32, w, h int, scale float32) {
@@ -192,20 +244,18 @@ func (c *Canvas) CenterImage(name string, x, y float32, w, h int, scale float32)
 	c.AbsCenterImage(name, x, y, w, h, scale)
 }
 
-// Grid makes vertical and horizontal grid lines
-func (c *Canvas) Grid(x, y, w, h, size, interval float32, linecolor color.RGBA) {
-	for xp := x; xp <= x+w; xp += interval {
-		c.Rect(xp, y+h, size, h, linecolor)
-	}
-	for yp := y; yp <= y+h; yp += interval {
-		c.Rect(x, yp, w, size, linecolor)
-	}
+// pct returns the percentage of its input
+func pct(p float32, m float32) float32 {
+	return ((p / 100.0) * m)
 }
 
-// MapRange maps a value between low1 and high1, return the corresponding value between low2 and high2
-func MapRange(value, low1, high1, low2, high2 float64) float64 {
-	return low2 + (high2-low2)*(value-low1)/(high1-low1)
+// dimen returns canvas dimensions from percentages
+// (converting from x increasing left-right, y increasing top-bottom)
+func dimen(xp, yp, w, h float32) (float32, float32) {
+	return pct(xp, w), pct(100-yp, h)
 }
+
+// foundational methods, and methods using Gio standard coordinates
 
 // textops places text
 func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string, fillcolor color.RGBA) {
@@ -424,7 +474,7 @@ func (c *Canvas) AbsCubicBezier(x, y, cx1, cy1, cx2, cy2, ex, ey, size float32, 
 func (c *Canvas) AbsCircle(x, y, radius float32, fillcolor color.RGBA) {
 	path := new(clip.Path)
 	ops := c.Context.Ops
-	const k = 0.5522847498 //  0.551915024494 // http://spencermortensen.com/articles/bezier-circle/
+	const k = 0.551915024494 // http://spencermortensen.com/articles/bezier-circle/
 	r := f32.Rect(0, 0, c.Width, c.Height)
 
 	defer op.Push(c.Context.Ops).Pop()
