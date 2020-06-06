@@ -13,10 +13,10 @@ import (
 	"github.com/ajstarks/giocanvas"
 )
 
-func play(s string, w, h int, showgrid bool) {
+func play(appname string, w, h int, showgrid bool) {
 	width, height := float32(w), float32(h)
 	size := app.Size(unit.Dp(width), unit.Dp(height))
-	title := app.Title("Gio Canvas API")
+	title := app.Title(appname)
 	tcolor := color.RGBA{128, 0, 0, 255}
 	fcolor := color.RGBA{0, 0, 128, 255}
 	bgcolor := color.RGBA{255, 255, 255, 255}
@@ -35,7 +35,7 @@ func play(s string, w, h int, showgrid bool) {
 
 			// Title
 			canvas.Background(bgcolor)
-			canvas.TextMid(50, 92, titlesize, "Gio Canvas API", labelcolor)
+			canvas.TextMid(50, 92, titlesize, appname, labelcolor)
 
 			colx = 20
 			// Lines
@@ -82,9 +82,9 @@ func play(s string, w, h int, showgrid bool) {
 			canvas.TextMid(colx, 55, labelsize, "Cubic Bezier Curve", labelcolor)
 			canvas.CubeCurve(start.X, start.Y, c1.X, c1.Y, c2.X, c2.Y, end.X, end.Y, fcolor)
 			canvas.Coord(start.X, start.Y, subsize, "start", labelcolor)
-			canvas.Coord(end.X, end.Y, subsize, "ctrl 1", labelcolor)
-			canvas.Coord(c1.X, c1.Y, subsize, "ctrl 2", labelcolor)
-			canvas.Coord(c2.X, c2.Y, subsize, "end", labelcolor)
+			canvas.Coord(end.X, end.Y, subsize, "end", labelcolor)
+			canvas.Coord(c1.X, c1.Y, subsize, "control 1", labelcolor)
+			canvas.Coord(c2.X, c2.Y, subsize, "control 2", labelcolor)
 
 			// Polygon
 			canvas.TextMid(colx, 30, labelsize, "Polygon", labelcolor)
@@ -132,6 +132,6 @@ func main() {
 	flag.IntVar(&h, "height", 1000, "canvas height")
 	flag.BoolVar(&showgrid, "grid", false, "show grid")
 	flag.Parse()
-	go play("Go API", w, h, showgrid)
+	go play("Gio Canvas API", w, h, showgrid)
 	app.Main()
 }
