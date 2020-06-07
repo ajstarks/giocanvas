@@ -15,7 +15,7 @@ import (
 
 func play(appname string, w, h int, showgrid bool) {
 	width, height := float32(w), float32(h)
-	size := app.Size(unit.Dp(width), unit.Dp(height))
+	size := app.Size(unit.Px(width), unit.Px(height))
 	title := app.Title(appname)
 	tcolor := color.RGBA{128, 0, 0, 255}
 	fcolor := color.RGBA{0, 0, 128, 255}
@@ -40,9 +40,9 @@ func play(appname string, w, h int, showgrid bool) {
 			colx = 20
 			// Lines
 			canvas.TextMid(colx, 80, labelsize, "Line", labelcolor)
-			canvas.Line(10, 75, colx, 65, lw, tcolor)
-			canvas.Coord(10, 75, subsize, "P0", labelcolor)
-			canvas.Coord(colx, 65, subsize, "P1", labelcolor)
+			canvas.Line(10, 70, colx+5, 65, lw, tcolor)
+			canvas.Coord(10, 70, subsize, "P0", labelcolor)
+			canvas.Coord(colx+5, 65, subsize, "P1", labelcolor)
 
 			canvas.Line(colx, 70, 35, 75, lw, fcolor)
 			canvas.Coord(colx, 70, subsize, "P0", labelcolor)
