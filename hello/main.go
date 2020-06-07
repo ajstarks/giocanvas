@@ -14,7 +14,7 @@ import (
 func hello(title string, w, h int) {
 	width, height := float32(w), float32(h)
 	gofont.Register()
-	win := app.NewWindow(app.Title(title), app.Size(unit.Dp(width), unit.Dp(height)))
+	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 	for e := range win.Events() {
 		if e, ok := e.(system.FrameEvent); ok {
 			canvas := giocanvas.NewCanvas(width, height, e.Config, e.Queue, e.Size)

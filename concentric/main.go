@@ -13,7 +13,7 @@ import (
 
 func concentric(s string, w, h int) {
 	width, height := float32(w), float32(h)
-	win := app.NewWindow(app.Title(s), app.Size(unit.Dp(width), unit.Dp(height)))
+	win := app.NewWindow(app.Title(s), app.Size(unit.Px(width), unit.Px(height)))
 	r := float32(30)
 	g := uint8(5)
 	for e := range win.Events() {

@@ -12,7 +12,7 @@ import (
 
 func mondrian(s string, w, h int) {
 	width, height := float32(w), float32(h)
-	size := app.Size(unit.Dp(width), unit.Dp(height))
+	size := app.Size(unit.Px(width), unit.Px(height))
 	title := app.Title(s)
 
 	black := color.RGBA{0, 0, 0, 255}

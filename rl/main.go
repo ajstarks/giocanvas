@@ -18,7 +18,7 @@ func rn(n int) float32 {
 
 func rl(title string, w, h, nlines int, thickness float32) {
 	width, height := float32(w), float32(h)
-	win := app.NewWindow(app.Title(title), app.Size(unit.Dp(width), unit.Dp(height)))
+	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 	for e := range win.Events() {
 		if e, ok := e.(system.FrameEvent); ok {
 			canvas := gc.NewCanvas(width, height, e.Config, e.Queue, e.Size)

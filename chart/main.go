@@ -138,7 +138,7 @@ func areachart(canvas *gc.Canvas, x, y, width, height float32, data []NameValue,
 func chart(s string, w, h int, data []NameValue, chartopts ChartOptions) {
 	width := float32(w)
 	height := float32(h)
-	size := app.Size(unit.Dp(width), unit.Dp(height))
+	size := app.Size(unit.Px(width), unit.Px(height))
 	title := app.Title(s)
 	gofont.Register()
 	win := app.NewWindow(title, size)

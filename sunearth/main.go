@@ -13,7 +13,7 @@ import (
 func sunearth(s string, w, h int) {
 	width := float32(w)
 	height := float32(h)
-	win := app.NewWindow(app.Title(s), app.Size(unit.Dp(width), unit.Dp(height)))
+	win := app.NewWindow(app.Title(s), app.Size(unit.Px(width), unit.Dp(height)))
 
 	yellow := color.RGBA{255, 248, 231, 255}
 	blue := color.RGBA{44, 77, 232, 255}
