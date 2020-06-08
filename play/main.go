@@ -7,7 +7,6 @@ import (
 
 	"gioui.org/app"
 	"gioui.org/f32"
-	"gioui.org/font/gofont"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
@@ -26,7 +25,6 @@ func play(appname string, w, h int, showgrid bool) {
 	subsize := labelsize * 0.7
 	var colx float32
 	var lw float32 = 0.2
-	gofont.Register()
 
 	win := app.NewWindow(title, size)
 	for e := range win.Events() {

@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"gioui.org/app"
-	"gioui.org/font/gofont"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	gc "github.com/ajstarks/giocanvas"
@@ -140,7 +139,6 @@ func chart(s string, w, h int, data []NameValue, chartopts ChartOptions) {
 	height := float32(h)
 	size := app.Size(unit.Px(width), unit.Px(height))
 	title := app.Title(s)
-	gofont.Register()
 	win := app.NewWindow(title, size)
 	black := color.RGBA{0, 0, 0, 255}
 	datacolor := gc.ColorLookup(chartopts.color)
@@ -184,7 +182,7 @@ func main() {
 
 	flag.StringVar(&opts.title, "chartitle", "", "chart title")
 	flag.StringVar(&opts.legend, "chartlegend", "", "chart legend")
-	flag.StringVar(&opts.color, "color", "lightsteelblue", "chart data color")
+	flag.StringVar(&opts.color, "color", "maroon", "chart data color")
 
 	flag.BoolVar(&opts.showtitle, "title", true, "show title")
 	flag.BoolVar(&opts.showlegend, "legend", false, "show legend")

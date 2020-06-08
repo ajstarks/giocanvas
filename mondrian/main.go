@@ -40,7 +40,7 @@ func mondrian(s string, w, h int) {
 			canvas.CenterRect(tq, qt, halft, halft, yellow)          // small yellow lower right
 			canvas.Line(0, 0, 100, 0, border, black)                 // top border
 			canvas.Line(0, 0, 0, 100, border, black)                 // left border
-			canvas.Line(99, border/2, 99, 100, border, black)        // right border
+			canvas.Line(100, border/2, 100, 100, border, black)      // right border
 			canvas.Line(0, 100, 100, 100, border, black)             // bottom border
 			canvas.Line(t2h, halft, t2h+halft, halft, border, black) // top of yellow square
 			canvas.Line(third, 100, third, 0, border, black)         //  first column border

@@ -12,6 +12,7 @@ import (
 	"os"
 
 	"gioui.org/f32"
+	"gioui.org/font/gofont"
 	"gioui.org/io/event"
 	"gioui.org/io/system"
 	"gioui.org/layout"
@@ -269,7 +270,6 @@ func dimen(xp, yp, w, h float32) (float32, float32) {
 // textops places text
 func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string, fillcolor color.RGBA) {
 	offset := x
-	th := material.NewTheme()
 	switch alignment {
 	case text.End:
 		offset = x - c.Width
@@ -278,7 +278,7 @@ func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string,
 	}
 	defer op.Push(c.Context.Ops).Pop()
 	op.TransformOp{}.Offset(f32.Point{X: offset, Y: y - size}).Add(c.Context.Ops) // shift to use baseline
-	l := material.Label(th, unit.Px(size), s)
+	l := material.Label(material.NewTheme(gofont.Collection()), unit.Px(size), s)
 	l.Color = fillcolor
 	l.Alignment = alignment
 	l.Layout(c.Context)
@@ -286,9 +286,7 @@ func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string,
 
 // TextWidth returns the size of a text string
 // TODO: implement correctly
-func (c *Canvas) TextWidth(s string, size float32) layout.Dimensions {
-	l := material.Label(material.NewTheme(), unit.Px(size), s)
-	return l.Layout(c.Context)
+func (c *Canvas) TextWidth(s string, size float32) {
 }
 
 // AbsText places text at (x,y)

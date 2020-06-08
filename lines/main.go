@@ -5,7 +5,6 @@ import (
 	"image/color"
 
 	"gioui.org/app"
-	"gioui.org/font/gofont"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
@@ -13,7 +12,6 @@ import (
 
 func linetest(title string, w, h int) {
 	width, height := float32(w), float32(h)
-	gofont.Register()
 	win := app.NewWindow(app.Title(title), app.Size(unit.Dp(width), unit.Dp(height)))
 	for e := range win.Events() {
 		if e, ok := e.(system.FrameEvent); ok {
