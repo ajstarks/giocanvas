@@ -18,10 +18,10 @@ func linetest(title string, w, h int) {
 	for e := range win.Events() {
 		if e, ok := e.(system.FrameEvent); ok {
 			canvas := giocanvas.NewCanvas(width, height, e.Config, e.Queue, e.Size)
-			var lw, ls float32
+			var x, y, lw, ls float32
 			lw = 0.1
 			ls = 1
-			for y := float32(5); y <= 95; y += 5 {
+			for y = 5; y <= 95; y += 5 {
 				canvas.Line(50, 50, 95, y, lw, color.RGBA{128, 0, 0, 128})
 				canvas.Line(50, 50, 5, y, lw, color.RGBA{0, 0, 128, 128})
 				canvas.Coord(95, y, ls, "", color.RGBA{0, 0, 0, 255})
@@ -30,7 +30,7 @@ func linetest(title string, w, h int) {
 			}
 
 			lw = 0.1
-			for x := float32(5); x <= 95; x += 5 {
+			for x = 5; x <= 95; x += 5 {
 				canvas.Line(50, 50, x, 95, lw, color.RGBA{0, 128, 0, 128})
 				canvas.Line(50, 50, x, 5, lw, color.RGBA{0, 0, 0, 128})
 				canvas.Coord(x, 95, ls, "", color.RGBA{0, 0, 0, 255})
