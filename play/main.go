@@ -20,7 +20,7 @@ func play(appname string, w, h int, showgrid bool) {
 	tcolor := color.RGBA{128, 0, 0, 255}
 	fcolor := color.RGBA{0, 0, 128, 255}
 	bgcolor := color.RGBA{255, 255, 255, 255}
-	labelcolor := color.RGBA{0, 0, 0, 255}
+	labelcolor := color.RGBA{50, 50, 50, 255}
 	labelsize := float32(2)
 	titlesize := labelsize * 2
 	subsize := labelsize * 0.7
@@ -113,12 +113,14 @@ func play(appname string, w, h int, showgrid bool) {
 
 			// Grid
 			if showgrid {
+				gridcolor := color.RGBA{0, 0, 128, 128}
+				var gridsize float32 = 1.2
 				for x := float32(5); x <= 95; x += 5 {
 					v := fmt.Sprintf("%v", x)
-					canvas.TextMid(x, 2, 1.5, v, color.RGBA{0, 0, 0, 200})
-					canvas.TextMid(2, x-0.75, 1.5, v, color.RGBA{0, 0, 0, 200})
+					canvas.TextMid(x, 2, gridsize, v, gridcolor)
+					canvas.TextMid(2, x-0.75, gridsize, v, gridcolor)
 				}
-				canvas.Grid(0, 0, 100, 100, 0.1, 5, color.RGBA{0, 0, 0, 100})
+				canvas.Grid(0, 0, 100, 100, 0.1, 5, gridcolor)
 			}
 			e.Frame(canvas.Context.Ops)
 		}

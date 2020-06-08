@@ -67,37 +67,46 @@ func (c *Canvas) Coord(x, y, size float32, s string, fillcolor color.RGBA) {
 // Grid makes vertical and horizontal grid lines, percentage-based coordinates
 func (c *Canvas) Grid(x, y, w, h, size, interval float32, linecolor color.RGBA) {
 	for xp := x; xp <= x+w; xp += interval {
-		c.Rect(xp, y+h, size, h, linecolor)
+		c.Line(xp, y, xp, y+h, size, linecolor) // vertical line
 	}
 	for yp := y; yp <= y+h; yp += interval {
-		c.Rect(x, yp, w, size, linecolor)
+		c.Line(x, yp, x+w, yp, size, linecolor) // horizontal line
 	}
 }
 
-// Methods using percentage-based, classical coordinate system
-// (x increasing left to right, y increasing bottom to top)
+// Methods using percentage-based, (x and y range from 0-100),
+// classical coordinate system (x increasing left to right, y increasing bottom to top)
 
 // Lines and shapes
 
 // Line makes a stroked line using percentage-based measures
 // from (x0, y0) to (x1, y1), stroke width size
-func (c *Canvas) Line(x0, y0, x1, y1, size float32, fillcolor color.RGBA) {
+func (c *Canvas) Line(x0, y0, x1, y1, size float32, strokecolor color.RGBA) {
 	x0, y0 = dimen(x0, y0, c.Width, c.Height)
 	x1, y1 = dimen(x1, y1, c.Width, c.Height)
 	size = pct(size, c.Width)
-	c.AbsLine(x0, y0, x1, y1, size, fillcolor)
+	c.AbsLine(x0, y0, x1, y1, size, strokecolor)
+}
+
+// oLine (deprecated) makes a stroked line using percentage-based measures
+// from (x0, y0) to (x1, y1), stroke width size
+func (c *Canvas) oLine(x0, y0, x1, y1, size float32, fillcolor color.RGBA) {
+	x0, y0 = dimen(x0, y0, c.Width, c.Height)
+	x1, y1 = dimen(x1, y1, c.Width, c.Height)
+	size = pct(size, c.Width)
+	c.oAbsLine(x0, y0, x1, y1, size, fillcolor)
 }
 
 // VLine makes a vertical line beginning at (x,y) with dimension (w, h)
-// half of the width is left of x, the other half is the to right of x
+// the line begins at (x,y) and moves upward by linewidth
 func (c *Canvas) VLine(x, y, lineheight, size float32, linecolor color.RGBA) {
-	c.Rect(x-(size/2), y+lineheight, size, lineheight, linecolor)
+	c.Line(x, y, x, y+lineheight, size, linecolor)
 }
 
 // HLine makes a horizontal line starting at (x, y), with dimensions (w, h)
-// half of the height is above y, the other below
+// the line begin at (x,y) and extends to the left by linewidth
 func (c *Canvas) HLine(x, y, linewidth, size float32, linecolor color.RGBA) {
-	c.Rect(x, y+(size/2), linewidth, size, linecolor)
+	c.Line(x, y, x+linewidth, y, size, linecolor)
 }
 
 // Polygon makes a filled polygon using percentage-based measures
@@ -255,7 +264,7 @@ func dimen(xp, yp, w, h float32) (float32, float32) {
 	return pct(xp, w), pct(100-yp, h)
 }
 
-// foundational methods, and methods using Gio standard coordinates
+// Foundational methods, and methods using Gio standard coordinates
 
 // textops places text
 func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string, fillcolor color.RGBA) {
@@ -273,6 +282,13 @@ func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string,
 	l.Color = fillcolor
 	l.Alignment = alignment
 	l.Layout(c.Context)
+}
+
+// TextWidth returns the size of a text string
+// TODO: implement correctly
+func (c *Canvas) TextWidth(s string, size float32) layout.Dimensions {
+	l := material.Label(material.NewTheme(), unit.Px(size), s)
+	return l.Layout(c.Context)
 }
 
 // AbsText places text at (x,y)
@@ -307,15 +323,13 @@ func (c *Canvas) AbsCenterRect(x, y, w, h float32, fillcolor color.RGBA) {
 }
 
 // AbsVLine makes a vertical line beginning at (x,y) with dimension (w, h)
-// half of the width is left of x, the other half is the to right of x
 func (c *Canvas) AbsVLine(x, y, w, h float32, fillcolor color.RGBA) {
-	c.AbsRect(x-(w/2), y, w, h, fillcolor)
+	c.AbsLine(x, y, x, y+h, w, fillcolor)
 }
 
 // AbsHLine makes a horizontal line starting at (x, y), with dimensions (w, h)
-// half of the height is above y, the other below
 func (c *Canvas) AbsHLine(x, y, w, h float32, fillcolor color.RGBA) {
-	c.AbsRect(x, y-(h/2), w, h, fillcolor)
+	c.AbsLine(x, y, x+w, y, h, fillcolor)
 }
 
 // AbsGrid uses horizontal and vertical lines to make a grid
@@ -383,26 +397,14 @@ func (c *Canvas) AbsPolygon(x, y []float32, fillcolor color.RGBA) {
 	paint.PaintOp{Rect: r}.Add(ops)
 }
 
-// quadline makes a four-sided polygon with vertices at (p0, p1, p2, p3) forming a line
-func (c *Canvas) quadline(p0, p1, p2, p3 f32.Point, fillcolor color.RGBA) {
-	path := new(clip.Path)
-	ops := c.Context.Ops
-	r := f32.Rect(0, 0, c.Width, c.Height)
-
-	defer op.Push(c.Context.Ops).Pop()
-	path.Begin(ops)
-	path.Move(p0)
-	path.Line(f32.Point{X: p1.X - p0.X, Y: p1.Y - p0.Y})
-	path.Line(f32.Point{X: p2.X - p1.X, Y: p2.Y - p1.Y})
-	path.Line(f32.Point{X: p3.X - p2.X, Y: p3.Y - p2.Y})
-	path.Line(f32.Point{X: p0.X - p3.X, Y: p0.Y - p3.Y})
-	path.End().Add(ops)
-	paint.ColorOp{Color: fillcolor}.Add(ops)
-	paint.PaintOp{Rect: r}.Add(ops)
+// AbsLine makes a line from (x0,y0) to (x1, y1) using absolute coordinates
+func (c *Canvas) AbsLine(x0, y0, x1, y1, size float32, fillcolor color.RGBA) {
+	lv{f32.Point{X: x0, Y: y0}, f32.Point{X: x1, Y: y1}}.Stroke(fillcolor, size, &c.Context)
 }
 
-// AbsLine makes a line from (x0,y0) to (x1, y1) using absolute coordinates
-func (c *Canvas) AbsLine(x0, y0, x1, y1, lw float32, fillcolor color.RGBA) {
+// oAbsLine (deprecated) makes a line from (x0,y0) to (x1, y1) using absolute coordinates
+// lines are formed with polygons
+func (c *Canvas) oAbsLine(x0, y0, x1, y1, lw float32, fillcolor color.RGBA) {
 	l2 := lw / 2
 
 	// vertical line
@@ -429,6 +431,24 @@ func (c *Canvas) AbsLine(x0, y0, x1, y1, lw float32, fillcolor color.RGBA) {
 		p3.Y = y1 + l2
 	}
 	c.quadline(p0, p1, p2, p3, fillcolor)
+}
+
+// quadline (deprecated) makes a four-sided polygon with vertices at (p0, p1, p2, p3) forming a line
+func (c *Canvas) quadline(p0, p1, p2, p3 f32.Point, fillcolor color.RGBA) {
+	path := new(clip.Path)
+	ops := c.Context.Ops
+	r := f32.Rect(0, 0, c.Width, c.Height)
+
+	defer op.Push(c.Context.Ops).Pop()
+	path.Begin(ops)
+	path.Move(p0)
+	path.Line(f32.Point{X: p1.X - p0.X, Y: p1.Y - p0.Y})
+	path.Line(f32.Point{X: p2.X - p1.X, Y: p2.Y - p1.Y})
+	path.Line(f32.Point{X: p3.X - p2.X, Y: p3.Y - p2.Y})
+	path.Line(f32.Point{X: p0.X - p3.X, Y: p0.Y - p3.Y})
+	path.End().Add(ops)
+	paint.ColorOp{Color: fillcolor}.Add(ops)
+	paint.PaintOp{Rect: r}.Add(ops)
 }
 
 // AbsQuadBezier makes a quadratic curve
@@ -581,4 +601,164 @@ func (c *Canvas) coord(x, y, size float64, s string, fillcolor color.RGBA) {
 	c.AbsCircle(px, py, ls, fillcolor)
 	c.AbsTextMid(px, py+ls*2, ls, s, fillcolor)
 	c.AbsTextMid(px, py-ls, ls, fmt.Sprintf("(%.1f, %.1f)", px, py), fillcolor)
+}
+
+// Line implementation from github.com/wrnrlr/shape
+
+type lv []f32.Point
+
+const (
+	rad45  = float32(45 * math.Pi / 180)
+	rad135 = float32(135 * math.Pi / 180)
+	rad315 = float32(315 * math.Pi / 180)
+	rad225 = float32(225 * math.Pi / 180)
+	rad90  = float32(90 * math.Pi / 180)
+	rad180 = float32(180 * math.Pi / 180)
+)
+
+func (l lv) Stroke(c color.RGBA, width float32, gtx *layout.Context) (box f32.Rectangle) {
+	if len(l) < 2 {
+		return box
+	}
+	defer op.Push(gtx.Ops).Pop()
+	paint.ColorOp{Color: c}.Add(gtx.Ops)
+	var path clip.Path
+	path.Begin(gtx.Ops)
+	distance := width
+	var angles []float32
+	var offsetPoints, originalPoints, deltaPoints []f32.Point
+	var tilt float32
+	var prevDelta f32.Point
+	for i, point := range l {
+		if i == 0 {
+			nextPoint := l[i+1]
+			tilt = angle(point, nextPoint) + rad225
+		} else if i == len(l)-1 {
+			prevPoint := l[i-1]
+			tilt = angle(prevPoint, point) + rad315
+		} else {
+			prevPoint := l[i-1]
+			nextPoint := l[i+1]
+			tilt = bezel(point, prevPoint, nextPoint)
+		}
+		angles = append(angles, tilt)
+		originalPoints = append(originalPoints, point)
+		point = offsetPoint(point, distance, tilt)
+		offsetPoints = append(offsetPoints, point)
+		newPoint := point.Sub(prevDelta)
+		deltaPoints = append(deltaPoints, newPoint)
+		prevDelta = point
+		if i == 0 {
+			path.Move(newPoint)
+		} else {
+			path.Line(newPoint)
+		}
+	}
+	for i := len(l) - 1; i >= 0; i-- {
+		point := l[i]
+		if i == 0 {
+			nextPoint := l[i+1]
+			tilt = angle(point, nextPoint) + rad135
+		} else if i == len(l)-1 {
+			prevPoint := l[i-1]
+			tilt = angle(prevPoint, point) + rad45
+		} else {
+			point := l[i]
+			prevPoint := l[i-1]
+			nextPoint := l[i+1]
+			tilt = bezel(point, nextPoint, prevPoint)
+		}
+		angles = append(angles, tilt)
+		originalPoints = append(originalPoints, point)
+		point = offsetPoint(point, distance, tilt)
+		offsetPoints = append(offsetPoints, point)
+		newPoint := point.Sub(prevDelta)
+		deltaPoints = append(deltaPoints, newPoint)
+		prevDelta = point
+		path.Line(newPoint)
+	}
+	point := l[0]
+	nextPoint := l[1]
+	tilt = angle(point, nextPoint) + rad225
+	angles = append(angles, tilt)
+	originalPoints = append(originalPoints, point)
+	point = offsetPoint(point, distance, tilt)
+	offsetPoints = append(offsetPoints, point)
+	point = point.Sub(prevDelta)
+	path.Line(point)
+	deltaPoints = append(deltaPoints, point)
+	// fmt.Printf("Original Points: %v\n", originalPoints)
+	// printDegrees(angles)
+	// fmt.Printf("Offset Points:   %v\n", offsetPoints)
+	for _, p := range offsetPoints {
+		box.Min.X = f32Min(box.Min.X, p.X)
+		box.Min.Y = f32Min(box.Min.Y, p.Y)
+		box.Max.X = f32Max(box.Max.X, p.X)
+		box.Max.Y = f32Max(box.Max.Y, p.Y)
+	}
+	//fmt.Printf("Min and Max:   %v\n", box)
+	//fmt.Printf("Delta Points:    %v\n", deltaPoints)
+	path.End().Add(gtx.Ops)
+	//paint.PaintOp{f32.Rectangle{Max:f32.Point{w,h}}}.Add(gtx.Ops)
+	paint.PaintOp{box}.Add(gtx.Ops)
+	return box
+}
+
+func angle(p1, p2 f32.Point) float32 {
+	return float32(math.Atan2(float64(p2.Y-p1.Y), float64(p2.X-p1.X)))
+}
+
+func offsetPoint(point f32.Point, distance, angle float32) f32.Point {
+	//fmt.Printf("Point X: %f, Y: %f, Angle: %f\n", point.X, point.Y, angle)
+	x := point.X + distance*cos(angle)
+	y := point.Y + distance*sin(angle)
+	//fmt.Printf("Point X: %f, Y: %f \n", x, y)
+	return f32.Point{X: x, Y: y}
+}
+
+func cos(v float32) float32 {
+	return float32(math.Cos(float64(v)))
+}
+
+func sin(v float32) float32 {
+	return float32(math.Sin(float64(v)))
+}
+
+func atan2(y, x float32) float32 {
+	return float32(math.Atan2(float64(y), float64(x)))
+}
+
+func bezel(p, q, r f32.Point) float32 {
+	angle := atan2(q.Y-p.Y, q.X-p.X) - atan2(r.Y-p.Y, r.X-p.X)
+	if angle < -rad180 || angle > rad180 { // concave
+
+	} else { // convex
+
+	}
+	if angle < 0 {
+		angle = angle
+	} else {
+		angle = angle
+	}
+	return angle
+}
+
+func f32Min(x, y float32) float32 {
+	return float32(math.Min(float64(x), float64(y)))
+}
+
+func f32Max(x, y float32) float32 {
+	return float32(math.Max(float64(x), float64(y)))
+}
+
+func printDegrees(radials []float32) {
+	var degrees []float32
+	for _, a := range radials {
+		degrees = append(degrees, f32mod(a*180/math.Pi, 360))
+	}
+	fmt.Printf("Angles: %v\n", degrees)
+}
+
+func f32mod(x, y float32) float32 {
+	return float32(math.Mod(float64(x), float64(y)))
 }
