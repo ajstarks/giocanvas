@@ -287,7 +287,9 @@ func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string,
 
 // TextWidth returns the size of a text string
 func (c *Canvas) TextWidth(s string, size float32) unit.Value {
-	return material.Label(material.NewTheme(gofont.Collection()), unit.Px(size), s).TextSize
+	l := material.Label(material.NewTheme(gofont.Collection()), unit.Px(size), s)
+	fmt.Fprintf(os.Stderr, "%q = %v\n", s, l.TextSize)
+	return l.TextSize
 }
 
 // AbsText places text at (x,y)
