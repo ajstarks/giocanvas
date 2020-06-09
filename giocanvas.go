@@ -173,26 +173,26 @@ func (c *Canvas) Arc(x, y, r float32, a1, a2 float64, fillcolor color.RGBA) {
 
 // Text places text using percentage-based measures
 // left at x, baseline at y, at the specified size and color
-func (c *Canvas) Text(x, y, size float32, s string, fillcolor color.RGBA) unit.Value {
+func (c *Canvas) Text(x, y, size float32, s string, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	size = pct(size, c.Width)
-	return c.textops(x, y, size, text.Start, s, fillcolor)
+	c.textops(x, y, size, text.Start, s, fillcolor)
 }
 
 // TextEnd places text using percentage-based measures
 // x is the end of the string, baseline at y, using specified size and color
-func (c *Canvas) TextEnd(x, y, size float32, s string, fillcolor color.RGBA) unit.Value {
+func (c *Canvas) TextEnd(x, y, size float32, s string, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	size = pct(size, c.Width)
-	return c.textops(x, y, size, text.End, s, fillcolor)
+	c.textops(x, y, size, text.End, s, fillcolor)
 }
 
 // TextMid places text using percentage-based measures
 // text is centered at x, baseline y, using specied size and color
-func (c *Canvas) TextMid(x, y, size float32, s string, fillcolor color.RGBA) unit.Value {
+func (c *Canvas) TextMid(x, y, size float32, s string, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	size = pct(size, c.Width)
-	return c.textops(x, y, size, text.Middle, s, fillcolor)
+	c.textops(x, y, size, text.Middle, s, fillcolor)
 }
 
 // EText - alternative name for TextEnd
@@ -268,7 +268,7 @@ func dimen(xp, yp, w, h float32) (float32, float32) {
 // Foundational methods, and methods using Gio standard coordinates
 
 // textops places text
-func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string, fillcolor color.RGBA) unit.Value {
+func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string, fillcolor color.RGBA) {
 	offset := x
 	switch alignment {
 	case text.End:
@@ -282,7 +282,6 @@ func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string,
 	l.Color = fillcolor
 	l.Alignment = alignment
 	l.Layout(c.Context)
-	return l.TextSize
 }
 
 // TextWidth returns the size of a text string
@@ -293,18 +292,18 @@ func (c *Canvas) TextWidth(s string, size float32) unit.Value {
 }
 
 // AbsText places text at (x,y)
-func (c *Canvas) AbsText(x, y, size float32, s string, fillcolor color.RGBA) unit.Value {
-	return c.textops(x, y, size, text.Start, s, fillcolor)
+func (c *Canvas) AbsText(x, y, size float32, s string, fillcolor color.RGBA) {
+	c.textops(x, y, size, text.Start, s, fillcolor)
 }
 
 // AbsTextMid places text centered at (x,y)
-func (c *Canvas) AbsTextMid(x, y, size float32, s string, fillcolor color.RGBA) unit.Value {
-	return c.textops(x, y, size, text.Middle, s, fillcolor)
+func (c *Canvas) AbsTextMid(x, y, size float32, s string, fillcolor color.RGBA) {
+	c.textops(x, y, size, text.Middle, s, fillcolor)
 }
 
 // AbsTextEnd places text aligned to the end
-func (c *Canvas) AbsTextEnd(x, y, size float32, s string, fillcolor color.RGBA) unit.Value {
-	return c.textops(x, y, size, text.End, s, fillcolor)
+func (c *Canvas) AbsTextEnd(x, y, size float32, s string, fillcolor color.RGBA) {
+	c.textops(x, y, size, text.End, s, fillcolor)
 }
 
 // AbsRect makes a filled Rectangle; left corner at (x, y), with dimensions (w,h)
