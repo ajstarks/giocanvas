@@ -1,0 +1,12 @@
+deck
+	opts="-textsize=1.8 -dot -bar=f -line -fulldeck=f -linewidth=0.3 -left=20 -right=80 -min=0 -max=7 -val=f"
+	slide
+		ctext "Binary size difference for gio programs:" 50 90 3
+		text "Regular build"	81 62 2 "sans" "red"
+		text "-ldflags='-s -w'"	81 52 2 "sans" "steelblue"
+		etext "Binary size (bytes x 1 million)" 20 85 1.5
+		
+		dchart opts -yrange=0,7,1 -grid -yaxis -color=red -hline 2.085304,hello.go b1m.d 
+		dchart opts -xlabel=0 b2m.d
+	eslide
+edeck

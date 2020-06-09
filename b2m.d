@@ -1,0 +1,10 @@
+play	5.40438
+hello	5.36722
+chart	5.36345
+lines	5.33884
+rl	3.22403
+confetti	3.21555
+sunearth	3.19424
+eclipse	3.19424
+concentric	3.19424
+mondrian	3.14518
