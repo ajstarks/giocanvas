@@ -26,6 +26,8 @@ func play(appname string, w, h int, showgrid bool) {
 	var colx float32
 	var lw float32 = 0.2
 
+	subtitle := "A canvas API for Gio applications using high-level objects and a percentage-based coordinate system (https://github.com/ajstarks/giocanvas)"
+
 	win := app.NewWindow(title, size)
 	for e := range win.Events() {
 		if e, ok := e.(system.FrameEvent); ok {
@@ -33,7 +35,10 @@ func play(appname string, w, h int, showgrid bool) {
 
 			// Title
 			canvas.Background(bgcolor)
-			canvas.TextMid(50, 92, titlesize, appname, labelcolor)
+
+			colx = 10
+			canvas.Text(colx, 92, titlesize, appname, labelcolor)
+			canvas.TextWrap(colx+35, 95, subsize, 50, subtitle, labelcolor)
 
 			colx = 20
 			// Lines

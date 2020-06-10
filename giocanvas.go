@@ -293,7 +293,7 @@ func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string,
 	l.Layout(c.Context)
 }
 
-// AbsTextWrap places and wraps text
+// AbsTextWrap places and wraps text at (x, y), wrapped at width
 func (c *Canvas) AbsTextWrap(x, y, size, width float32, s string, fillcolor color.RGBA) {
 	defer op.Push(c.Context.Ops).Pop()
 	op.TransformOp{}.Offset(f32.Point{X: x, Y: y - size}).Add(c.Context.Ops) // shift to use baseline
@@ -649,11 +649,7 @@ func (l lv) Stroke(c color.RGBA, width float32, gtx *layout.Context) (box f32.Re
 		} else if i == len(l)-1 {
 			prevPoint := l[i-1]
 			tilt = angle(prevPoint, point) + rad315
-		} /*else {
-			prevPoint := l[i-1]
-			nextPoint := l[i+1]
-			tilt = bezel(point, prevPoint, nextPoint)
-		}*/
+		}
 		angles = append(angles, tilt)
 		originalPoints = append(originalPoints, point)
 		point = offsetPoint(point, distance, tilt)
@@ -675,12 +671,7 @@ func (l lv) Stroke(c color.RGBA, width float32, gtx *layout.Context) (box f32.Re
 		} else if i == len(l)-1 {
 			prevPoint := l[i-1]
 			tilt = angle(prevPoint, point) + rad45
-		} /*else {
-			point := l[i]
-			prevPoint := l[i-1]
-			nextPoint := l[i+1]
-			tilt = bezel(point, nextPoint, prevPoint)
-		}*/
+		}
 		angles = append(angles, tilt)
 		originalPoints = append(originalPoints, point)
 		point = offsetPoint(point, distance, tilt)
@@ -741,22 +732,6 @@ func atan2(y, x float32) float32 {
 	return float32(math.Atan2(float64(y), float64(x)))
 }
 
-/*
-func bezel(p, q, r f32.Point) float32 {
-	angle := atan2(q.Y-p.Y, q.X-p.X) - atan2(r.Y-p.Y, r.X-p.X)
-	if angle < -rad180 || angle > rad180 { // concave
-
-	} else { // convex
-
-	}
-	if angle < 0 {
-		angle = angle
-	} else {
-		angle = angle
-	}
-	return angle
-}
-*/
 func f32Min(x, y float32) float32 {
 	return float32(math.Min(float64(x), float64(y)))
 }
