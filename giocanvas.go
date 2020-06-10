@@ -205,6 +205,15 @@ func (c *Canvas) CText(x, y, size float32, s string, fillcolor color.RGBA) {
 	c.TextMid(x, y, size, s, fillcolor)
 }
 
+// TextWrap places and wraps text using percentage-based measures
+// text begins at (x,y), baseline y, and wraps at width, using specied size and color
+func (c *Canvas) TextWrap(x, y, size, width float32, s string, fillcolor color.RGBA) {
+	x, y = dimen(x, y, c.Width, c.Height)
+	size = pct(size, c.Width)
+	width = pct(width, c.Width)
+	c.AbsTextWrap(x, y, size, width, s, fillcolor)
+}
+
 // Rect makes a rectangle using percentage-based measures
 // upper left corner at (x,y), with size at (w,h)
 func (c *Canvas) Rect(x, y, w, h float32, fillcolor color.RGBA) {
@@ -284,11 +293,15 @@ func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string,
 	l.Layout(c.Context)
 }
 
-// TextWidth returns the size of a text string
-func (c *Canvas) TextWidth(s string, size float32) unit.Value {
+// AbsTextWrap places and wraps text
+func (c *Canvas) AbsTextWrap(x, y, size, width float32, s string, fillcolor color.RGBA) {
+	defer op.Push(c.Context.Ops).Pop()
+	op.TransformOp{}.Offset(f32.Point{X: x, Y: y - size}).Add(c.Context.Ops) // shift to use baseline
 	l := material.Label(material.NewTheme(gofont.Collection()), unit.Px(size), s)
-	fmt.Fprintf(os.Stderr, "%q = %v\n", s, l.TextSize)
-	return l.TextSize
+	l.Color = fillcolor
+	c.Context.Constraints.Max.X = int(width)
+	l.Layout(c.Context)
+	c.Context.Constraints.Max.X = int(c.Width) // restore width...
 }
 
 // AbsText places text at (x,y)
@@ -636,11 +649,11 @@ func (l lv) Stroke(c color.RGBA, width float32, gtx *layout.Context) (box f32.Re
 		} else if i == len(l)-1 {
 			prevPoint := l[i-1]
 			tilt = angle(prevPoint, point) + rad315
-		} else {
+		} /*else {
 			prevPoint := l[i-1]
 			nextPoint := l[i+1]
 			tilt = bezel(point, prevPoint, nextPoint)
-		}
+		}*/
 		angles = append(angles, tilt)
 		originalPoints = append(originalPoints, point)
 		point = offsetPoint(point, distance, tilt)
@@ -662,12 +675,12 @@ func (l lv) Stroke(c color.RGBA, width float32, gtx *layout.Context) (box f32.Re
 		} else if i == len(l)-1 {
 			prevPoint := l[i-1]
 			tilt = angle(prevPoint, point) + rad45
-		} else {
+		} /*else {
 			point := l[i]
 			prevPoint := l[i-1]
 			nextPoint := l[i+1]
 			tilt = bezel(point, nextPoint, prevPoint)
-		}
+		}*/
 		angles = append(angles, tilt)
 		originalPoints = append(originalPoints, point)
 		point = offsetPoint(point, distance, tilt)
@@ -728,6 +741,7 @@ func atan2(y, x float32) float32 {
 	return float32(math.Atan2(float64(y), float64(x)))
 }
 
+/*
 func bezel(p, q, r f32.Point) float32 {
 	angle := atan2(q.Y-p.Y, q.X-p.X) - atan2(r.Y-p.Y, r.X-p.X)
 	if angle < -rad180 || angle > rad180 { // concave
@@ -742,7 +756,7 @@ func bezel(p, q, r f32.Point) float32 {
 	}
 	return angle
 }
-
+*/
 func f32Min(x, y float32) float32 {
 	return float32(math.Min(float64(x), float64(y)))
 }
