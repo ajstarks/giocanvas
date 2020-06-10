@@ -16,8 +16,8 @@ func play(appname string, w, h int, showgrid bool) {
 	width, height := float32(w), float32(h)
 	size := app.Size(unit.Px(width), unit.Px(height))
 	title := app.Title(appname)
-	tcolor := color.RGBA{128, 0, 0, 255}
-	fcolor := color.RGBA{0, 0, 128, 255}
+	tcolor := color.RGBA{128, 0, 0, 100}
+	fcolor := color.RGBA{0, 0, 128, 100}
 	bgcolor := color.RGBA{255, 255, 255, 255}
 	labelcolor := color.RGBA{50, 50, 50, 255}
 
@@ -51,9 +51,6 @@ func play(appname string, w, h int, showgrid bool) {
 			canvas.Coord(colx, 70, subsize, "P0", labelcolor)
 			canvas.Coord(35, 75, subsize, "P1", labelcolor)
 
-			fcolor.A = 100
-			tcolor.A = 100
-
 			// Circle
 			canvas.TextMid(colx, 55, labelsize, "Circle", labelcolor)
 			canvas.Circle(colx, 45, 5, fcolor)
@@ -61,9 +58,8 @@ func play(appname string, w, h int, showgrid bool) {
 
 			// Ellipse
 			canvas.TextMid(colx, 30, labelsize, "Ellipse", labelcolor)
-			ex := (colx / 100) * width
-			canvas.AbsEllipse(ex, height*0.85, width*0.05, height*0.10, tcolor)
-			canvas.AbsEllipse(ex, height*0.85, width*0.10, height*0.05, fcolor)
+			canvas.Ellipse(colx, 15, 5, 10, tcolor)
+			canvas.Ellipse(colx, 15, 10, 5, fcolor)
 			canvas.Coord(colx, 15, subsize, "center", labelcolor)
 
 			// Quadradic Bezier
