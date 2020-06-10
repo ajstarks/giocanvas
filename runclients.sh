@@ -1,5 +1,5 @@
 #!/bin/bash
-for i in chart concentric confetti eclipse hello lines mondrian play rl sunearth
+for i in chart concentric confetti eclipse hello lines mondrian play rl sunearth twrap
 do
 	cd $i
 	if test $i == "chart"
