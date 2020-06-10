@@ -21,7 +21,7 @@ func rl(title string, w, h, nlines int, thickness float32) {
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 	for e := range win.Events() {
 		if e, ok := e.(system.FrameEvent); ok {
-			canvas := gc.NewCanvas(width, height, e.Config, e.Queue, e.Size)
+			canvas := gc.NewCanvas(width, height, e)
 
 			canvas.Background(gc.ColorLookup("black"))
 			for i := 0; i < nlines; i++ {

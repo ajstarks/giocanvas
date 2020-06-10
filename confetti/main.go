@@ -29,7 +29,7 @@ func confetti(s string, w, h, nshapes, maxsize int) {
 
 	for e := range win.Events() {
 		if e, ok := e.(system.FrameEvent); ok {
-			canvas := giocanvas.NewCanvas(width, height, e.Config, e.Queue, e.Size)
+			canvas := giocanvas.NewCanvas(width, height, e)
 			canvas.CenterRect(50, 50, 100, 100, color.RGBA{0, 0, 0, 255})
 			for i := 0; i < nshapes; i++ {
 				color := color.RGBA{rn8(255), rn8(255), rn8(255), rn8(255)}

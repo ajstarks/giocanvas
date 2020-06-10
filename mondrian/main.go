@@ -32,7 +32,7 @@ func mondrian(s string, w, h int) {
 	win := app.NewWindow(title, size)
 	for e := range win.Events() {
 		if e, ok := e.(system.FrameEvent); ok {
-			canvas := giocanvas.NewCanvas(width, height, e.Config, e.Queue, e.Size)
+			canvas := giocanvas.NewCanvas(width, height, e)
 
 			canvas.Rect(0, 100, 100, 100, white)                     // white background
 			canvas.CenterRect(halft, halft, third, third, blue)      // lower left blue square

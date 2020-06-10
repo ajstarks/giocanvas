@@ -145,7 +145,7 @@ func chart(s string, w, h int, data []NameValue, chartopts ChartOptions) {
 	framecolor := color.RGBA{0, 0, 0, 20}
 	for e := range win.Events() {
 		if e, ok := e.(system.FrameEvent); ok {
-			canvas := gc.NewCanvas(width, height, e.Config, e.Queue, e.Size)
+			canvas := gc.NewCanvas(width, height, e)
 			if chartopts.showtitle {
 				canvas.Text(10, 90, 3, chartopts.title, black)
 			}

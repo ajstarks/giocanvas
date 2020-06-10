@@ -13,7 +13,6 @@ import (
 
 	"gioui.org/f32"
 	"gioui.org/font/gofont"
-	"gioui.org/io/event"
 	"gioui.org/io/system"
 	"gioui.org/layout"
 	"gioui.org/op"
@@ -32,14 +31,12 @@ type Canvas struct {
 }
 
 // NewCanvas initializes a Canvas
-func NewCanvas(width, height float32, cfg system.Config, q event.Queue, size image.Point) *Canvas {
+func NewCanvas(width, height float32, e system.FrameEvent) *Canvas {
 	canvas := new(Canvas)
 	canvas.Width = width
 	canvas.Height = height
 	canvas.TextColor = color.RGBA{0, 0, 0, 255}
-	size.X = int(width)
-	size.Y = int(height)
-	canvas.Context = layout.NewContext(new(op.Ops), q, cfg, size)
+	canvas.Context = layout.NewContext(new(op.Ops), e)
 	return canvas
 }
 

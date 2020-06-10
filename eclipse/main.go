@@ -21,7 +21,7 @@ func eclipse(s string, w, h int) {
 	win := app.NewWindow(title, size)
 	for e := range win.Events() {
 		if e, ok := e.(system.FrameEvent); ok {
-			canvas := giocanvas.NewCanvas(width, height, e.Config, e.Queue, e.Size)
+			canvas := giocanvas.NewCanvas(width, height, e)
 			canvas.CenterRect(50, 50, 100, 100, black)
 			var r float32 = 5.0
 			var y float32 = 50.0

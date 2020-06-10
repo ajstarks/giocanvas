@@ -26,7 +26,7 @@ func work(title string, w, h int) {
 	blue := color.RGBA{0, 0, 128, 255}
 	for e := range win.Events() {
 		if e, ok := e.(system.FrameEvent); ok {
-			canvas := giocanvas.NewCanvas(width, height, e.Config, e.Queue, e.Size)
+			canvas := giocanvas.NewCanvas(width, height, e)
 			s := "Now is the time for all good men to come to the aid of the party, and the quick brown fox jumped over the lazy dog."
 			var left float32 = 20
 			canvas.Line(left, 0, left, 100, lw*2, gray)

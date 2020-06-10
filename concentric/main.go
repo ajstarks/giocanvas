@@ -17,7 +17,7 @@ func concentric(s string, w, h int) {
 
 	for e := range win.Events() {
 		if e, ok := e.(system.FrameEvent); ok {
-			canvas := gc.NewCanvas(width, height, e.Config, e.Queue, e.Size)
+			canvas := gc.NewCanvas(width, height, e)
 			canvas.Background(gc.ColorLookup("white"))
 			var r float32 = 50
 			for g := uint8(0); g < 250; g += 50 {
