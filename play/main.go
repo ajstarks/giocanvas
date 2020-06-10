@@ -20,13 +20,13 @@ func play(appname string, w, h int, showgrid bool) {
 	fcolor := color.RGBA{0, 0, 128, 255}
 	bgcolor := color.RGBA{255, 255, 255, 255}
 	labelcolor := color.RGBA{50, 50, 50, 255}
-	labelsize := float32(2)
-	titlesize := labelsize * 2
-	subsize := labelsize * 0.7
+
 	var colx float32
 	var lw float32 = 0.2
-
-	subtitle := "A canvas API for Gio applications using high-level objects and a percentage-based coordinate system (https://github.com/ajstarks/giocanvas)"
+	var labelsize float32 = 2
+	titlesize := labelsize * 2
+	subsize := labelsize * 0.7
+	subtitle := `A canvas API for Gio applications using high-level objects and a percentage-based coordinate system (https://github.com/ajstarks/giocanvas)`
 
 	win := app.NewWindow(title, size)
 	for e := range win.Events() {
@@ -38,7 +38,7 @@ func play(appname string, w, h int, showgrid bool) {
 
 			colx = 10
 			canvas.Text(colx, 92, titlesize, appname, labelcolor)
-			canvas.TextWrap(colx+35, 95, subsize, 50, subtitle, labelcolor)
+			canvas.TextWrap(colx+35, 95, titlesize*0.3, 40, subtitle, labelcolor)
 
 			colx = 20
 			// Lines
