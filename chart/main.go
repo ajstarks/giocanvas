@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"gioui.org/app"
+	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	gc "github.com/ajstarks/giocanvas"
@@ -144,7 +145,8 @@ func chart(s string, w, h int, data []NameValue, chartopts ChartOptions) {
 	datacolor := gc.ColorLookup(chartopts.color)
 	framecolor := color.RGBA{0, 0, 0, 20}
 	for e := range win.Events() {
-		if e, ok := e.(system.FrameEvent); ok {
+		switch e := e.(type) {
+		case system.FrameEvent:
 			canvas := gc.NewCanvas(width, height, e)
 			if chartopts.showtitle {
 				canvas.Text(10, 90, 3, chartopts.title, black)
@@ -169,6 +171,12 @@ func chart(s string, w, h int, data []NameValue, chartopts ChartOptions) {
 				barchart(canvas, 10, 15, 90, 70, data, datacolor)
 			}
 			e.Frame(canvas.Context.Ops)
+		case key.Event:
+			switch e.Name {
+			case "Q", key.NameEscape:
+				os.Exit(0)
+			}
+
 		}
 	}
 }

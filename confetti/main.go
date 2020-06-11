@@ -5,8 +5,10 @@ import (
 	"flag"
 	"image/color"
 	"math/rand"
+	"os"
 
 	"gioui.org/app"
+	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
@@ -28,7 +30,8 @@ func confetti(s string, w, h, nshapes, maxsize int) {
 	win := app.NewWindow(title, size)
 
 	for e := range win.Events() {
-		if e, ok := e.(system.FrameEvent); ok {
+		switch e := e.(type) {
+		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, e)
 			canvas.CenterRect(50, 50, 100, 100, color.RGBA{0, 0, 0, 255})
 			for i := 0; i < nshapes; i++ {
@@ -42,7 +45,13 @@ func confetti(s string, w, h, nshapes, maxsize int) {
 				}
 			}
 			e.Frame(canvas.Context.Ops)
+		case key.Event:
+			switch e.Name {
+			case "Q", key.NameEscape:
+				os.Exit(0)
+			}
 		}
+
 	}
 }
 

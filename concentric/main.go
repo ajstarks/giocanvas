@@ -4,8 +4,10 @@ package main
 import (
 	"flag"
 	"image/color"
+	"os"
 
 	"gioui.org/app"
+	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	gc "github.com/ajstarks/giocanvas"
@@ -16,7 +18,8 @@ func concentric(s string, w, h int) {
 	win := app.NewWindow(app.Title(s), app.Size(unit.Px(width), unit.Px(height)))
 
 	for e := range win.Events() {
-		if e, ok := e.(system.FrameEvent); ok {
+		switch e := e.(type) {
+		case system.FrameEvent:
 			canvas := gc.NewCanvas(width, height, e)
 			canvas.Background(gc.ColorLookup("white"))
 			var r float32 = 50
@@ -25,6 +28,11 @@ func concentric(s string, w, h int) {
 				r -= 10
 			}
 			e.Frame(canvas.Context.Ops)
+		case key.Event:
+			switch e.Name {
+			case "Q", key.NameEscape:
+				os.Exit(0)
+			}
 		}
 	}
 }

@@ -4,8 +4,10 @@ package main
 import (
 	"flag"
 	"image/color"
+	"os"
 
 	"gioui.org/app"
+	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
@@ -20,7 +22,8 @@ func eclipse(s string, w, h int) {
 
 	win := app.NewWindow(title, size)
 	for e := range win.Events() {
-		if e, ok := e.(system.FrameEvent); ok {
+		switch e := e.(type) {
+		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, e)
 			canvas.CenterRect(50, 50, 100, 100, black)
 			var r float32 = 5.0
@@ -32,6 +35,12 @@ func eclipse(s string, w, h int) {
 				y -= 2
 			}
 			e.Frame(canvas.Context.Ops)
+		case key.Event:
+			switch e.Name {
+			case "Q", key.NameEscape:
+				os.Exit(0)
+			}
+
 		}
 	}
 }

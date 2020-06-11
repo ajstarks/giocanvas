@@ -3,8 +3,10 @@ package main
 import (
 	"flag"
 	"image/color"
+	"os"
 
 	"gioui.org/app"
+	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
@@ -25,7 +27,8 @@ func twrap(title string, w, h int) {
 	green := color.RGBA{0, 128, 0, 255}
 	blue := color.RGBA{0, 0, 128, 255}
 	for e := range win.Events() {
-		if e, ok := e.(system.FrameEvent); ok {
+		switch e := e.(type) {
+		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, e)
 			s := "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
 			var left float32 = 15
@@ -50,6 +53,12 @@ func twrap(title string, w, h int) {
 			canvas.TextWrap(left, y2-ys, ts, 40, s, green)
 			canvas.TextWrap(left, y3-ys, ts, 20, s, blue)
 			e.Frame(canvas.Context.Ops)
+		case key.Event:
+			switch e.Name {
+			case "Q", key.NameEscape:
+				os.Exit(0)
+			}
+
 		}
 	}
 }

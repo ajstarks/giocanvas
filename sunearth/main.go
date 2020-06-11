@@ -3,8 +3,10 @@ package main
 import (
 	"flag"
 	"image/color"
+	"os"
 
 	"gioui.org/app"
+	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
@@ -23,7 +25,8 @@ func sunearth(s string, w, h int) {
 	sunsize := earthsize * 109
 
 	for e := range win.Events() {
-		if e, ok := e.(system.FrameEvent); ok {
+		switch e := e.(type) {
+		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, e)
 
 			canvas.CenterRect(50, 50, 100, 100, black)
@@ -31,6 +34,12 @@ func sunearth(s string, w, h int) {
 			canvas.Circle(30, 90, earthsize, blue)
 
 			e.Frame(canvas.Context.Ops)
+		case key.Event:
+			switch e.Name {
+			case "Q", key.NameEscape:
+				os.Exit(0)
+			}
+
 		}
 	}
 }

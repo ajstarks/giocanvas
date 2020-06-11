@@ -4,9 +4,11 @@ import (
 	"flag"
 	"image/color"
 	"math/rand"
+	"os"
 	"time"
 
 	"gioui.org/app"
+	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	gc "github.com/ajstarks/giocanvas"
@@ -20,7 +22,8 @@ func rl(title string, w, h, nlines int, thickness float32) {
 	width, height := float32(w), float32(h)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 	for e := range win.Events() {
-		if e, ok := e.(system.FrameEvent); ok {
+		switch e := e.(type) {
+		case system.FrameEvent:
 			canvas := gc.NewCanvas(width, height, e)
 
 			canvas.Background(gc.ColorLookup("black"))
@@ -31,6 +34,12 @@ func rl(title string, w, h, nlines int, thickness float32) {
 			}
 
 			e.Frame(canvas.Context.Ops)
+		case key.Event:
+			switch e.Name {
+			case "Q", key.NameEscape:
+				os.Exit(0)
+			}
+
 		}
 	}
 }

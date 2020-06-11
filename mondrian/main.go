@@ -3,8 +3,10 @@ package main
 
 import (
 	"image/color"
+	"os"
 
 	"gioui.org/app"
+	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
@@ -31,7 +33,8 @@ func mondrian(s string, w, h int) {
 
 	win := app.NewWindow(title, size)
 	for e := range win.Events() {
-		if e, ok := e.(system.FrameEvent); ok {
+		switch e := e.(type) {
+		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, e)
 
 			canvas.Rect(0, 100, 100, 100, white)                     // white background
@@ -49,6 +52,12 @@ func mondrian(s string, w, h int) {
 			canvas.Line(0, t2, third, t2, border, black)             // border between left white squares
 
 			e.Frame(canvas.Context.Ops)
+		case key.Event:
+			switch e.Name {
+			case "Q", key.NameEscape:
+				os.Exit(0)
+			}
+
 		}
 	}
 }

@@ -4,9 +4,11 @@ import (
 	"flag"
 	"fmt"
 	"image/color"
+	"os"
 
 	"gioui.org/app"
 	"gioui.org/f32"
+	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
@@ -30,7 +32,8 @@ func play(appname string, w, h int, showgrid bool) {
 
 	win := app.NewWindow(title, size)
 	for e := range win.Events() {
-		if e, ok := e.(system.FrameEvent); ok {
+		switch e := e.(type) {
+		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, e)
 
 			// Title
@@ -122,6 +125,11 @@ func play(appname string, w, h int, showgrid bool) {
 				canvas.Grid(0, 0, 100, 100, 0.1, 5, gridcolor)
 			}
 			e.Frame(canvas.Context.Ops)
+		case key.Event:
+			switch e.Name {
+			case "Q", key.NameEscape:
+				os.Exit(0)
+			}
 		}
 	}
 }
