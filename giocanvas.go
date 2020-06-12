@@ -354,7 +354,7 @@ func (c *Canvas) AbsGrid(width, height, size, interval float32, fillcolor color.
 }
 
 // AbsCenterImage places a named image centered at (x, y)
-// scaled using the specified dimensions (w, h)
+// using the specified dimensions (w, h), and hen scaled
 func (c *Canvas) AbsCenterImage(name string, x, y float32, w, h int, scale float32) {
 	r, err := os.Open(name)
 	if err != nil {
@@ -364,6 +364,12 @@ func (c *Canvas) AbsCenterImage(name string, x, y float32, w, h int, scale float
 	if err != nil {
 		return
 	}
+	c.AbsImg(im, x, y, w, h, scale)
+}
+
+// AbsImg places a image.Image centered at (x, y)
+// using the specified dimensions (w, h), and then scaled
+func (c *Canvas) AbsImg(im image.Image, x, y float32, w, h int, scale float32) {
 	// compute scaled image dimensions
 	// if w and h are zero, use the natural dimensions
 	sc := scale / 100
