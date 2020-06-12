@@ -51,7 +51,7 @@ func play(appname string, w, h int, showgrid bool) {
 
 			// Title
 			canvas.Background(bgcolor)
-			canvas.AbsImg(logoimg, width*0.05, height*0.05, 400, 400, 20)
+			canvas.Img(logoimg, 5, 95, 400, 400, 20)
 
 			colx = 20
 			canvas.TextMid(colx, 92, titlesize, appname, labelcolor)

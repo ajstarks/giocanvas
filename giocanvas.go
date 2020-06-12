@@ -249,12 +249,21 @@ func (c *Canvas) CenterRect(x, y, w, h float32, fillcolor color.RGBA) {
 
 // Images
 
-// Image places a scaled image centered at (x,y)
+// Img places a scaled image centered at (x, y), data from image.Image
+// using percentage coordinates and scales
+func (c *Canvas) Img(im image.Image, x, y float32, w, h int, scale float32) {
+	x, y = dimen(x, y, c.Width, c.Height)
+	c.AbsImg(im, x, y, w, h, scale)
+}
+
+// Image places a scaled image centered at (x,y), reading from a named file,
+// using percetage coordinates and scales
 func (c *Canvas) Image(name string, x, y float32, w, h int, scale float32) {
 	c.CenterImage(name, x, y, w, h, scale)
 }
 
-// CenterImage places a scaled image centered at (x,y)
+// CenterImage places a scaled image centered at (x,y),
+// using percentage coordinates and scales
 func (c *Canvas) CenterImage(name string, x, y float32, w, h int, scale float32) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	c.AbsCenterImage(name, x, y, w, h, scale)
