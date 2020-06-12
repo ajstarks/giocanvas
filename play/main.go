@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"image"
 	"image/color"
 	"os"
 
@@ -13,6 +14,18 @@ import (
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
+
+func getImage(name string) image.Image {
+	r, err := os.Open(name)
+	if err != nil {
+		return nil
+	}
+	im, _, err := image.Decode(r)
+	if err != nil {
+		return nil
+	}
+	return im
+}
 
 func play(appname string, w, h int, showgrid bool) {
 	width, height := float32(w), float32(h)
@@ -29,7 +42,7 @@ func play(appname string, w, h int, showgrid bool) {
 	titlesize := labelsize * 2
 	subsize := labelsize * 0.7
 	subtitle := `A canvas API for Gio applications using high-level objects and a percentage-based coordinate system (https://github.com/ajstarks/giocanvas)`
-
+	logoimg := getImage("logo.png")
 	win := app.NewWindow(title, size)
 	for e := range win.Events() {
 		switch e := e.(type) {
@@ -38,12 +51,12 @@ func play(appname string, w, h int, showgrid bool) {
 
 			// Title
 			canvas.Background(bgcolor)
-
-			colx = 10
-			canvas.Text(colx, 92, titlesize, appname, labelcolor)
-			canvas.TextWrap(colx+35, 95, titlesize*0.3, 40, subtitle, labelcolor)
+			canvas.AbsImg(logoimg, width*0.05, height*0.05, 400, 400, 20)
 
 			colx = 20
+			canvas.TextMid(colx, 92, titlesize, appname, labelcolor)
+			canvas.TextWrap(colx+15, 95, titlesize*0.3, 50, subtitle, labelcolor)
+
 			// Lines
 			canvas.TextMid(colx, 80, labelsize, "Line", labelcolor)
 			canvas.Line(10, 70, colx+5, 65, lw, tcolor)
@@ -115,7 +128,7 @@ func play(appname string, w, h int, showgrid bool) {
 
 			// Grid
 			if showgrid {
-				gridcolor := color.RGBA{0, 0, 128, 128}
+				gridcolor := color.RGBA{0, 0, 128, 50}
 				var gridsize float32 = 1.2
 				for x := float32(5); x <= 95; x += 5 {
 					v := fmt.Sprintf("%v", x)
@@ -141,6 +154,6 @@ func main() {
 	flag.IntVar(&h, "height", 1000, "canvas height")
 	flag.BoolVar(&showgrid, "grid", false, "show grid")
 	flag.Parse()
-	go play("Gio Canvas API", w, h, showgrid)
+	go play("Canvas API", w, h, showgrid)
 	app.Main()
 }
