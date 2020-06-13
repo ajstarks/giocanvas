@@ -47,6 +47,30 @@ func MapRange(value, low1, high1, low2, high2 float64) float64 {
 	return low2 + (high2-low2)*(value-low1)/(high1-low1)
 }
 
+// PolarDegrees returns the Cartesian coordinates (x, y) from polar coordinates
+// with compensation for canvas aspect ratio
+// center at (cx, cy), radius r, and angle theta (degrees)
+func (c *Canvas) PolarDegrees(cx, cy, r, theta float32) (float32, float32) {
+	fr := float64(r)
+	ft := float64(theta * (math.Pi / 180))
+	aspect := float64(c.Width / c.Height)
+	px := fr * math.Cos(ft)
+	py := (fr * aspect) * math.Sin(ft)
+	return cx + float32(px), cy + float32(py)
+
+}
+
+// Polar returns the Cartesian coordinates (x, y) from polar coordinates
+// with compensation for canvas aspect ratio
+// center at (cx, cy), radius r, and angle theta (radians)
+func (c *Canvas) Polar(cx, cy, r, theta float32) (float32, float32) {
+	fr := float64(r)
+	ft := float64(theta)
+	px := fr * math.Cos(ft)
+	py := fr * math.Sin(ft)
+	return cx + float32(px), cy + float32(py)
+}
+
 // Background makes a filled rectangle covering the whole canvas
 func (c *Canvas) Background(fillcolor color.RGBA) {
 	c.AbsRect(0, 0, c.Width, c.Height, fillcolor)
