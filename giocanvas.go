@@ -66,8 +66,9 @@ func (c *Canvas) PolarDegrees(cx, cy, r, theta float32) (float32, float32) {
 func (c *Canvas) Polar(cx, cy, r, theta float32) (float32, float32) {
 	fr := float64(r)
 	ft := float64(theta)
+	aspect := float64(c.Width / c.Height)
 	px := fr * math.Cos(ft)
-	py := fr * math.Sin(ft)
+	py := (fr * aspect) * math.Sin(ft)
 	return cx + float32(px), cy + float32(py)
 }
 
