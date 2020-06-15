@@ -111,15 +111,6 @@ func (c *Canvas) Line(x0, y0, x1, y1, size float32, strokecolor color.RGBA) {
 	c.AbsLine(x0, y0, x1, y1, size, strokecolor)
 }
 
-// oLine (deprecated) makes a stroked line using percentage-based measures
-// from (x0, y0) to (x1, y1), stroke width size
-func (c *Canvas) oLine(x0, y0, x1, y1, size float32, fillcolor color.RGBA) {
-	x0, y0 = dimen(x0, y0, c.Width, c.Height)
-	x1, y1 = dimen(x1, y1, c.Width, c.Height)
-	size = pct(size, c.Width)
-	c.oAbsLine(x0, y0, x1, y1, size, fillcolor)
-}
-
 // VLine makes a vertical line beginning at (x,y) with dimension (w, h)
 // the line begins at (x,y) and moves upward by linewidth
 func (c *Canvas) VLine(x, y, lineheight, size float32, linecolor color.RGBA) {
@@ -452,55 +443,6 @@ func (c *Canvas) AbsLine(x0, y0, x1, y1, size float32, fillcolor color.RGBA) {
 	lv{f32.Point{X: x0, Y: y0}, f32.Point{X: x1, Y: y1}}.Stroke(fillcolor, size, &c.Context)
 }
 
-// oAbsLine (deprecated) makes a line from (x0,y0) to (x1, y1) using absolute coordinates
-// lines are formed with polygons
-func (c *Canvas) oAbsLine(x0, y0, x1, y1, lw float32, fillcolor color.RGBA) {
-	l2 := lw / 2
-
-	// vertical line
-	if x0 == x1 {
-		c.AbsRect(x0, y0, lw, y1-y0, fillcolor)
-		return
-	}
-	// horizontal line
-	if y0 == y1 {
-		c.AbsRect(x0, y0-l2, x1-x0, lw, fillcolor)
-		return
-	}
-	// init for positive sloped line
-	p0 := f32.Point{X: x0 - l2, Y: y0 - l2}
-	p1 := f32.Point{X: x0 + l2, Y: y0 + l2}
-	p2 := f32.Point{X: x1 + l2, Y: y1 + l2}
-	p3 := f32.Point{X: x1 - l2, Y: y1 - l2}
-
-	// adjust for negative slope
-	if y0 < y1 {
-		p0.Y = y0 + l2
-		p1.Y = y0 - l2
-		p2.Y = y1 - l2
-		p3.Y = y1 + l2
-	}
-	c.quadline(p0, p1, p2, p3, fillcolor)
-}
-
-// quadline (deprecated) makes a four-sided polygon with vertices at (p0, p1, p2, p3) forming a line
-func (c *Canvas) quadline(p0, p1, p2, p3 f32.Point, fillcolor color.RGBA) {
-	path := new(clip.Path)
-	ops := c.Context.Ops
-	r := f32.Rect(0, 0, c.Width, c.Height)
-
-	defer op.Push(c.Context.Ops).Pop()
-	path.Begin(ops)
-	path.Move(p0)
-	path.Line(f32.Point{X: p1.X - p0.X, Y: p1.Y - p0.Y})
-	path.Line(f32.Point{X: p2.X - p1.X, Y: p2.Y - p1.Y})
-	path.Line(f32.Point{X: p3.X - p2.X, Y: p3.Y - p2.Y})
-	path.Line(f32.Point{X: p0.X - p3.X, Y: p0.Y - p3.Y})
-	path.End().Add(ops)
-	paint.ColorOp{Color: fillcolor}.Add(ops)
-	paint.PaintOp{Rect: r}.Add(ops)
-}
-
 // AbsQuadBezier makes a quadratic curve
 // starting at (x, y), control point at (cx, cy), end point (ex, ey)
 func (c *Canvas) AbsQuadBezier(x, y, cx, cy, ex, ey, size float32, fillcolor color.RGBA) {
@@ -741,7 +683,7 @@ func (l lv) Stroke(c color.RGBA, width float32, gtx *layout.Context) (box f32.Re
 	//fmt.Printf("Delta Points:    %v\n", deltaPoints)
 	path.End().Add(gtx.Ops)
 	//paint.PaintOp{f32.Rectangle{Max:f32.Point{w,h}}}.Add(gtx.Ops)
-	paint.PaintOp{box}.Add(gtx.Ops)
+	paint.PaintOp{Rect: box}.Add(gtx.Ops)
 	return box
 }
 
