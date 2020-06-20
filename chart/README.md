@@ -1,3 +1,4 @@
-# chart
+# gchart -- gio canvas charting package
 
-![chart](chart.png)
+![gchart-sine](gchart-sine.png)
+
