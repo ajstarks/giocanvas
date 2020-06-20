@@ -129,7 +129,7 @@ func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 
 			// Draw labels, axes if specified
 			data.Color = labelcolor
-			if opts.line || opts.bar || opts.scatter {
+			if opts.line || opts.bar || opts.scatter || opts.area {
 				data.Label(canvas, opts.textsize, opts.xlabel)
 				if len(opts.yrange) > 0 {
 					var yaxmin, yaxmax, yaxstep float64
