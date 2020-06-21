@@ -4,7 +4,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"image/color"
 	"io"
 	"os"
 
@@ -19,7 +18,7 @@ import (
 type chartOptions struct {
 	top, bottom, left, right                                                 float64
 	barwidth, linewidth, linespacing, dotsize, textsize, ty, frameOp, areaOp float64
-	bgcolor, dcolor, chartitle, yaxfmt, yrange                               string
+	bgcolor, dcolor, labelcolor, chartitle, yaxfmt, yrange                   string
 	xlabel                                                                   int
 	zb, line, bar, hbar, scatter, area, showtitle, showgrid                  bool
 }
@@ -50,6 +49,7 @@ func main() {
 	flag.StringVar(&opts.yaxfmt, "yfmt", "%v", "yaxis format")
 	flag.StringVar(&opts.dcolor, "color", "steelblue", "color")
 	flag.StringVar(&opts.bgcolor, "bgcolor", "white", "background color")
+	flag.StringVar(&opts.labelcolor, "labelcolor", "rgb(100,100,100)", "label color")
 	flag.BoolVar(&opts.showtitle, "title", true, "show the title")
 	flag.BoolVar(&opts.showgrid, "grid", false, "show y axis grid")
 	flag.BoolVar(&opts.zb, "zero", true, "zero minumum")
@@ -73,12 +73,12 @@ func main() {
 			os.Exit(1)
 		}
 	}
+	// read the data
 	data, err := chart.DataRead(input)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(2)
 	}
-
 	// make the chart
 	go gchart("charts", width, height, data, opts)
 	app.Main()
@@ -93,7 +93,7 @@ func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 
 	// Define the colors
 	datacolor := giocanvas.ColorLookup(opts.dcolor)
-	labelcolor := color.RGBA{100, 100, 100, 255}
+	labelcolor := giocanvas.ColorLookup(opts.labelcolor)
 	bgcolor := giocanvas.ColorLookup(opts.bgcolor)
 
 	// Set the chart attributes
@@ -149,6 +149,7 @@ func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 			}
 
 			e.Frame(canvas.Context.Ops)
+
 		case key.Event:
 			switch e.Name {
 			case "Q", key.NameEscape:
