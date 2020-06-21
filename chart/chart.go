@@ -219,11 +219,14 @@ func (c *ChartBox) CTitle(canvas *gc.Canvas, size, offset float64) {
 
 // Frame makes a filled frame with the specified opacity (0-100)
 func (c *ChartBox) Frame(canvas *gc.Canvas, op float64) {
+	if op <= 0 {
+		return
+	}
 	a := c.Color.A // Save opacity
 	w := float32(c.Right - c.Left)
 	h := float32(c.Top - c.Bottom)
 	fa := uint8((op / 100) * 255.0)
 	c.Color.A = fa
-	canvas.Rect(float32(c.Left)+w/2, float32(c.Bottom)+h/2, w, h, c.Color)
+	canvas.CenterRect(float32(c.Left)+w/2, float32(c.Bottom)+h/2, w, h, c.Color)
 	c.Color.A = a // Restore opacity
 }
