@@ -2,8 +2,10 @@ package main
 
 import (
 	"flag"
-	
+	"os"
+
 	"gioui.org/app"
+	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
