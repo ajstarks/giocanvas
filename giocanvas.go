@@ -285,6 +285,37 @@ func (c *Canvas) CenterImage(name string, x, y float32, w, h int, scale float32)
 	c.AbsCenterImage(name, x, y, w, h, scale)
 }
 
+// Transformations
+
+// Translate moves current location by (x,y) using percentage-based measures
+func (c *Canvas) Translate(x, y float32) op.StackOp {
+	x, y = dimen(x, y, c.Width, c.Height)
+	return c.AbsTranslate(x, y)
+}
+
+// Rotate around (x,y) by angle (radians) using percentage-based measures
+func (c *Canvas) Rotate(x, y, angle float32) op.StackOp {
+	x, y = dimen(x, y, c.Width, c.Height)
+	return c.AbsRotate(x, y, angle)
+}
+
+// Scale centered at (x,y) by factor using percentage-based measures
+func (c *Canvas) Scale(x, y, factor float32) op.StackOp {
+	x, y = dimen(x, y, c.Width, c.Height)
+	return c.AbsScale(x, y, factor)
+}
+
+// Shear the object centered at (x,y) using x-angle and y-angle (radians) using percentage-based measures
+func (c *Canvas) Shear(x, y, ax, ay float32) op.StackOp {
+	x, y = dimen(x, y, c.Width, c.Height)
+	return c.AbsShear(x, y, ax, ay)
+}
+
+// EndTransform ends a transformation
+func EndTransform(stack op.StackOp) {
+	stack.Pop()
+}
+
 // pct returns the percentage of its input
 func pct(p float32, m float32) float32 {
 	return ((p / 100.0) * m)
@@ -729,4 +760,45 @@ func printDegrees(radials []float32) {
 
 func f32mod(x, y float32) float32 {
 	return float32(math.Mod(float64(x), float64(y)))
+}
+
+// AbsTranslate moves current location by (x,y)
+func (c *Canvas) AbsTranslate(x, y float32) op.StackOp {
+	ops := c.Context.Ops
+	op.InvalidateOp{}.Add(ops)
+	stack := op.Push(ops)
+	tr := f32.Affine2D{}
+	tr = tr.Offset(f32.Pt(x, y))
+	op.Affine(tr).Add(ops)
+	return stack
+}
+
+// AbsRotate rotates around (x,y) using angle (radians)
+func (c *Canvas) AbsRotate(x, y, angle float32) op.StackOp {
+	ops := c.Context.Ops
+	op.InvalidateOp{}.Add(ops)
+	stack := op.Push(ops)
+	tr := f32.Affine2D{}.Rotate(f32.Pt(x, y), angle)
+	op.Affine(tr).Add(ops)
+	return stack
+}
+
+// AbsScale scales by factor at (x,y)
+func (c *Canvas) AbsScale(x, y, factor float32) op.StackOp {
+	ops := c.Context.Ops
+	op.InvalidateOp{}.Add(ops)
+	stack := op.Push(ops)
+	tr := f32.Affine2D{}.Scale(f32.Pt(x, y), f32.Pt(factor, factor))
+	op.Affine(tr).Add(ops)
+	return stack
+}
+
+// AbsShear shears at (x,y) using angle ax and ay
+func (c *Canvas) AbsShear(x, y, ax, ay float32) op.StackOp {
+	ops := c.Context.Ops
+	op.InvalidateOp{}.Add(ops)
+	stack := op.Push(ops)
+	tr := f32.Affine2D{}.Shear(f32.Pt(x, y), ax, ay)
+	op.Affine(tr).Add(ops)
+	return stack
 }
