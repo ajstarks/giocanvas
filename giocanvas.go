@@ -339,7 +339,7 @@ func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string,
 		offset = x - c.Width/2
 	}
 	defer op.Push(c.Context.Ops).Pop()
-	op.TransformOp{}.Offset(f32.Point{X: offset, Y: y - size}).Add(c.Context.Ops) // shift to use baseline
+	op.Offset(f32.Point{X: offset, Y: y - size}).Add(c.Context.Ops) // shift to use baseline
 	l := material.Label(material.NewTheme(gofont.Collection()), unit.Px(size), s)
 	l.Color = fillcolor
 	l.Alignment = alignment
@@ -349,7 +349,7 @@ func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string,
 // AbsTextWrap places and wraps text at (x, y), wrapped at width
 func (c *Canvas) AbsTextWrap(x, y, size, width float32, s string, fillcolor color.RGBA) {
 	defer op.Push(c.Context.Ops).Pop()
-	op.TransformOp{}.Offset(f32.Point{X: x, Y: y - size}).Add(c.Context.Ops) // shift to use baseline
+	op.Offset(f32.Point{X: x, Y: y - size}).Add(c.Context.Ops) // shift to use baseline
 	l := material.Label(material.NewTheme(gofont.Collection()), unit.Px(size), s)
 	l.Color = fillcolor
 	c.Context.Constraints.Max.X = int(width)
