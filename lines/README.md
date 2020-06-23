@@ -1,2 +1,2 @@
 # line test
-!(line-test)[linetest.png]
+![linetest](linetest.png)
