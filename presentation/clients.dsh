@@ -1,0 +1,13 @@
+imscale=10
+image "images/hello.png" x y 1020 1046 imscale
+image "images/concentric.png" x y 1020 1046 imscale
+image "images/compchart.png" x y 1020 1046 imscale
+image "images/confetti.png" x y 1020 1046 imscale
+image "images/eclipse.png" x y 1020 1046 imscale
+image "images/flowers.png" x y 1020 1046 imscale
+image "images/lines.png" x y 1020 1046 imscale
+image "images/mondrian.png" x y 1020 1046 imscale
+image "images/polar.png" x y 1020 1046 imscale
+image "images/sunearth.png" x y 1020 1046 imscale
+image "images/transform.png" x y 1020 1046 imscale
+image "images/twrap.png" x y 1020 1046 imscale

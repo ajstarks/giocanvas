@@ -6,8 +6,8 @@ flowers
 hello
 lines
 mondrian
-play
 polar
 sunearth
 transform
 twrap
+play

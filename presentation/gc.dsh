@@ -18,30 +18,28 @@ deck
 	slide bgcolor fgcolor
 		image "images/gc0.png" 50 50 1940 1126 95
 	eslide
+
+	
 	
 	slide bgcolor fgcolor
-                gistlink="https://gist.github.com/ajstarks/5bad9b1f5a859b86a17a03bbfbafcee6"
-                motivation="The desire for a high-level Go API for developers and designers to think in terms of high level objects that make up a visual display. The objects will be familiar to anyone using a modern illustration program (text, images, lines, arcs, circles, curves, etc). The API should facilitate the artful arrangement of these elements on a scalable 2D canvas."
-                ctext "Motivation" 50 top ts
-                textblock motivation 15 listop 65 2
-                ctext "Use Cases: Information Displays, Data Visualization, Creative Coding, Presentations" 50 45 2
-                etext gistlink 90 10 1 "mono" fgcolor 100 gistlink
+		gistlink="https://gist.github.com/ajstarks/5bad9b1f5a859b86a17a03bbfbafcee6"
+		motivation="The desire for a high-level Go API for developers and designers to think in terms of high level objects that make up a visual display. The objects will be familiar to anyone using a modern illustration program (text, images, lines, arcs, circles, curves, etc). The API should facilitate the artful arrangement of these elements on a scalable 2D canvas."
+		ctext "Motivation" 50 top ts
+		textblock motivation 15 listop 65 2
+		ctext "Use Cases: Information Displays, Data Visualization, Creative Coding, Presentations" 50 45 2
+		etext gistlink 90 10 1 "mono" fgcolor 100 gistlink
     eslide
 
    // grid
     slide bgcolor fgcolor
-            rect 50 92.5 100 15 "black"
             ctext "The Percent Grid" 50 top ts
             include "showgrid.dsh"
     eslide
 
 	// Objects on the grid
 	slide bgcolor fgcolor
-			rect 50 92.5 100 15 "black"
 			ctext "Using the Percent Grid" 50 top ts
-
 			include "showgrid.dsh"
-
 			circle 40 45 10 fgcolor 40
 			circle 40 45 1 spotcolor 60
 			ctext "(50, 50)" 40 40 2
@@ -146,11 +144,6 @@ deck
  	eslide
 
 	slide bgcolor fgcolor
-		ctext "Clients" 50 50 ts
-		image "images/clients.png" 50 50 3038 2079 50
-	eslide
-
-	slide bgcolor fgcolor
 		ctext "giocanvas/chart" 50 top ts
 		image "images/sine+cosine.png" 50 45 1220 946 90
 	eslide
@@ -212,6 +205,44 @@ deck
 		textfile "code/side-by-side.go"  left listop codesize "mono"
 		image "images/side-by-side.png"   70 50 1102 371
  	eslide
+
+
+slide bgcolor fgcolor
+	    ctext "Clients" 50 top ts
+		imleft=25
+		imxskip=16
+		imyskip=30
+		imscale=25
+		ix=imleft
+		iy=75
+		image "images/hello.png" ix iy 1020 1046 imscale
+		ix+=imxskip
+		image "images/mondrian.png" ix iy 1020 1046 imscale
+		ix+=imxskip
+		image "images/compchart.png" ix iy 1020 1046 imscale
+		ix+=imxskip
+		image "images/confetti.png" ix iy 1020 1046 imscale
+
+		ix=imleft
+		iy-=imyskip
+		image "images/eclipse.png" ix iy 1020 1046 imscale
+		ix+=imxskip
+		image "images/sunearth.png" ix iy 1020 1046 imscale
+		ix+=imxskip
+		image "images/flowers.png" ix iy 1020 1046 imscale
+		ix+=imxskip
+		image "images/concentric.png" ix iy 1020 1046 imscale
+
+		ix=imleft
+		iy-=imyskip
+		image "images/polar.png" ix iy 1020 1046 imscale
+		ix+=imxskip
+		image "images/lines.png" ix iy 1020 1046 imscale
+		ix+=imxskip
+		image "images/transform.png" ix iy 1020 1046 imscale
+		ix+=imxskip
+		image "images/twrap.png" ix iy 1020 1046 imscale
+	eslide
 
 	slide bgcolor fgcolor
 		ctext "go get it" 50 top ts
