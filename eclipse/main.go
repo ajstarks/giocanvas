@@ -47,8 +47,8 @@ func eclipse(s string, w, h int) {
 
 func main() {
 	var w, h int
-	flag.IntVar(&w, "width", 1200, "canvas width")
-	flag.IntVar(&h, "height", 900, "canvas height")
+	flag.IntVar(&w, "width", 1000, "canvas width")
+	flag.IntVar(&h, "height", 1000, "canvas height")
 	flag.Parse()
 	go eclipse("eclipse", w, h)
 	app.Main()

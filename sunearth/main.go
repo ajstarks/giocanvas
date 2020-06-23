@@ -46,8 +46,8 @@ func sunearth(s string, w, h int) {
 
 func main() {
 	var w, h int
-	flag.IntVar(&w, "width", 900, "canvas width")
-	flag.IntVar(&h, "height", 1200, "canvas height")
+	flag.IntVar(&w, "width", 1000, "canvas width")
+	flag.IntVar(&h, "height", 1000, "canvas height")
 	flag.Parse()
 	go sunearth("sun+earth", w, h)
 	app.Main()

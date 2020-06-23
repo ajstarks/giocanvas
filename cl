@@ -1,13 +1,13 @@
-chartest
 concentric
+compchart
 confetti
 eclipse
+flowers
 hello
 lines
 mondrian
 play
 polar
-rl
 sunearth
 transform
 twrap
