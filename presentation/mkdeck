@@ -1,0 +1,2 @@
+#!/bin/sh
+decksh gc.dsh | pdfdeck -pagesize 1920,1080 -sans Go-Medium -mono Inconsolata-Regular $*  -stdout - > gc.pdf

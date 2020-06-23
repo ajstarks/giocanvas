@@ -57,8 +57,8 @@ func confetti(s string, w, h, nshapes, maxsize int) {
 
 func main() {
 	var w, h, nshapes, maxsize int
-	flag.IntVar(&w, "width", 1200, "canvas width")
-	flag.IntVar(&h, "height", 900, "canvas height")
+	flag.IntVar(&w, "width", 1000, "canvas width")
+	flag.IntVar(&h, "height", 1000, "canvas height")
 	flag.IntVar(&nshapes, "n", 500, "number of shapes")
 	flag.IntVar(&maxsize, "size", 10, "max size")
 	flag.Parse()

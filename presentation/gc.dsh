@@ -1,0 +1,221 @@
+deck
+	top=90
+	left=5
+	ts=4
+	ss=ts/2
+	listop=top-10
+	listleft=left
+	codeleft=listleft+30
+	listspacing=1.7
+	ls=ts*0.4
+	codesize=ts*0.3
+
+	bgcolor="rgb(50,50,50)"
+	fgcolor="rgb(250,250,250)"
+	spotcolor="orangered"
+
+
+	slide bgcolor fgcolor
+		image "images/gc0.png" 50 50 1940 1126 95
+	eslide
+	
+	slide bgcolor fgcolor
+                gistlink="https://gist.github.com/ajstarks/5bad9b1f5a859b86a17a03bbfbafcee6"
+                motivation="The desire for a high-level Go API for developers and designers to think in terms of high level objects that make up a visual display. The objects will be familiar to anyone using a modern illustration program (text, images, lines, arcs, circles, curves, etc). The API should facilitate the artful arrangement of these elements on a scalable 2D canvas."
+                ctext "Motivation" 50 top ts
+                textblock motivation 15 listop 65 2
+                ctext "Use Cases: Information Displays, Data Visualization, Creative Coding, Presentations" 50 45 2
+                etext gistlink 90 10 1 "mono" fgcolor 100 gistlink
+    eslide
+
+   // grid
+    slide bgcolor fgcolor
+            rect 50 92.5 100 15 "black"
+            ctext "The Percent Grid" 50 top ts
+            include "showgrid.dsh"
+    eslide
+
+	// Objects on the grid
+	slide bgcolor fgcolor
+			rect 50 92.5 100 15 "black"
+			ctext "Using the Percent Grid" 50 top ts
+
+			include "showgrid.dsh"
+
+			circle 40 45 10 fgcolor 40
+			circle 40 45 1 spotcolor 60
+			ctext "(50, 50)" 40 40 2
+			ctext "(90, 70)" 60 55 2
+			ctext "(10, 10)" 20 22 2
+			ctext "(30, 70)" 30 57 2
+
+			line 20 25 30 55 0.5 fgcolor 40
+			circle 20 25 1 spotcolor 60
+			circle 30 55 1 spotcolor 60
+
+			rect 60 55 5 15 fgcolor 40
+			circle 60 55 1 spotcolor 60
+
+			text "Rect(90, 70, ...)"   70 65 2
+			text "Circle(50, 50, ...)" 70 45 2
+			text "Line(10, 10, 30, 70, ...)" 70 25 2
+	eslide
+
+	slide bgcolor fgcolor
+		ctext "Methods on *Canvas" 50 top ts
+
+		list listleft listop ls "sans" fgcolor 100 listspacing
+			li "Make a new canvas"
+			li ""
+			li "Place an image from file"
+			li "Place an image from image.Image"
+			li "Line from (x0,y0) to (x1,y1)"
+			li "Circle centered at (x,y), radius r"
+			li "Ellipse centered at (x,y), radii (w,h)"
+			li "Square centered at (x,y)"
+			li "Rectangle centered at (x,y)"
+			li "Rectangle upper-left at (x,y)"
+			li "Cubic Bezier Curve"
+			li "Quadratic Bezier Curve"
+			li "Filled Polygon"
+			li "Left-Aligned Text"
+			li "Centered Text"
+			li "End-Aligned Text"
+		elist
+
+		list codeleft listop ls "mono" fgcolor 100 listspacing
+			li "NewCanvas	(width, height float32, e system.FrameEvent) *Canvas" 
+			li ""
+			li "Image		(name string, x, y float32, w, h int, scale float32)"
+			li "Img			(im image.Image, x, y float32, w, h int, scale float32)"
+			li "Line		(x0, y0, x1, y1, size float32, stroke color.RGBA)" 
+			li "Circle		(x, y, r float32, fill color.RGBA)"
+			li "Ellipse		(x, y, w, h float32, fill color.RGBA)"
+			li "Square		(x, y, w float32, fill color.RGBA)"
+
+			li "CenterRect	(x, y, w, h float32, fill color.RGBA)"  
+			li "CornerRect	(x, y, w, h float32, fill color.RGBA)"
+
+			li "CubeCurve	(x, y, cx1, cy1, cx2, cy2, ex, ey float32, fill color.RGBA)" 
+			li "Curve		(x, y, cx, cy, ex, ey float32, fill color.RGBA)"
+			li "Polygon		(x, y []float32, fill color.RGBA)"
+
+			li "Text		(x, y, size float32, s string, fill color.RGBA)" 
+			li "CText		(x, y, size float32, s string, fill color.RGBA)" 
+			li "EText		(x, y, size float32, s string, fill color.RGBA)" 
+		elist
+	eslide
+
+	slide bgcolor fgcolor
+		ctext "Transformations and Convenience Functions" 50 top ts
+		list listleft listop ls "sans" fgcolor 100 listspacing
+			li "Rotate at (x,y) around angle"
+			li "Scale at (x,y) by factor"
+			li "Shear at (x,y) by angle1, angle2"
+			li "Translate by (x,y)"
+			li "End Transformation"
+			li ""
+			li "Map one range to another"
+			li "Show annotated coordinates"
+			li "Set the background color"
+			li "Show a grid"
+			li "Polar to Cartesian (radians)"
+			li "Polar to Cartesian (degrees)"
+		elist
+
+		list codeleft listop ls "mono" fgcolor 100 listspacing
+			li "Rotate	(x, y, angle float32) op.StackOp" 
+			li "Scale	(x, y, factor float32) op.StackOp" 
+			li "Shear	(x, y, ax, ay float32) op.StackOp" 
+			li "Translate	(x, y float32) op.StackOp"
+			li "EndTransform(stack op.StackOp)"
+			li ""
+			li "MapRange	(value, low1, high1, low2, high2 float64) float64"
+			li "Coord		(x, y, size float32, s string, fill color.RGBA)"
+			li "Background	(fill color.RGBA)"
+			li "Grid		(x, y, w, h, size, interval float32, linecolor color.RGBA)"
+			li "Polar		(cx, cy, r, theta float32) (float32, float32)" 
+			li "PolarDegrees(cx, cy, r, theta float32) (float32, float32)"
+		elist
+	eslide
+
+	slide bgcolor fgcolor
+		ctext "giocanvas hello, world" 50 top ts
+		textfile "code/hello.go" left 85 codesize "mono"
+		image "images/hello.png" 77 45 1020 1046 75
+ 	eslide
+
+	slide bgcolor fgcolor
+		ctext "Clients" 50 50 ts
+		image "images/clients.png" 50 50 3038 2079 50
+	eslide
+
+	slide bgcolor fgcolor
+		ctext "giocanvas/chart" 50 top ts
+		image "images/sine+cosine.png" 50 45 1220 946 90
+	eslide
+
+	codesize=ts*0.4
+	slide bgcolor fgcolor
+		ctext "giocanvas/chart data structures" 50 top ts
+		textfile "code/chartbox.go" left listop codesize "mono"
+ 	eslide
+
+	 // giocanvas/chart methods
+	 slide bgcolor fgcolor
+		ctext "methods on *ChartBox" 50 top ts
+		list listleft listop ls
+			li "Read data int ChartBox"
+			li ""
+			li "Bar Chart"
+			li "Horizontal Bar Chart"
+			li "Line Chart"
+			li "Area Chart"
+			li "Scatter Chart"
+			li "Centered Title"
+			li "Chart Frame"
+			li "X Axis Label"
+			li "Y axis"
+		elist
+
+	 	list codeleft listop ls "mono"
+			li "func DataRead(r io.Reader) (ChartBox, error)"
+			li ""
+			li "Bar		(canvas *gc.Canvas, size float64)"
+			li "HBar	(canvas *gc.Canvas, size, linespacing, textsize float64)"
+			li "Line	(canvas *gc.Canvas, size float64)"
+			li "Area	(canvas *gc.Canvas, opacity float64)"
+			li "Scatter	(canvas *gc.Canvas, size float64)"
+			li "CTitle	(canvas *gc.Canvas, size, offset float64)"
+			li "Frame	(canvas *gc.Canvas, op float64)"
+			li "Label	(canvas *gc.Canvas, size float64, n int)"
+			li "YAxis	(canvas *gc.Canvas, size, min, max, step float64,"
+			li "        format string, gridlines bool)"                                                                                 
+		elist
+	eslide
+
+	slide bgcolor fgcolor
+		ctext "giocanvas/chart: read data" 50 top ts
+		textfile "code/chartread.go"   left listop codesize "mono"
+		textfile "code/sin.d"          50   listop codesize "mono" 
+		textfile "code/cos.d"          70   listop codesize "mono"
+	eslide
+
+	slide bgcolor fgcolor
+		ctext "giocanvas/chart: composite charts" 50 top ts
+		textfile "code/composite.go"  left 66 codesize "mono"
+		image "images/comp.png" 75 50 1069 479 80
+ 	eslide
+
+	slide bgcolor fgcolor
+		ctext "giocanvas/chart: side by side" 50 top ts
+		textfile "code/side-by-side.go"  left listop codesize "mono"
+		image "images/side-by-side.png"   70 50 1102 371
+ 	eslide
+
+	slide bgcolor fgcolor
+		ctext "go get it" 50 top ts
+		ctext "github.com/ajstarks/giocanvas" 50 50 ts "mono"
+ 	eslide
+
+edeck

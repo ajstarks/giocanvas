@@ -1,0 +1,52 @@
+gx=15
+gridlen=50
+egx=gx+gridlen
+gstep=5
+
+rect 40 45 50 50 "black"
+
+gy=20
+egy=gy+gridlen
+for x=gx egx gstep
+	vline x gy 50 0.1 fgcolor 60
+efor
+
+
+for y=gy egy gstep
+	hline gx y 50 0.1 fgcolor 60
+efor
+
+lgs=ls*0.75
+lgx=gx-3
+lgy=gy-3
+
+ctext "0" 15 lgy lgs
+ctext "10" 20 lgy lgs
+ctext "20" 25 lgy lgs
+ctext "30" 30 lgy lgs
+ctext "40" 35 lgy lgs
+ctext "50" 40 lgy lgs
+ctext "60" 45 lgy lgs
+ctext "70" 50 lgy lgs
+ctext "80" 55 lgy lgs
+ctext "90" 60 lgy lgs
+ctext "100" 65 lgy lgs
+
+
+ctext "0" lgx 20 lgs
+ctext "10" lgx 25 lgs
+ctext "20" lgx 30 lgs
+ctext "30" lgx 35 lgs
+ctext "40" lgx 40 lgs
+ctext "50" lgx 45 lgs
+ctext "60" lgx 50 lgs
+ctext "70" lgx 55 lgs
+ctext "80" lgx 60 lgs
+ctext "90" lgx 65 lgs
+ctext "100" lgx 70 lgs
+
+
+ctext "x" gx 10 2
+arrow 20 10 65 10 0.1 1 2
+ctext "y" 5 20 2
+arrow 5 25 5 70 0.1 2 1

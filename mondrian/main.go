@@ -63,6 +63,6 @@ func mondrian(s string, w, h int) {
 }
 
 func main() {
-	go mondrian("Mondrian", 750, 750)
+	go mondrian("Mondrian", 1000, 1000)
 	app.Main()
 }
