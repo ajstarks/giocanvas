@@ -550,29 +550,6 @@ func (c *Canvas) AbsEllipse(x, y, w, h float32, fillcolor color.RGBA) {
 	paint.PaintOp{Rect: r}.Add(ops)
 }
 
-func anglebetweenpoints(p0x, p0y, p1x, p1y float64) float64 {
-	return math.Atan2(p1y-p0y, p1x-p0x)
-}
-
-func polar(r, theta float64) (float64, float64) {
-	return (r * math.Cos(theta)), (r * math.Sin(theta))
-}
-
-func radians(degrees float64) float64 {
-	return degrees * (math.Pi / 180)
-}
-
-func degrees(radians float64) float64 {
-	deg := radians * (180 / math.Pi)
-	return deg
-}
-
-func controls(Ax, Ay, R float64) (float64, float64, float64, float64) {
-	Aprimex := ((4 * R) - Ax) / 3
-	Aprimey := (R - Ax) * ((3 * R) - Ax) / (3 * Ay)
-	return Aprimex, Aprimey, Aprimex, -Aprimey
-}
-
 // AbsArc makes an arc centered at (x, y), through angles a1 and a2
 func (c *Canvas) AbsArc(x, y, radius, a1, a2 float64, fillcolor color.RGBA) {
 
@@ -582,7 +559,7 @@ func (c *Canvas) AbsArc(x, y, radius, a1, a2 float64, fillcolor color.RGBA) {
 	p1x, p1y := polar(radius, a2)
 	theta := anglebetweenpoints(p0x, p0y, p1x, p1y)
 
-	c.AbsTextMid(500, 100, 15, fmt.Sprintf("a1 = %.1f a2 = %.1f theta = %.1f", degrees(a1), degrees(a2), degrees(theta)), color.RGBA{0, 0, 0, 255})
+	c.AbsTextMid(500, 100, 20, fmt.Sprintf("a1 = %.1f a2 = %.1f theta = %.1f", degrees(a1), degrees(a2), degrees(theta)), color.RGBA{0, 0, 0, 255})
 	fmt.Fprintf(os.Stderr, "begin: a1=%.1f, a2=%.1f\n", a1, a2)
 
 	x0 := (radius * math.Cos(theta/2))
@@ -614,6 +591,29 @@ func (c *Canvas) AbsArc(x, y, radius, a1, a2 float64, fillcolor color.RGBA) {
 		float32(x+x3), float32(y+y3),
 		float32(radius), color.RGBA{128, 0, 0, 100})
 
+}
+
+func anglebetweenpoints(p0x, p0y, p1x, p1y float64) float64 {
+	return math.Atan2(p1y-p0y, p1x-p0x)
+}
+
+func polar(r, theta float64) (float64, float64) {
+	return (r * math.Cos(theta)), (r * math.Sin(theta))
+}
+
+func radians(degrees float64) float64 {
+	return degrees * (math.Pi / 180)
+}
+
+func degrees(radians float64) float64 {
+	deg := radians * (180 / math.Pi)
+	return deg
+}
+
+func controls(Ax, Ay, R float64) (float64, float64, float64, float64) {
+	Aprimex := ((4 * R) - Ax) / 3
+	Aprimey := (R - Ax) * ((3 * R) - Ax) / (3 * Ay)
+	return Aprimex, Aprimey, Aprimex, -Aprimey
 }
 
 func (c *Canvas) coord(x, y, size float64, s string, fillcolor color.RGBA) {

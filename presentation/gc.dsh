@@ -9,9 +9,11 @@ deck
 	listspacing=1.7
 	ls=ts*0.4
 	codesize=ts*0.3
+	cmdsize=ts*0.5
+	cmdy=7
 
-	bgcolor="rgb(50,50,50)"
-	fgcolor="rgb(250,250,250)"
+	bgcolor="rgb(250,250,250)"
+	fgcolor="rgb(50,50,50)"
 	spotcolor="orangered"
 
 
@@ -19,8 +21,6 @@ deck
 		image "images/gc0.png" 50 50 1940 1126 95
 	eslide
 
-	
-	
 	slide bgcolor fgcolor
 		gistlink="https://gist.github.com/ajstarks/5bad9b1f5a859b86a17a03bbfbafcee6"
 		motivation="The desire for a high-level Go API for developers and designers to think in terms of high level objects that make up a visual display. The objects will be familiar to anyone using a modern illustration program (text, images, lines, arcs, circles, curves, etc). The API should facilitate the artful arrangement of these elements on a scalable 2D canvas."
@@ -205,6 +205,18 @@ deck
 		textfile "code/side-by-side.go"  left listop codesize "mono"
 		image "images/side-by-side.png"   70 50 1102 371
  	eslide
+
+	slide bgcolor fgcolor
+		ctext "gchart" 50 top ts
+		image "images/gchart1.png" 50 50 1020 796
+		ctext "gchart -area -bar -barwidth=0.2 -zero=f -xlabel=10 -yrange=-1,1,0.2 -yfmt=%.2f -h 750 sin.d" 50 cmdy cmdsize "mono"
+	eslide
+
+	slide bgcolor fgcolor
+		ctext "gcdeck: deck viewer"  50 top ts
+		image "images/c19.png" 50 50 1820 1246 60
+		ctext "c19chart -cyr=0,1e7,2e6 -dyr=0,5e5,1e5 | gcdeck -pagesize 1800,1200" 50 cmdy cmdsize "mono"
+	eslide
 
 
 slide bgcolor fgcolor

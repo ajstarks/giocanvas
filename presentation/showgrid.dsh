@@ -3,7 +3,7 @@ gridlen=50
 egx=gx+gridlen
 gstep=5
 
-rect 40 45 50 50 "black"
+rect 40 45 50 50 bgcolor
 
 gy=20
 egy=gy+gridlen

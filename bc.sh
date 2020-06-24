@@ -2,6 +2,6 @@
 for i in $(cat cl)
 do
 	cd $i
-	go build .
+	go build -ldflags="-s -w" .
 	cd ..
 done
