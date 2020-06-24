@@ -219,7 +219,7 @@ slide bgcolor fgcolor
 		ix+=imxskip
 		image "images/mondrian.png" ix iy 1020 1046 imscale
 		ix+=imxskip
-		image "images/compchart.png" ix iy 1020 1046 imscale
+		image "images/tile.png" ix iy 1020 1046 imscale
 		ix+=imxskip
 		image "images/confetti.png" ix iy 1020 1046 imscale
 
@@ -229,9 +229,9 @@ slide bgcolor fgcolor
 		ix+=imxskip
 		image "images/sunearth.png" ix iy 1020 1046 imscale
 		ix+=imxskip
-		image "images/flowers.png" ix iy 1020 1046 imscale
+		image "images/compchart.png" ix iy 1020 1046 imscale
 		ix+=imxskip
-		image "images/concentric.png" ix iy 1020 1046 imscale
+		image "images/flowers.png" ix iy 1020 1046 imscale
 
 		ix=imleft
 		iy-=imyskip
