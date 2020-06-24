@@ -12,9 +12,10 @@ deck
 	cmdsize=ts*0.5
 	cmdy=7
 
-	bgcolor="rgb(250,250,250)"
-	fgcolor="rgb(50,50,50)"
+	fgcolor="rgb(250,250,250)"
+	bgcolor="rgb(50,50,50)"
 	spotcolor="orangered"
+	codecolor=fgcolor // "lightsteelblue" // "orange"
 
 
 	slide bgcolor fgcolor
@@ -81,7 +82,7 @@ deck
 			li "End-Aligned Text"
 		elist
 
-		list codeleft listop ls "mono" fgcolor 100 listspacing
+		list codeleft listop ls "mono" codecolor 100 listspacing
 			li "NewCanvas	(width, height float32, e system.FrameEvent) *Canvas" 
 			li ""
 			li "Image		(name string, x, y float32, w, h int, scale float32)"
@@ -121,7 +122,7 @@ deck
 			li "Polar to Cartesian (degrees)"
 		elist
 
-		list codeleft listop ls "mono" fgcolor 100 listspacing
+		list codeleft listop ls "mono" codecolor 100 listspacing
 			li "Rotate	(x, y, angle float32) op.StackOp" 
 			li "Scale	(x, y, factor float32) op.StackOp" 
 			li "Shear	(x, y, ax, ay float32) op.StackOp" 
@@ -139,7 +140,7 @@ deck
 
 	slide bgcolor fgcolor
 		ctext "giocanvas hello, world" 50 top ts
-		textfile "code/hello.go" left 85 codesize "mono"
+		textfile "code/hello.go" left 85 codesize "mono" codecolor
 		image "images/hello.png" 77 45 1020 1046 75
  	eslide
 
@@ -151,7 +152,7 @@ deck
 	codesize=ts*0.4
 	slide bgcolor fgcolor
 		ctext "giocanvas/chart data structures" 50 top ts
-		textfile "code/chartbox.go" left listop codesize "mono"
+		textfile "code/chartbox.go" left listop codesize "mono" codecolor
  	eslide
 
 	 // giocanvas/chart methods
@@ -171,7 +172,7 @@ deck
 			li "Y axis"
 		elist
 
-	 	list codeleft listop ls "mono"
+	 	list codeleft listop ls "mono" codecolor
 			li "func DataRead(r io.Reader) (ChartBox, error)"
 			li ""
 			li "Bar		(canvas *gc.Canvas, size float64)"
@@ -189,33 +190,33 @@ deck
 
 	slide bgcolor fgcolor
 		ctext "giocanvas/chart: read data" 50 top ts
-		textfile "code/chartread.go"   left listop codesize "mono"
-		textfile "code/sin.d"          50   listop codesize "mono" 
-		textfile "code/cos.d"          70   listop codesize "mono"
+		textfile "code/chartread.go"   left listop codesize "mono" codecolor
+		textfile "code/sin.d"          50   listop codesize "mono" codecolor
+		textfile "code/cos.d"          70   listop codesize "mono" codecolor
 	eslide
 
 	slide bgcolor fgcolor
 		ctext "giocanvas/chart: composite charts" 50 top ts
-		textfile "code/composite.go"  left 66 codesize "mono"
+		textfile "code/composite.go"  left 66 codesize "mono" codecolor
 		image "images/comp.png" 75 50 1069 479 80
  	eslide
 
 	slide bgcolor fgcolor
 		ctext "giocanvas/chart: side by side" 50 top ts
-		textfile "code/side-by-side.go"  left listop codesize "mono"
+		textfile "code/side-by-side.go"  left listop codesize "mono" codecolor
 		image "images/side-by-side.png"   70 50 1102 371
  	eslide
 
 	slide bgcolor fgcolor
 		ctext "gchart" 50 top ts
 		image "images/gchart1.png" 50 50 1020 796
-		ctext "gchart -area -bar -barwidth=0.2 -zero=f -xlabel=10 -yrange=-1,1,0.2 -yfmt=%.2f -h 750 sin.d" 50 cmdy cmdsize "mono"
+		ctext "gchart -area -bar -barwidth=0.2 -zero=f -xlabel=10 -yrange=-1,1,0.2 -yfmt=%.2f -h 750 sin.d" 50 cmdy cmdsize "mono" codecolor
 	eslide
 
 	slide bgcolor fgcolor
 		ctext "gcdeck: deck viewer"  50 top ts
 		image "images/c19.png" 50 50 1820 1246 60
-		ctext "c19chart -cyr=0,1e7,2e6 -dyr=0,5e5,1e5 | gcdeck -pagesize 1800,1200" 50 cmdy cmdsize "mono"
+		ctext "c19chart -cyr=0,1e7,2e6 -dyr=0,5e5,1e5 | gcdeck -pagesize 1800,1200" 50 cmdy cmdsize "mono" codecolor
 	eslide
 
 
@@ -258,7 +259,7 @@ slide bgcolor fgcolor
 
 	slide bgcolor fgcolor
 		ctext "go get it" 50 top ts
-		ctext "github.com/ajstarks/giocanvas" 50 50 ts "mono"
+		ctext "github.com/ajstarks/giocanvas" 50 50 ts "mono" codecolor
  	eslide
 
 edeck
