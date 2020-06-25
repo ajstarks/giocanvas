@@ -13,7 +13,7 @@ func hello(title string, width, height float32) {
 		switch e := e.(type) {
 		case system.FrameEvent:
 			canvas := gc.NewCanvas(width, height, e)
-			canvas.CenterRect(50, 50, 100, 100, gc.ColorLookup("black"))
+			canvas.Background(gc.ColorLookup("black"))
 			canvas.Circle(50, 0, 50, gc.ColorLookup("blue"))
 			canvas.TextMid(50, 20, 10, "hello, world", gc.ColorLookup("white"))
 			canvas.CenterImage("earth.jpg", 50, 70, 1000, 1000, 30)
