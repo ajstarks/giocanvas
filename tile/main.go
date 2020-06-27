@@ -43,6 +43,7 @@ func main() {
 }
 
 func tile(title string, opts options) {
+	defer os.Exit(0)
 	width := float32(opts.width)
 	height := float32(opts.height)
 	leftColor := gc.ColorLookup(opts.leftcolor)

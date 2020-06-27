@@ -27,8 +27,8 @@ func getImage(name string) image.Image {
 	return im
 }
 
-func play(appname string, w, h int, showgrid bool) {
-	width, height := float32(w), float32(h)
+func play(appname string, width, height float32, showgrid bool) {
+	defer os.Exit(0)
 	size := app.Size(unit.Px(width), unit.Px(height))
 	title := app.Title(appname)
 	tcolor := color.RGBA{128, 0, 0, 100}
@@ -154,6 +154,6 @@ func main() {
 	flag.IntVar(&h, "height", 1000, "canvas height")
 	flag.BoolVar(&showgrid, "grid", false, "show grid")
 	flag.Parse()
-	go play("Canvas API", w, h, showgrid)
+	go play("Canvas API", float32(w), float32(h), showgrid)
 	app.Main()
 }

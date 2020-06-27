@@ -23,6 +23,8 @@ func rn8(n int) uint8 {
 }
 
 func confetti(s string, w, h, nshapes, maxsize int) {
+	defer os.Exit(0)
+
 	width := float32(w)
 	height := float32(h)
 	size := app.Size(unit.Px(width), unit.Px(height))

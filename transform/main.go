@@ -14,6 +14,7 @@ import (
 )
 
 func transforms(title string, w, h int) {
+	defer os.Exit(0)
 	width, height := float32(w), float32(h)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 

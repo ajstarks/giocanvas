@@ -13,6 +13,7 @@ import (
 )
 
 func mondrian(s string, w, h int) {
+	defer os.Exit(0)
 	width, height := float32(w), float32(h)
 	size := app.Size(unit.Px(width), unit.Px(height))
 	title := app.Title(s)

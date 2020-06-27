@@ -13,6 +13,7 @@ import (
 )
 
 func sunearth(s string, w, h int) {
+	defer os.Exit(0)
 	width := float32(w)
 	height := float32(h)
 	win := app.NewWindow(app.Title(s), app.Size(unit.Px(width), unit.Px(height)))

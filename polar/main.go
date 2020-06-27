@@ -22,6 +22,7 @@ func polar(x, y, r, t float32) (float32, float32) {
 }
 
 func circles(title string, w, h int) {
+	defer os.Exit(0)
 	width, height := float32(w), float32(h)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 	for e := range win.Events() {
