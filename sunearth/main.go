@@ -12,10 +12,8 @@ import (
 	"github.com/ajstarks/giocanvas"
 )
 
-func sunearth(s string, w, h int) {
+func sunearth(s string, width, height float32) {
 	defer os.Exit(0)
-	width := float32(w)
-	height := float32(h)
 	win := app.NewWindow(app.Title(s), app.Size(unit.Px(width), unit.Px(height)))
 
 	yellow := color.RGBA{255, 248, 231, 255}
@@ -50,6 +48,6 @@ func main() {
 	flag.IntVar(&w, "width", 1000, "canvas width")
 	flag.IntVar(&h, "height", 1000, "canvas height")
 	flag.Parse()
-	go sunearth("sun+earth", w, h)
+	go sunearth("sun+earth", float32(w), float32(h))
 	app.Main()
 }

@@ -13,10 +13,8 @@ import (
 	"github.com/ajstarks/giocanvas"
 )
 
-func eclipse(s string, w, h int) {
+func eclipse(s string, width, height float32) {
 	defer os.Exit(0)
-
-	width, height := float32(w), float32(h)
 	size := app.Size(unit.Px(width), unit.Px(height))
 	title := app.Title(s)
 	black := color.RGBA{0, 0, 0, 255}
@@ -52,6 +50,6 @@ func main() {
 	flag.IntVar(&w, "width", 1000, "canvas width")
 	flag.IntVar(&h, "height", 1000, "canvas height")
 	flag.Parse()
-	go eclipse("eclipse", w, h)
+	go eclipse("eclipse", float32(w), float32(h))
 	app.Main()
 }

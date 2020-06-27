@@ -12,9 +12,8 @@ import (
 	"github.com/ajstarks/giocanvas"
 )
 
-func mondrian(s string, w, h int) {
+func mondrian(s string, width, height float32) {
 	defer os.Exit(0)
-	width, height := float32(w), float32(h)
 	size := app.Size(unit.Px(width), unit.Px(height))
 	title := app.Title(s)
 

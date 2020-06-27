@@ -13,9 +13,8 @@ import (
 	gc "github.com/ajstarks/giocanvas"
 )
 
-func transforms(title string, w, h int) {
+func transforms(title string, width, height float32) {
 	defer os.Exit(0)
-	width, height := float32(w), float32(h)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 
 	var midx, rectw, recth, recty, ts, ts2 float32
@@ -72,6 +71,6 @@ func main() {
 	flag.IntVar(&w, "width", 1000, "canvas width")
 	flag.IntVar(&h, "height", 1000, "canvas height")
 	flag.Parse()
-	go transforms("transforms", w, h)
+	go transforms("transforms", float32(w), float32(h))
 	app.Main()
 }

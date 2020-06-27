@@ -13,9 +13,8 @@ import (
 	gc "github.com/ajstarks/giocanvas"
 )
 
-func concentric(s string, w, h int) {
+func concentric(s string, width, height float32) {
 	defer os.Exit(0)
-	width, height := float32(w), float32(h)
 	win := app.NewWindow(app.Title(s), app.Size(unit.Px(width), unit.Px(height)))
 
 	for e := range win.Events() {
@@ -43,6 +42,6 @@ func main() {
 	flag.IntVar(&w, "width", 1000, "canvas width")
 	flag.IntVar(&h, "height", 1000, "canvas height")
 	flag.Parse()
-	go concentric("concentric", w, h)
+	go concentric("concentric", float32(w), float32(h))
 	app.Main()
 }

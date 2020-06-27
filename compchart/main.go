@@ -60,9 +60,8 @@ func comp(canvas *giocanvas.Canvas) error {
 	return nil
 }
 
-func work(title string, w, h int) {
+func work(title string, width, height float32) {
 	defer os.Exit(0)
-	width, height := float32(w), float32(h)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 	for e := range win.Events() {
 		switch e := e.(type) {
@@ -86,6 +85,6 @@ func main() {
 	flag.IntVar(&w, "width", 1000, "canvas width")
 	flag.IntVar(&h, "height", 1000, "canvas height")
 	flag.Parse()
-	go work("sine+cosine", w, h)
+	go work("sine+cosine", float32(w), float32(h))
 	app.Main()
 }

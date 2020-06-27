@@ -17,9 +17,8 @@ func pct(p float32, m float32) float32 {
 	return ((p / 100.0) * m)
 }
 
-func twrap(title string, w, h int) {
+func twrap(title string, width, height float32) {
 	defer os.Exit(0)
-	width, height := float32(w), float32(h)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 	var ts float32 = 2.8
 	subsize := ts * 0.6
@@ -69,6 +68,6 @@ func main() {
 	flag.IntVar(&w, "width", 1000, "canvas width")
 	flag.IntVar(&h, "height", 1000, "canvas height")
 	flag.Parse()
-	go twrap("Text Wrapping", w, h)
+	go twrap("Text Wrapping", float32(w), float32(h))
 	app.Main()
 }
