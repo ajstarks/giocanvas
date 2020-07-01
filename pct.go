@@ -165,7 +165,7 @@ func (c *Canvas) Square(x, y, w float32, fillcolor color.RGBA) {
 }
 
 // CenterRect makes a rectangle using percentage-based measures
-// with upper left corner at (x,y), with sized at (w,h)
+// with center at (x,y), sized at (w,h)
 func (c *Canvas) CenterRect(x, y, w, h float32, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	w = pct(w, c.Width)
