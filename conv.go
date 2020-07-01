@@ -1,9 +1,9 @@
 package giocanvas
 
 import (
-	"fmt"
 	"image/color"
 	"math"
+	"strconv"
 )
 
 // Convenience functions
@@ -47,7 +47,9 @@ func (c *Canvas) Background(fillcolor color.RGBA) {
 // the (x, y) label is above the point, with a label below
 func (c *Canvas) Coord(x, y, size float32, s string, fillcolor color.RGBA) {
 	c.Square(x, y, size/2, fillcolor)
-	c.TextMid(x, y+size, size, fmt.Sprintf("(%g, %g)", x, y), fillcolor)
+	xs := strconv.FormatFloat(float64(x), 'g', -1, 32)
+	ys := strconv.FormatFloat(float64(y), 'g', -1, 32)
+	c.TextMid(x, y+size, size, `(`+xs+`, `+ys+`)`, fillcolor)
 	if len(s) > 0 {
 		c.CText(x, y-(size*1.33), size*0.66, s, fillcolor)
 	}

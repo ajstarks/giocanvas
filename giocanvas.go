@@ -2,11 +2,7 @@
 package giocanvas
 
 import (
-	"image"
 	"image/color"
-	_ "image/gif" // needed by image
-	_ "image/jpeg"
-	_ "image/png"
 
 	"gioui.org/io/system"
 	"gioui.org/layout"
@@ -22,14 +18,15 @@ type Canvas struct {
 
 // NewCanvas initializes a Canvas
 func NewCanvas(width, height float32, e system.FrameEvent) *Canvas {
-
 	canvas := new(Canvas)
 	canvas.Width = width
 	canvas.Height = height
 	canvas.TextColor = color.RGBA{0, 0, 0, 255}
 	canvas.Context = layout.NewContext(new(op.Ops), e)
-	ip := image.Point{X: int(width), Y: int(height)}
-	canvas.Context.Constraints.Min = ip
-	canvas.Context.Constraints.Max = ip
+	iw, ih := int(width), int(height)
+	canvas.Context.Constraints.Min.X = iw
+	canvas.Context.Constraints.Min.Y = ih
+	canvas.Context.Constraints.Max.X = iw
+	canvas.Context.Constraints.Max.Y = ih
 	return canvas
 }

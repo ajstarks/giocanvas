@@ -1,9 +1,11 @@
 package giocanvas
 
 import (
-	"fmt"
 	"image"
 	"image/color"
+	_ "image/gif" // needed by image
+	_ "image/jpeg"
+	_ "image/png"
 	"math"
 	"os"
 
@@ -162,7 +164,7 @@ func (c *Canvas) AbsPolygon(x, y []float32, fillcolor color.RGBA) {
 
 // AbsLine makes a line from (x0,y0) to (x1, y1) using absolute coordinates
 func (c *Canvas) AbsLine(x0, y0, x1, y1, size float32, fillcolor color.RGBA) {
-	lv{f32.Point{X: x0, Y: y0}, f32.Point{X: x1, Y: y1}}.Stroke(fillcolor, size, &c.Context)
+	lv{f32.Point{X: x0, Y: y0}, f32.Point{X: x1, Y: y1}}.stroke(fillcolor, size, &c.Context)
 }
 
 // AbsQuadBezier makes a quadratic curve
@@ -250,8 +252,7 @@ func (c *Canvas) AbsArc(x, y, radius, a1, a2 float64, fillcolor color.RGBA) {
 	p1x, p1y := polar(radius, a2)
 	theta := anglebetweenpoints(p0x, p0y, p1x, p1y)
 
-	c.AbsTextMid(500, 100, 20, fmt.Sprintf("a1 = %.1f a2 = %.1f theta = %.1f", degrees(a1), degrees(a2), degrees(theta)), color.RGBA{0, 0, 0, 255})
-	fmt.Fprintf(os.Stderr, "begin: a1=%.1f, a2=%.1f\n", a1, a2)
+	//fmt.Fprintf(os.Stderr, "begin: a1=%.1f, a2=%.1f\n", a1, a2)
 
 	x0 := (radius * math.Cos(theta/2))
 	y0 := (radius * math.Sin(theta/2))
@@ -260,15 +261,6 @@ func (c *Canvas) AbsArc(x, y, radius, a1, a2 float64, fillcolor color.RGBA) {
 
 	x3 := x0
 	y3 := -y0
-
-	c.coord(x, y, 15, "center", color.RGBA{0, 0, 0, 255})
-	c.coord(x+p0x, y+p0y, 15, "start", color.RGBA{128, 0, 0, 128})
-	c.coord(x+p1x, y+p1y, 15, "end", color.RGBA{0, 128, 0, 128})
-
-	c.coord(x+x0, y+y0, 10, "X0", color.RGBA{0, 0, 0, 255})
-	c.coord(x+x1, y+y1, 15, "C1", color.RGBA{0, 0, 0, 255})
-	c.coord(x+x2, y+y2, 15, "C2", color.RGBA{0, 0, 0, 255})
-	c.coord(x+x3, y+y3, 10, "X3", color.RGBA{0, 0, 0, 255})
 
 	c.AbsPolygon(
 		[]float32{float32(x), float32(x + x0), float32(x + x0)},
@@ -307,16 +299,6 @@ func controls(Ax, Ay, R float64) (float64, float64, float64, float64) {
 	return Aprimex, Aprimey, Aprimex, -Aprimey
 }
 
-func (c *Canvas) coord(x, y, size float64, s string, fillcolor color.RGBA) {
-	px := float32(x)
-	py := float32(y)
-	ls := float32(size)
-
-	c.AbsCircle(px, py, ls, fillcolor)
-	c.AbsTextMid(px, py+ls*2, ls, s, fillcolor)
-	c.AbsTextMid(px, py-ls, ls, fmt.Sprintf("(%.1f, %.1f)", px, py), fillcolor)
-}
-
 // Line implementation from github.com/wrnrlr/shape
 
 type lv []f32.Point
@@ -330,7 +312,7 @@ const (
 	rad180 = float32(180 * math.Pi / 180)
 )
 
-func (l lv) Stroke(c color.RGBA, width float32, gtx *layout.Context) (box f32.Rectangle) {
+func (l lv) stroke(c color.RGBA, width float32, gtx *layout.Context) (box f32.Rectangle) {
 	if len(l) < 2 {
 		return box
 	}
@@ -385,26 +367,20 @@ func (l lv) Stroke(c color.RGBA, width float32, gtx *layout.Context) (box f32.Re
 	point := l[0]
 	nextPoint := l[1]
 	tilt = angle(point, nextPoint) + rad225
-	//angles = append(angles, tilt)
-	//originalPoints = append(originalPoints, point)
+
 	point = offsetPoint(point, distance, tilt)
 	offsetPoints = append(offsetPoints, point)
 	point = point.Sub(prevDelta)
 	path.Line(point)
-	//deltaPoints = append(deltaPoints, point)
-	// fmt.Printf("Original Points: %v\n", originalPoints)
-	// printDegrees(angles)
-	// fmt.Printf("Offset Points:   %v\n", offsetPoints)
+
 	for _, p := range offsetPoints {
 		box.Min.X = f32Min(box.Min.X, p.X)
 		box.Min.Y = f32Min(box.Min.Y, p.Y)
 		box.Max.X = f32Max(box.Max.X, p.X)
 		box.Max.Y = f32Max(box.Max.Y, p.Y)
 	}
-	//fmt.Printf("Min and Max:   %v\n", box)
-	//fmt.Printf("Delta Points:    %v\n", deltaPoints)
+
 	path.End().Add(gtx.Ops)
-	//paint.PaintOp{f32.Rectangle{Max:f32.Point{w,h}}}.Add(gtx.Ops)
 	paint.PaintOp{Rect: box}.Add(gtx.Ops)
 	return box
 }
@@ -414,10 +390,8 @@ func angle(p1, p2 f32.Point) float32 {
 }
 
 func offsetPoint(point f32.Point, distance, angle float32) f32.Point {
-	//fmt.Printf("Point X: %f, Y: %f, Angle: %f\n", point.X, point.Y, angle)
 	x := point.X + distance*cos(angle)
 	y := point.Y + distance*sin(angle)
-	//fmt.Printf("Point X: %f, Y: %f \n", x, y)
 	return f32.Point{X: x, Y: y}
 }
 
@@ -439,14 +413,6 @@ func f32Min(x, y float32) float32 {
 
 func f32Max(x, y float32) float32 {
 	return float32(math.Max(float64(x), float64(y)))
-}
-
-func printDegrees(radials []float32) {
-	var degrees []float32
-	for _, a := range radials {
-		degrees = append(degrees, f32mod(a*180/math.Pi, 360))
-	}
-	fmt.Printf("Angles: %v\n", degrees)
 }
 
 func f32mod(x, y float32) float32 {
