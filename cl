@@ -8,6 +8,7 @@ hello
 lines
 mondrian
 polar
+rgb
 sunearth
 tile
 transform
