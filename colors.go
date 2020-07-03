@@ -1,8 +1,8 @@
 package giocanvas
 
 import (
-	"fmt"
 	"image/color"
+	"strconv"
 	"strings"
 )
 
@@ -157,17 +157,49 @@ var colornames = map[string]color.RGBA{
 	"yellowgreen":          {154, 205, 50, 255},
 }
 
-// ColorLookup returns a color.RGBA  corresponding to the named color or
+// cc converts a color string to number
+func cc(s string) uint8 {
+	v, err := strconv.Atoi(s)
+	if err != nil {
+		return 0
+	}
+	return uint8(v)
+}
+
+// ColorLookup returns a color.RGBA corresponding to the named color or
 // "rgb(r)", "rgb(r,b)", "rgb(r,g,b), "rgb(r,g,b,a)" string.
 // On error, return black.
 func ColorLookup(s string) color.RGBA {
+	black := color.RGBA{0, 0, 0, 255}
 	c, ok := colornames[s]
 	if ok {
 		return color.RGBA{c.R, c.G, c.B, c.A}
 	}
-	var red, green, blue, alpha uint8 = 0, 0, 0, 255
-	if strings.HasPrefix(s, "rgb(") {
-		fmt.Sscanf(s[3:], "(%d,%d,%d,%d)", &red, &green, &blue, &alpha)
+	if strings.HasPrefix(s, "rgb(") && strings.HasSuffix(s, ")") && len(s) > 5 {
+		c.R, c.G, c.B, c.A = 0, 0, 0, 255
+		v := strings.Split(s[4:len(s)-1], ",")
+		switch len(v) {
+		case 1:
+			c.R = cc(v[0])
+			return c
+		case 2:
+			c.R = cc(v[0])
+			c.G = cc(v[1])
+			return c
+		case 3:
+			c.R = cc(v[0])
+			c.G = cc(v[1])
+			c.B = cc(v[2])
+			return c
+		case 4:
+			c.R = cc(v[0])
+			c.G = cc(v[1])
+			c.B = cc(v[2])
+			c.A = cc(v[3])
+			return c
+		default:
+			return black
+		}
 	}
-	return color.RGBA{red, green, blue, alpha}
+	return black
 }

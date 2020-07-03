@@ -3,8 +3,8 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"os"
+	"strconv"
 
 	"gioui.org/app"
 	"gioui.org/io/system"
@@ -33,8 +33,8 @@ func alpha(s string, width, height float32, color string) {
 			for x = 0; x <= 100; x += 2 {
 				dotcolor.A = uint8((x / 100) * 255)
 				canvas.Circle(px, y, dotsize, dotcolor)
-				canvas.TextMid(px, y-8, 0.75, fmt.Sprintf("%02.0f", x), gray)
-				canvas.TextMid(px, y+5, 0.75, fmt.Sprintf("%02d", dotcolor.A), blue)
+				canvas.TextMid(px, y-8, 0.75, strconv.FormatFloat(float64(x), 'g', -1, 32), gray)
+				canvas.TextMid(px, y+5, 0.75, strconv.FormatInt(int64(dotcolor.A), 10), blue)
 				px += interval
 			}
 			e.Frame(canvas.Context.Ops)
