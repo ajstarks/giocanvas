@@ -181,25 +181,25 @@ func ColorLookup(s string) color.RGBA {
 		switch len(v) {
 		case 1:
 			c.R = cc(v[0])
-
+			return c
 		case 2:
 			c.R = cc(v[0])
 			c.G = cc(v[1])
-
+			return c
 		case 3:
 			c.R = cc(v[0])
 			c.G = cc(v[1])
 			c.B = cc(v[2])
-
+			return c
 		case 4:
 			c.R = cc(v[0])
 			c.G = cc(v[1])
 			c.B = cc(v[2])
 			c.A = cc(v[3])
-
+			return c
 		default:
 			return black
 		}
 	}
-	return c
+	return black
 }
