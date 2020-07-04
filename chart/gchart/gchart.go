@@ -85,6 +85,7 @@ func main() {
 }
 
 func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
+	defer os.Exit(0)
 	width := float32(w)
 	height := float32(h)
 	appsize := app.Size(unit.Px(width), unit.Px(height))
