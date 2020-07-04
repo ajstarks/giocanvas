@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
+	"strings"
 
 	"gioui.org/app"
 	"gioui.org/io/key"
@@ -84,12 +86,42 @@ func main() {
 	app.Main()
 }
 
+// string to floating point
+func stof(s string) float64 {
+	v, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		return 0
+	}
+	return v
+}
+
+// yr parses the the yrange (max,min,step) string
+func yr(yrange string, dmin, dmax float64) (float64, float64, float64) {
+	var min, max, step float64
+	min = dmin
+	max = dmax
+	step = max - min/5
+	v := strings.Split(yrange, ",")
+	switch len(v) {
+	case 1:
+		min = stof(v[0])
+	case 2:
+		min = stof(v[0])
+		max = stof(v[1])
+	case 3:
+		min = stof(v[0])
+		max = stof(v[1])
+		step = stof(v[2])
+	}
+	return min, max, step
+}
+
 func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 	defer os.Exit(0)
 	width := float32(w)
 	height := float32(h)
 	appsize := app.Size(unit.Px(width), unit.Px(height))
-	apptitle := app.Title(fmt.Sprintf("Chart: %s", data.Title))
+	apptitle := app.Title("Chart: " + data.Title)
 	win := app.NewWindow(apptitle, appsize)
 
 	// Define the colors
@@ -99,7 +131,8 @@ func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 
 	// Set the chart attributes
 	data.Zerobased = opts.zb
-	data.Top, data.Bottom, data.Left, data.Right = opts.top, opts.bottom, opts.left, opts.right
+	data.Top, data.Bottom = opts.top, opts.bottom
+	data.Left, data.Right = opts.left, opts.right
 
 	for e := range win.Events() {
 		switch e := e.(type) {
@@ -133,11 +166,8 @@ func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 			if opts.line || opts.bar || opts.scatter || opts.area {
 				data.Label(canvas, opts.textsize, opts.xlabel)
 				if len(opts.yrange) > 0 {
-					var yaxmin, yaxmax, yaxstep float64
-					n, err := fmt.Sscanf(opts.yrange, "%v,%v,%v", &yaxmin, &yaxmax, &yaxstep)
-					if n == 3 && err == nil {
-						data.YAxis(canvas, opts.textsize, yaxmin, yaxmax, yaxstep, opts.yaxfmt, opts.showgrid)
-					}
+					yaxmin, yaxmax, yaxstep := yr(opts.yrange, data.Minvalue, data.Maxvalue)
+					data.YAxis(canvas, opts.textsize, yaxmin, yaxmax, yaxstep, opts.yaxfmt, opts.showgrid)
 				}
 			}
 
