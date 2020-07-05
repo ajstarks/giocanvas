@@ -3,7 +3,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"io"
 	"os"
 	"strconv"
@@ -64,26 +63,31 @@ func main() {
 
 	var input io.Reader
 	var ferr error
+	infile := flag.Args()[0]
 
 	// Read from stdin or specified file
 	if len(flag.Args()) == 0 {
 		input = os.Stdin
 	} else {
-		input, ferr = os.Open(flag.Args()[0])
+		input, ferr = os.Open(infile)
 		if ferr != nil {
-			fmt.Fprintf(os.Stderr, "%v\n", ferr)
+			perr("unable to open ", infile)
 			os.Exit(1)
 		}
 	}
 	// read the data
 	data, err := chart.DataRead(input)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
+		perr("unable to read ", infile)
 		os.Exit(2)
 	}
 	// make the chart
 	go gchart("charts", width, height, data, opts)
 	app.Main()
+}
+
+func perr(msg, file string) {
+	io.WriteString(os.Stderr, msg+file+"\n")
 }
 
 // string to floating point
