@@ -1,3 +1,4 @@
+// lines tests line drawing
 package main
 
 import (

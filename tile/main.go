@@ -1,3 +1,4 @@
+// tile makes a tiling visual
 package main
 
 import (

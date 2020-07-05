@@ -1,5 +1,5 @@
+// rl makes random lines
 package main
-
 import (
 	"flag"
 	"image/color"

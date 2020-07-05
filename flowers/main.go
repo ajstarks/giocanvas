@@ -1,3 +1,4 @@
+// flowers demonstrated transforms with "flowers"
 package main
 
 import (

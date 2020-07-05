@@ -1,3 +1,4 @@
+// play demos the giocanvas API
 package main
 
 import (

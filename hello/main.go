@@ -1,3 +1,4 @@
+// hello is the giocanvas hello, world
 package main
 
 import (

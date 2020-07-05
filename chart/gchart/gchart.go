@@ -1,4 +1,4 @@
-// fchart -- command line chart using fc chart packages
+// gchart -- command line chart using giocanvas chart package
 package main
 
 import (
