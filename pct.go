@@ -143,7 +143,7 @@ func (c *Canvas) Rect(x, y, w, h float32, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	w = pct(w, c.Width)
 	h = pct(h, c.Height)
-	c.AbsRect(x, y, w, h, fillcolor)
+	c.AbsCenterRect(x, y, w, h, fillcolor)
 }
 
 // CornerRect makes a rectangle using percentage-based measures

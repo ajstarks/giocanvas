@@ -37,7 +37,7 @@ func mondrian(s string, width, height float32) {
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, e)
 
-			canvas.Rect(0, 100, 100, 100, white)                     // white background
+			canvas.Background(color.RGBA{255,255,255,255})
 			canvas.CenterRect(halft, halft, third, third, blue)      // lower left blue square
 			canvas.CenterRect(t2, t2, t2, t2, red)                   // big red
 			canvas.CenterRect(tq, qt, halft, halft, yellow)          // small yellow lower right

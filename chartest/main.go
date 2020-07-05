@@ -93,7 +93,7 @@ func xaxis(canvas *gc.Canvas, x, y, width, height float32, interval int, data []
 }
 
 func frame(canvas *gc.Canvas, x, y, width, height float32, color color.RGBA) {
-	canvas.Rect(x, height, width-x, height-y, color)
+	canvas.CornerRect(x, height, width-x, height-y, color)
 }
 
 func dotchart(canvas *gc.Canvas, x, y, width, height float32, data []NameValue, datacolor color.RGBA) {
