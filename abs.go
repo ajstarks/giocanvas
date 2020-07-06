@@ -321,8 +321,7 @@ func (l lv) stroke(c color.RGBA, width float32, gtx *layout.Context) (box f32.Re
 	var path clip.Path
 	path.Begin(gtx.Ops)
 	distance := width
-	var angles []float32
-	var offsetPoints, originalPoints, deltaPoints []f32.Point
+	var offsetPoints []f32.Point
 	var tilt float32
 	var prevDelta f32.Point
 	for i, point := range l {
@@ -333,12 +332,9 @@ func (l lv) stroke(c color.RGBA, width float32, gtx *layout.Context) (box f32.Re
 			prevPoint := l[i-1]
 			tilt = angle(prevPoint, point) + rad315
 		}
-		angles = append(angles, tilt)
-		originalPoints = append(originalPoints, point)
 		point = offsetPoint(point, distance, tilt)
 		offsetPoints = append(offsetPoints, point)
 		newPoint := point.Sub(prevDelta)
-		deltaPoints = append(deltaPoints, newPoint)
 		prevDelta = point
 		if i == 0 {
 			path.Move(newPoint)
@@ -355,12 +351,9 @@ func (l lv) stroke(c color.RGBA, width float32, gtx *layout.Context) (box f32.Re
 			prevPoint := l[i-1]
 			tilt = angle(prevPoint, point) + rad45
 		}
-		angles = append(angles, tilt)
-		originalPoints = append(originalPoints, point)
 		point = offsetPoint(point, distance, tilt)
 		offsetPoints = append(offsetPoints, point)
 		newPoint := point.Sub(prevDelta)
-		deltaPoints = append(deltaPoints, newPoint)
 		prevDelta = point
 		path.Line(newPoint)
 	}

@@ -47,13 +47,19 @@ func (c *Canvas) Polygon(x, y []float32, fillcolor color.RGBA) {
 	c.AbsPolygon(nx, ny, fillcolor)
 }
 
-// Curve makes a quadric Bezier curve, using percentage-based measures
+// QuadCurve makes a quadric Bezier curve, using percentage-based measures
 // starting at (x, y), control point at (cx, cy), end point (ex, ey)
-func (c *Canvas) Curve(x, y, cx, cy, ex, ey float32, fillcolor color.RGBA) {
+func (c *Canvas) QuadCurve(x, y, cx, cy, ex, ey float32, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	cx, cy = dimen(cx, cy, c.Width, c.Height)
 	ex, ey = dimen(ex, ey, c.Width, c.Height)
 	c.AbsQuadBezier(x, y, cx, cy, ex, ey, 0, fillcolor)
+}
+
+// Curve makes a quadric Bezier curve, using percentage-based measures
+// starting at (x, y), control point at (cx, cy), end point (ex, ey)
+func (c *Canvas) Curve(x, y, cx, cy, ex, ey float32, fillcolor color.RGBA) {
+	c.QuadCurve(x, y, cx, cy, ex, ey, fillcolor)
 }
 
 // CubeCurve makes a cubic Bezier curve, using percentage-based measures
