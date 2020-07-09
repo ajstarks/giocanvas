@@ -8,52 +8,11 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/f32"
 	"gioui.org/io/system"
-	"gioui.org/op"
-	"gioui.org/op/clip"
-	"gioui.org/op/paint"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
 
-func doarc(c *giocanvas.Canvas, x, y, start, end, radius float64, color color.RGBA) {
-	ops := c.Context.Ops
-	r := f32.Rect(0, 0, c.Width, c.Height)
-	outer := float32(radius)
-	sine, cose := math.Sincos(start)
-	defer op.Push(ops).Pop()
-	path := new(clip.Path)
-	path.Begin(ops)
-	path.Move(f32.Pt(float32(x), float32(y)))              // move to the center
-	pen := f32.Pt(float32(cose), float32(sine)).Mul(outer) // starting point
-	path.Line(pen)
-
-	// The clip path uses quadratic beziér curves to approximate
-	// a circle arc. Minimize the error by capping the length of
-	// each curve segment.
-	const maxArcLen = 20.0
-	arcPerRadian := radius * math.Pi
-	anglePerSegment := maxArcLen / arcPerRadian
-	for angle := start; angle < end; {
-		angle += anglePerSegment
-		if angle > end {
-			angle = end
-		}
-		sins, coss := sine, cose
-		sine, cose = math.Sincos(angle)
-
-		// https://pomax.github.io/bezierinfo/#circles
-		div := 1.0 / (coss*sine - cose*sins)
-		ctrlPt := f32.Point{X: float32((sine - sins) * div), Y: -float32((cose - coss) * div)}.Mul(outer)
-		endPt := f32.Pt(float32(cose), float32(sine)).Mul(outer)
-		path.Quad(ctrlPt.Sub(pen), endPt.Sub(pen))
-		pen = endPt
-	}
-	path.End().Add(ops)
-	paint.ColorOp{Color: color}.Add(ops)
-	paint.PaintOp{Rect: r}.Add(ops)
-}
 func arc(title string, width, height float32) {
 	defer os.Exit(0)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
