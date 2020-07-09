@@ -137,13 +137,6 @@ func ref(title string, width, height float32) {
 			giocanvas.EndTransform(stack)
 			canvas.CText(col3, y-5, apisize, "Rotate(x, y, angle float32) op.StackOp", apicolor)
 
-			y -= 15
-			stack = canvas.Translate(midx+5, y-5)
-			canvas.CenterRect(midx, y, rectw, recth, shapecolor)
-			canvas.TextMid(midx, y-ts2, ts, "translate", tcolor)
-			giocanvas.EndTransform(stack)
-			canvas.CText(col3, y-5, apisize, "Translate(x, y float32) op.StackOp", apicolor)
-
 			e.Frame(canvas.Context.Ops)
 		case key.Event:
 			switch e.Name {

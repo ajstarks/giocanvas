@@ -91,11 +91,10 @@ func (c *Canvas) Ellipse(x, y, w, h float32, fillcolor color.RGBA) {
 
 // Arc makes a filled arc, using percentage-based measures
 // center is (x, y) the arc begins at angle a1, and ends at a2
-// TODO: Still buggy
 func (c *Canvas) Arc(x, y, r float32, a1, a2 float64, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	pr := pct(r, c.Width)
-	c.AbsArc(float64(x), float64(y), float64(pr), float64(a1), float64(a2), fillcolor)
+	c.AbsArc(x, y, pr, a1, a2, fillcolor)
 }
 
 // Text methods
@@ -129,7 +128,7 @@ func (c *Canvas) EText(x, y, size float32, s string, fillcolor color.RGBA) {
 	c.TextEnd(x, y, size, s, fillcolor)
 }
 
-// CText - alternarive name for TextMid
+// CText - alternative name for TextMid
 func (c *Canvas) CText(x, y, size float32, s string, fillcolor color.RGBA) {
 	c.TextMid(x, y, size, s, fillcolor)
 }

@@ -243,60 +243,44 @@ func (c *Canvas) AbsEllipse(x, y, w, h float32, fillcolor color.RGBA) {
 	paint.PaintOp{Rect: r}.Add(ops)
 }
 
-// AbsArc makes an arc centered at (x, y), through angles a1 and a2
-func (c *Canvas) AbsArc(x, y, radius, a1, a2 float64, fillcolor color.RGBA) {
+// AbsArc makes circulr arc centered at (x, y), through angles start and end;
+// the angles are measured in radians and increase clockwise
+// N.B: derived from the clipLoader function in widget/material/loader.go
+func (c *Canvas) AbsArc(x, y, radius float32, start, end float64, fillcolor color.RGBA) {
+	ops := c.Context.Ops
+	r := f32.Rect(0, 0, c.Width, c.Height)
+	sine, cose := math.Sincos(start)
+	defer op.Push(ops).Pop()
+	path := new(clip.Path)
+	path.Begin(ops)
+	path.Move(f32.Pt(x, y))                                 // move to the center
+	pen := f32.Pt(float32(cose), float32(sine)).Mul(radius) // starting point
+	path.Line(pen)
 
-	c.AbsCircle(float32(x), float32(y), float32(radius), color.RGBA{0, 0, 0, 100})
+	// The clip path uses quadratic beziér curves to approximate
+	// a circle arc. Minimize the error by capping the length of
+	// each curve segment.
+	const maxArcLen = 20.0
+	arcPerRadian := float64(radius) * math.Pi
+	anglePerSegment := maxArcLen / arcPerRadian
+	for angle := start; angle < end; {
+		angle += anglePerSegment
+		if angle > end {
+			angle = end
+		}
+		sins, coss := sine, cose
+		sine, cose = math.Sincos(angle)
 
-	p0x, p0y := polar(radius, a1)
-	p1x, p1y := polar(radius, a2)
-	theta := anglebetweenpoints(p0x, p0y, p1x, p1y)
-
-	//fmt.Fprintf(os.Stderr, "begin: a1=%.1f, a2=%.1f\n", a1, a2)
-
-	x0 := (radius * math.Cos(theta/2))
-	y0 := (radius * math.Sin(theta/2))
-
-	x1, y1, x2, y2 := controls(x0, y0, radius)
-
-	x3 := x0
-	y3 := -y0
-
-	c.AbsPolygon(
-		[]float32{float32(x), float32(x + x0), float32(x + x0)},
-		[]float32{float32(y), float32(y + y0), float32(y + y3)},
-		color.RGBA{128, 0, 0, 100})
-
-	c.AbsCubicBezier(
-		float32(x+x0), float32(y+y0),
-		float32(x+x1), float32(y+y1),
-		float32(x+x2), float32(y+y2),
-		float32(x+x3), float32(y+y3),
-		float32(radius), color.RGBA{128, 0, 0, 100})
-
-}
-
-func anglebetweenpoints(p0x, p0y, p1x, p1y float64) float64 {
-	return math.Atan2(p1y-p0y, p1x-p0x)
-}
-
-func polar(r, theta float64) (float64, float64) {
-	return (r * math.Cos(theta)), (r * math.Sin(theta))
-}
-
-func radians(degrees float64) float64 {
-	return degrees * (math.Pi / 180)
-}
-
-func degrees(radians float64) float64 {
-	deg := radians * (180 / math.Pi)
-	return deg
-}
-
-func controls(Ax, Ay, R float64) (float64, float64, float64, float64) {
-	Aprimex := ((4 * R) - Ax) / 3
-	Aprimey := (R - Ax) * ((3 * R) - Ax) / (3 * Ay)
-	return Aprimex, Aprimey, Aprimex, -Aprimey
+		// https://pomax.github.io/bezierinfo/#circles
+		div := 1.0 / (coss*sine - cose*sins)
+		ctrlPt := f32.Point{X: float32((sine - sins) * div), Y: -float32((cose - coss) * div)}.Mul(radius)
+		endPt := f32.Pt(float32(cose), float32(sine)).Mul(radius)
+		path.Quad(ctrlPt.Sub(pen), endPt.Sub(pen))
+		pen = endPt
+	}
+	path.End().Add(ops)
+	paint.ColorOp{Color: fillcolor}.Add(ops)
+	paint.PaintOp{Rect: r}.Add(ops)
 }
 
 // Line implementation from github.com/wrnrlr/shape
