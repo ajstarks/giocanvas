@@ -16,25 +16,27 @@ import (
 func ref(title string, width, height float32) {
 	defer os.Exit(0)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
-	var col1, col2, col3 float32 = 15, 50, 90
-	var top, subtop, titlesize, headsize, apisize, dotsize float32 = 92, 82, 4, 3, 1, 0.3
+	var col1, col2, col3 float32 = 15, 50, 85
+	var top, subtop float32 = 92, 82
+	var titlesize, headsize, apisize, dotsize float32 = 4, 3, 0.9, 0.3
 	titlecolor := giocanvas.ColorLookup("black")
 	subcolor := giocanvas.ColorLookup("gray")
-	dotcolor := giocanvas.ColorLookup("rgb(100,0,0,180)")
-	apicolor := giocanvas.ColorLookup("rgb(70,70,70)")
-	shapecolor := color.RGBA{128, 0, 0, 127} // color.RGBA{70, 130, 180, 127}
-	tcolor := color.RGBA{0, 0, 0, 255}
-	quote := `If there is no struggle, there is no progress. Those who profess to favor freedom, and yet depreciate agitation, are men who want crops without plowing up the ground.`
-	//quote := `The beauty of a living thing is not the atoms that go into it, but the way those atoms are put togehter.`
+	dotcolor := giocanvas.ColorLookup("rgb(100,100,100,180)")
+	bgcolor := giocanvas.ColorLookup("rgb(250,250,250)")
+	apicolor := giocanvas.ColorLookup("rgb(75,75,75)")
+	shapecolor := color.RGBA{70, 130, 180, 150}
+	tcolor := titlecolor
+	quote := "If there is no struggle, there is no progress. Those who profess to favor freedom, and yet depreciate agitation, are men who want crops without plowing up the ground. They want rain without thunder and lightning. They want the ocean without the awful roar of its many waters."
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, e)
-			canvas.Background(giocanvas.ColorLookup("linen"))
+			canvas.Background(bgcolor)
 			canvas.CText(50, top, titlesize, "Giocanvas API Reference", titlecolor)
 			canvas.CText(col1, subtop, headsize, "Text", subcolor)
 			canvas.CText(col2, subtop, headsize, "Graphics", subcolor)
 			canvas.CText(col3, subtop, headsize, "Transforms", subcolor)
+			canvas.CText(col3, subtop-60, headsize, "Image", subcolor)
 
 			// Text
 			y := subtop - 10
@@ -53,13 +55,13 @@ func ref(title string, width, height float32) {
 			canvas.CText(col1, y-5, apisize, "CText(x, y, size float32, s string, c color.RGBA)", apicolor)
 
 			y -= 15
-			canvas.TextWrap(col1-10, y, headsize*0.4, 20, quote, tcolor)
+			canvas.TextWrap(col1-10, y, headsize*0.4, 18, quote, tcolor)
 			canvas.Circle(col1-10, y, dotsize, dotcolor)
-			canvas.CText(col1, y-10, apisize, "TextWrap(x, y, size, width float32, s string, c color.RGBA)", apicolor)
+			canvas.CText(col1, y-20, apisize, "TextWrap(x, y, size, width float32, s string, c color.RGBA)", apicolor)
 
 			// graphics
-			x1 := col2 - 11
-			x2 := col2 + 11
+			x1 := col2 - 10
+			x2 := col2 + 10
 
 			y = subtop - 10
 			canvas.Line(x1, y, x2, y, 0.2, shapecolor)
@@ -106,9 +108,11 @@ func ref(title string, width, height float32) {
 			canvas.Circle(x1, y+5, dotsize, dotcolor)
 			canvas.Circle(x1+5, y, dotsize, dotcolor)
 
-			canvas.Image("earth.jpg", x2, y+2, 1000, 1000, 12)
-			canvas.CText(x2, y-5, apisize, "Image(file string, x, y float32, w, h int, scale float32)", apicolor)
+			canvas.Arc(x2, y+5, 5, 0, math.Pi/2, shapecolor)
+			canvas.Circle(x2, y+5, dotsize, dotcolor)
+			canvas.CText(x2, y-5, apisize, "Arc(x, y, radius, a1, a2, c color.RGBA)", apicolor)
 
+			// Transforms
 			var rectw, recth, ts, ts2 float32
 			var midx float32 = col3
 			rectw = 10
@@ -136,6 +140,11 @@ func ref(title string, width, height float32) {
 			canvas.TextMid(midx, y-ts2, ts, "rotate", tcolor)
 			giocanvas.EndTransform(stack)
 			canvas.CText(col3, y-5, apisize, "Rotate(x, y, angle float32) op.StackOp", apicolor)
+
+			y -= 30
+			canvas.Image("earth.jpg", midx, y+2, 1000, 1000, 15)
+			canvas.CText(midx, y-5, apisize, "Image(file string, x, y float32, w, h int, scale float32)", apicolor)
+			canvas.CText(midx, y-7, apisize, "Img(img image.Image, x, y float32, w, h int, scale float32)", apicolor)
 
 			e.Frame(canvas.Context.Ops)
 		case key.Event:
