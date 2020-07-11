@@ -65,7 +65,6 @@ deck
 
 		list listleft listop ls "sans" fgcolor 100 listspacing
 			li "Make a new canvas"
-			li ""
 			li "Place an image from file"
 			li "Place an image from image.Image"
 			li "Line from (x0,y0) to (x1,y1)"
@@ -73,7 +72,7 @@ deck
 			li "Ellipse centered at (x,y), radii (w,h)"
 			li "Square centered at (x,y)"
 			li "Rectangle centered at (x,y)"
-			li "Rectangle upper-left at (x,y)"
+			li "Arc at (x,y), radius r, angle a1-a2"
 			li "Cubic Bezier Curve"
 			li "Quadratic Bezier Curve"
 			li "Filled Polygon"
@@ -84,7 +83,6 @@ deck
 
 		list codeleft listop ls "mono" codecolor 100 listspacing
 			li "NewCanvas	(width, height float32, e system.FrameEvent) *Canvas" 
-			li ""
 			li "Image		(name string, x, y float32, w, h int, scale float32)"
 			li "Img			(im image.Image, x, y float32, w, h int, scale float32)"
 			li "Line		(x0, y0, x1, y1, size float32, stroke color.RGBA)" 
@@ -92,9 +90,9 @@ deck
 			li "Ellipse		(x, y, w, h float32, fill color.RGBA)"
 			li "Square		(x, y, w float32, fill color.RGBA)"
 
-			li "CenterRect	(x, y, w, h float32, fill color.RGBA)"  
-			li "CornerRect	(x, y, w, h float32, fill color.RGBA)"
+			li "Rect	    (x, y, w, h float32, fill color.RGBA)"  
 
+			li "Arc         (x, y, r float32, a1, a2 float64, fill color.RGBA)"
 			li "CubeCurve	(x, y, cx1, cy1, cx2, cy2, ex, ey float32, fill color.RGBA)" 
 			li "Curve		(x, y, cx, cy, ex, ey float32, fill color.RGBA)"
 			li "Polygon		(x, y []float32, fill color.RGBA)"

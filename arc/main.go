@@ -49,6 +49,7 @@ func arc(title string, width, height float32) {
 				canvas.CText(x, y+8, 1.8, fmt.Sprintf("%.4f rad", angle), black)
 				angle -= math.Pi / 4
 			}
+
 			e.Frame(canvas.Context.Ops)
 		}
 	}

@@ -45,6 +45,7 @@ func play(appname string, width, height float32, showgrid bool) {
 	subtitle := `A canvas API for Gio applications using high-level objects and a percentage-based coordinate system (https://github.com/ajstarks/giocanvas)`
 	logoimg := getImage("logo.png")
 	win := app.NewWindow(title, size)
+	const pi = 3.14159265
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.FrameEvent:
@@ -69,9 +70,16 @@ func play(appname string, width, height float32, showgrid bool) {
 			canvas.Coord(35, 75, subsize, "P1", labelcolor)
 
 			// Circle
-			canvas.TextMid(colx, 55, labelsize, "Circle", labelcolor)
-			canvas.Circle(colx, 45, 5, fcolor)
-			canvas.Coord(colx, 45, subsize, "center", labelcolor)
+			cx1 := colx - 10
+			cx2 := colx + 10
+			canvas.TextMid(cx1, 55, labelsize, "Circle", labelcolor)
+			canvas.Circle(cx1, 45, 5, fcolor)
+			canvas.Coord(cx1, 45, subsize, "center", labelcolor)
+
+			// Arc
+			canvas.TextMid(cx2, 55, labelsize, "Arc", labelcolor)
+			canvas.Arc(cx2, 45, 5, 0, 3*pi/4, tcolor)
+			canvas.Coord(cx2, 45, subsize, "center", labelcolor)
 
 			// Ellipse
 			canvas.TextMid(colx, 30, labelsize, "Ellipse", labelcolor)
