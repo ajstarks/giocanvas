@@ -2,4 +2,4 @@
 
 (Note: this code is under development and the API may change)
 
-![canvas API](giocanvas.png)
+![canvas API](giocanvas-grid.png)
