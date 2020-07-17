@@ -30,8 +30,9 @@ type ChartBox struct {
 }
 
 const (
-	largest  = 1.797693134862315708145274237317043567981e+308
-	smallest = -largest
+	largest    = 1.797693134862315708145274237317043567981e+308
+	smallest   = -largest
+	fullcircle = 3.14159265358979323846264338327950288419716939937510582097494459 * 2
 )
 
 var labelcolor = color.RGBA{100, 100, 100, 255}
@@ -164,6 +165,36 @@ func (c *ChartBox) Area(canvas *gc.Canvas, opacity float64) {
 	}
 	c.Color.A = uint8(255.0 * (opacity / 100))
 	canvas.Polygon(ax, ay, c.Color)
+}
+
+// datasum returns the sum of the data
+func datasum(data []NameValue) float64 {
+	sum := 0.0
+	for _, d := range data {
+		sum += d.value
+	}
+	return sum
+}
+
+// Pie makes a pie chart
+func (c *ChartBox) Pie(canvas *gc.Canvas, r float64) {
+	px, py, pr := float32(c.Left+r), float32(c.Top-r), float32(r)
+	sum := datasum(c.Data)
+	a1 := 0.0
+	labelr := pr + 10
+	ts := pr / 10
+	for _, d := range c.Data {
+		fillcolor := gc.ColorLookup(d.note)
+		pct := (d.value / sum)
+		a2 := (fullcircle * pct) + a1
+		mid := fullcircle - (a1 + (a2-a1)/2)
+		canvas.Arc(px, py, pr, a1, a2, fillcolor)
+		tx, ty := canvas.Polar(px, py, labelr, float32(mid))
+		lx, ly := canvas.Polar(px, py, labelr-ts, float32(mid))
+		canvas.CText(tx, ty, ts, fmt.Sprintf("%s (%.2f%%)", d.label, pct*100), fillcolor)
+		canvas.Line(px, py, lx, ly, 0.1, fillcolor)
+		a1 = a2
+	}
 }
 
 // Label draws the x axis labels

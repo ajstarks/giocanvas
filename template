@@ -34,6 +34,6 @@ func main() {
 	flag.IntVar(&w, "width", 1000, "canvas width")
 	flag.IntVar(&h, "height", 1000, "canvas height")
 	flag.Parse()
-	go work("work", float32(w), float32(h)))
+	go work("work", float32(w), float32(h))
 	app.Main()
 }

@@ -9,6 +9,7 @@ flowers
 hello
 lines
 mondrian
+pie
 polar
 rgb
 sunearth

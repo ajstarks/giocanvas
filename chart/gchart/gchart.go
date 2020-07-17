@@ -17,11 +17,11 @@ import (
 )
 
 type chartOptions struct {
-	top, bottom, left, right                                                 float64
-	barwidth, linewidth, linespacing, dotsize, textsize, ty, frameOp, areaOp float64
-	bgcolor, dcolor, labelcolor, chartitle, yaxfmt, yrange                   string
-	xlabel                                                                   int
-	zb, line, bar, hbar, scatter, area, showtitle, showgrid                  bool
+	top, bottom, left, right                                                          float64
+	barwidth, linewidth, linespacing, dotsize, textsize, piesize, ty, frameOp, areaOp float64
+	bgcolor, dcolor, labelcolor, chartitle, yaxfmt, yrange                            string
+	xlabel                                                                            int
+	zb, line, bar, hbar, scatter, area, pie, showtitle, showgrid                      bool
 }
 
 func main() {
@@ -45,6 +45,7 @@ func main() {
 	flag.Float64Var(&opts.ty, "ty", 5, "title position relative to the top")
 	flag.Float64Var(&opts.frameOp, "frame", 0, "frame opacity")
 	flag.Float64Var(&opts.areaOp, "areaop", 50, "area opacity")
+	flag.Float64Var(&opts.piesize, "piesize", 2, "pie chart radius")
 	flag.StringVar(&opts.yrange, "yrange", "", "y axis range (min,max,step")
 	flag.StringVar(&opts.chartitle, "chartitle", "", "chart title")
 	flag.StringVar(&opts.yaxfmt, "yfmt", "%v", "yaxis format")
@@ -59,6 +60,7 @@ func main() {
 	flag.BoolVar(&opts.line, "line", false, "line chart")
 	flag.BoolVar(&opts.hbar, "hbar", false, "horizontal bar")
 	flag.BoolVar(&opts.scatter, "scatter", false, "scatter chart")
+	flag.BoolVar(&opts.pie, "pie", false, "show a pie chart")
 	flag.Parse()
 
 	var input io.Reader
@@ -164,6 +166,10 @@ func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 			if opts.area {
 				data.Area(canvas, opts.areaOp)
 			}
+			if opts.pie {
+				data.Pie(canvas, opts.piesize)
+				data.Left -= opts.piesize // adjust for title
+			}
 
 			// Draw labels, axes if specified
 			data.Color = labelcolor
@@ -190,7 +196,6 @@ func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 			case "Q", key.NameEscape:
 				os.Exit(0)
 			}
-
 		}
 	}
 }
