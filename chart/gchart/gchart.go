@@ -65,12 +65,14 @@ func main() {
 
 	var input io.Reader
 	var ferr error
-	infile := flag.Args()[0]
+	var infile string
 
 	// Read from stdin or specified file
 	if len(flag.Args()) == 0 {
 		input = os.Stdin
+		infile = "stdin"
 	} else {
+		infile = flag.Args()[0]
 		input, ferr = os.Open(infile)
 		if ferr != nil {
 			perr("unable to open ", infile)
