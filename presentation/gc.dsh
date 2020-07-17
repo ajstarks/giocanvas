@@ -164,6 +164,7 @@ deck
 			li "Line Chart"
 			li "Area Chart"
 			li "Scatter Chart"
+			li "Pie Chart"
 			li "Centered Title"
 			li "Chart Frame"
 			li "X Axis Label"
@@ -178,11 +179,11 @@ deck
 			li "Line	(canvas *gc.Canvas, size float64)"
 			li "Area	(canvas *gc.Canvas, opacity float64)"
 			li "Scatter	(canvas *gc.Canvas, size float64)"
+			li "Pie     (canvas *gc.Canvas, size float64)"
 			li "CTitle	(canvas *gc.Canvas, size, offset float64)"
 			li "Frame	(canvas *gc.Canvas, op float64)"
 			li "Label	(canvas *gc.Canvas, size float64, n int)"
-			li "YAxis	(canvas *gc.Canvas, size, min, max, step float64,"
-			li "        format string, gridlines bool)"                                                                                 
+			li "YAxis	(canvas *gc.Canvas, size, min, max, step float64, fmt string, grid bool)"                                                                                 
 		elist
 	eslide
 
