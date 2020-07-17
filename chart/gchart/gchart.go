@@ -45,7 +45,7 @@ func main() {
 	flag.Float64Var(&opts.ty, "ty", 5, "title position relative to the top")
 	flag.Float64Var(&opts.frameOp, "frame", 0, "frame opacity")
 	flag.Float64Var(&opts.areaOp, "areaop", 50, "area opacity")
-	flag.Float64Var(&opts.piesize, "piesize", 2, "pie chart radius")
+	flag.Float64Var(&opts.piesize, "piesize", 20, "pie chart radius")
 	flag.StringVar(&opts.yrange, "yrange", "", "y axis range (min,max,step")
 	flag.StringVar(&opts.chartitle, "chartitle", "", "chart title")
 	flag.StringVar(&opts.yaxfmt, "yfmt", "%v", "yaxis format")
