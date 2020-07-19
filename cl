@@ -7,6 +7,7 @@ confetti
 eclipse
 flowers
 hello
+lego
 lines
 mondrian
 pie

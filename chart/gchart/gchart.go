@@ -21,7 +21,7 @@ type chartOptions struct {
 	barwidth, linewidth, linespacing, dotsize, textsize, piesize, ty, frameOp, areaOp float64
 	bgcolor, dcolor, labelcolor, chartitle, yaxfmt, yrange                            string
 	xlabel                                                                            int
-	zb, line, bar, hbar, scatter, area, pie, showtitle, showgrid                      bool
+	zb, line, bar, hbar, scatter, area, pie, lego, showtitle, showgrid                bool
 }
 
 func main() {
@@ -55,6 +55,7 @@ func main() {
 	flag.BoolVar(&opts.showtitle, "title", true, "show the title")
 	flag.BoolVar(&opts.showgrid, "grid", false, "show y axis grid")
 	flag.BoolVar(&opts.zb, "zero", true, "zero minumum")
+	flag.BoolVar(&opts.lego, "lego", false, "lego chart")
 	flag.BoolVar(&opts.area, "area", false, "area chart")
 	flag.BoolVar(&opts.bar, "bar", false, "bar chart")
 	flag.BoolVar(&opts.line, "line", false, "line chart")
@@ -171,6 +172,9 @@ func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 			if opts.pie {
 				data.Pie(canvas, opts.piesize)
 				data.Left -= opts.piesize // adjust for title
+			}
+			if opts.lego {
+				data.Lego(canvas, opts.dotsize)
 			}
 
 			// Draw labels, axes if specified

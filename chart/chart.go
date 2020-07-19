@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"image/color"
 	"io"
+	"math"
 	"strconv"
 	"strings"
 
@@ -194,6 +195,49 @@ func (c *ChartBox) Pie(canvas *gc.Canvas, r float64) {
 		canvas.CText(tx, ty, ts, fmt.Sprintf("%s (%.2f%%)", d.label, pct*100), fillcolor)
 		canvas.Line(px, py, lx, ly, 0.1, fillcolor)
 		a1 = a2
+	}
+}
+
+// dotgrid makes a grid 10x10 grid of dots colored by value
+func dotgrid(canvas *gc.Canvas, x, y, left, step float32, n int, fillcolor color.RGBA) (float32, float32) {
+	edge := (((step * 0.3) + step) * 7) + left
+	for i := 0; i < n; i++ {
+		if x > edge {
+			x = left
+			y -= step
+		}
+		op := fillcolor.A
+		canvas.Circle(x, y, step*0.3, fillcolor)
+		fillcolor.A = op - 30
+		canvas.Square(x, y, step*0.9, fillcolor)
+		fillcolor.A = op
+		x += step
+	}
+	return x, y
+}
+
+// Lego makes a lego/waffle chart
+func (c *ChartBox) Lego(canvas *gc.Canvas, size float64) {
+	step := float32(size)
+	left := float32(c.Left)
+	x := left
+	y := float32(c.Top)
+
+	sum := datasum(c.Data)
+	for _, d := range c.Data {
+		pct := (d.value / sum) * 100
+		v := int(math.Round(pct))
+		px, py := dotgrid(canvas, x, y, left, step, v, gc.ColorLookup(d.note))
+		x = px
+		y = py
+	}
+	y -= step * 2
+	for _, d := range c.Data {
+		pct := (d.value / sum) * 100
+		v := int(math.Round(pct))
+		canvas.Circle(left, y, step*0.3, gc.ColorLookup(d.note))
+		canvas.Text(left+step, y-step*0.2, step*0.5, fmt.Sprintf("%s (%.d%%)", d.label, v), gc.ColorLookup("rgb(120,120,120"))
+		y -= step
 	}
 }
 

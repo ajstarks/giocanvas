@@ -1,0 +1,5 @@
+# Racial makeup of the US Population (2010 Census)
+White	64	rgb(160,82,45,120)
+Hispanic	16	rgb(160,82,45,180)
+Black	13	rgb(160,82,45)
+Other	7	rgb(160,82,45,220)
