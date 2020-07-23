@@ -93,7 +93,7 @@ func ref(title string, width, height float32) {
 			canvas.Circle(col2-5, y, dotsize, dotcolor)
 
 			canvas.CubeCurve(col2+5, y, x2, y+5, col2+15, y+7, x2+5, y, shapecolor)
-			canvas.CText(x2+5, y-5, apisize, "CubeCurve(x, y, x1, y1, x2, y2, ex, ey float32, c color.RGBA)", apicolor)
+			canvas.CText(x2+5, y-5, apisize, "CubeCurve(x, y, cx1, cy1, cx2, cy2, ex, ey float32, c color.RGBA)", apicolor)
 			canvas.Circle(col2+5, y, dotsize, dotcolor)
 			canvas.Circle(x2, y+5, dotsize, dotcolor)
 			canvas.Circle(col2+15, y+7, dotsize, dotcolor)
