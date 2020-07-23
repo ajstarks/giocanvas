@@ -2,9 +2,12 @@ package main
 
 import (
 	"flag"
+	"image"
 	"image/color"
-	"math"
+	_ "image/png"
+	"io"
 	"os"
+	"strconv"
 
 	"gioui.org/app"
 	"gioui.org/io/key"
@@ -13,7 +16,21 @@ import (
 	"github.com/ajstarks/giocanvas"
 )
 
-func ref(title string, width, height float32) {
+const pi = 3.14159265358979323846264338327950288419716939937510582097494459
+
+func getimage(s string) (image.Image, error) {
+	i, err := os.Open(s)
+	if err != nil {
+		return nil, err
+	}
+	im, _, err := image.Decode(i)
+	if err != nil {
+		return nil, err
+	}
+	return im, nil
+}
+
+func ref(title string, width, height float32, showgrid bool) {
 	defer os.Exit(0)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 	var col1, col2, col3 float32 = 15, 50, 85
@@ -27,12 +44,20 @@ func ref(title string, width, height float32) {
 	shapecolor := color.RGBA{70, 130, 180, 150}
 	tcolor := titlecolor
 	quote := "If there is no struggle, there is no progress. Those who profess to favor freedom, and yet depreciate agitation, are men who want crops without plowing up the ground. They want rain without thunder and lightning. They want the ocean without the awful roar of its many waters."
+	desc := "A canvas API for Gio applications, using hight-level objects and a percentage-based coordinate system (https://github.com/ajstarks/giocanvas)"
+	logoimg, err := getimage("logo.png")
+	if err != nil {
+		io.WriteString(os.Stderr, "unable to open the logo file\n")
+		os.Exit(1)
+	}
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, e)
 			canvas.Background(bgcolor)
-			canvas.CText(50, top, titlesize, "Giocanvas API Reference", titlecolor)
+			canvas.Img(logoimg, col1, 94, 400, 400, 25)
+			canvas.Text(col1+3, top, titlesize, "Canvas API Reference", titlecolor)
+			canvas.TextWrap(col3-20, 95, headsize*0.4, 35, desc, subcolor)
 			canvas.CText(col1, subtop, headsize, "Text", subcolor)
 			canvas.CText(col2, subtop, headsize, "Graphics", subcolor)
 			canvas.CText(col3, subtop, headsize, "Transforms", subcolor)
@@ -108,7 +133,7 @@ func ref(title string, width, height float32) {
 			canvas.Circle(x1, y+5, dotsize, dotcolor)
 			canvas.Circle(x1+5, y, dotsize, dotcolor)
 
-			canvas.Arc(x2, y+5, 5, 0, math.Pi/2, shapecolor)
+			canvas.Arc(x2, y+5, 5, 0, pi/2, shapecolor)
 			canvas.Circle(x2, y+5, dotsize, dotcolor)
 			canvas.CText(x2, y-5, apisize, "Arc(x, y, radius, a1, a2, c color.RGBA)", apicolor)
 
@@ -128,14 +153,14 @@ func ref(title string, width, height float32) {
 			canvas.CText(col3, y-5, apisize, "Scale(x, y, factor float32) op.StackOp", apicolor)
 
 			y -= 15
-			stack = canvas.Shear(midx, y, math.Pi/4, 0)
+			stack = canvas.Shear(midx, y, pi/4, 0)
 			canvas.CenterRect(midx, y, rectw, recth, shapecolor)
 			canvas.TextMid(midx, y-ts2, ts, "shear", tcolor)
 			giocanvas.EndTransform(stack)
 			canvas.CText(col3, y-5, apisize, "Shear(x, y, ax, ay float32) op.StackOp", apicolor)
 
 			y -= 15
-			stack = canvas.Rotate(midx, y, math.Pi/6)
+			stack = canvas.Rotate(midx, y, pi/6)
 			canvas.CenterRect(midx, y, rectw, recth, shapecolor)
 			canvas.TextMid(midx, y-ts2, ts, "rotate", tcolor)
 			giocanvas.EndTransform(stack)
@@ -145,6 +170,18 @@ func ref(title string, width, height float32) {
 			canvas.Image("earth.jpg", midx, y+2, 1000, 1000, 15)
 			canvas.CText(midx, y-5, apisize, "Image(file string, x, y float32, w, h int, scale float32)", apicolor)
 			canvas.CText(midx, y-7, apisize, "Img(img image.Image, x, y float32, w, h int, scale float32)", apicolor)
+
+			// Grid
+			if showgrid {
+				gridcolor := color.RGBA{0, 0, 128, 40}
+				var gridsize float32 = 1.2
+				for x := float32(5); x <= 95; x += 5 {
+					v := strconv.FormatInt(int64(x), 10)
+					canvas.TextMid(x, 2, gridsize, v, gridcolor)
+					canvas.TextMid(2, x-0.75, gridsize, v, gridcolor)
+				}
+				canvas.Grid(0, 0, 100, 100, 0.1, 5, gridcolor)
+			}
 
 			e.Frame(canvas.Context.Ops)
 		case key.Event:
@@ -158,9 +195,11 @@ func ref(title string, width, height float32) {
 
 func main() {
 	var w, h int
+	var showgrid bool
 	flag.IntVar(&w, "width", 2400, "canvas width")
 	flag.IntVar(&h, "height", 1800, "canvas height")
+	flag.BoolVar(&showgrid, "grid", false, "show grid")
 	flag.Parse()
-	go ref("API Reference", float32(w), float32(h))
+	go ref("API Reference", float32(w), float32(h), showgrid)
 	app.Main()
 }
