@@ -380,20 +380,12 @@ func sin(v float32) float32 {
 	return float32(math.Sin(float64(v)))
 }
 
-func atan2(y, x float32) float32 {
-	return float32(math.Atan2(float64(y), float64(x)))
-}
-
 func f32Min(x, y float32) float32 {
 	return float32(math.Min(float64(x), float64(y)))
 }
 
 func f32Max(x, y float32) float32 {
 	return float32(math.Max(float64(x), float64(y)))
-}
-
-func f32mod(x, y float32) float32 {
-	return float32(math.Mod(float64(x), float64(y)))
 }
 
 // AbsTranslate moves current location by (x,y)

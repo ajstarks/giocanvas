@@ -59,6 +59,7 @@ func arc(title string, width, height float32) {
 				canvas.Circle(x, y, 5, bgcolor)
 				canvas.Circle(x, y, 0.5, centercolor)
 				canvas.Arc(x, y, 5, 0, angle, arcolor)
+				canvas.ArcLine(x, y, 5, 0, angle, 0.2, color.RGBA{128, 0, 0, 255})
 				canvas.CText(x, y-10, 1.8, fmt.Sprintf("%.1f°", degrees(angle)), black)
 				canvas.CText(x, y+8, 1.8, fmt.Sprintf("%.4f rad", angle), black)
 				angle -= pi / 4

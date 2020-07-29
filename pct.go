@@ -90,11 +90,26 @@ func (c *Canvas) Ellipse(x, y, w, h float32, fillcolor color.RGBA) {
 }
 
 // Arc makes a filled arc, using percentage-based measures
-// center is (x, y) the arc begins at angle a1, and ends at a2
+// center is (x, y) the arc begins at angle a1, and ends at a2, with radius r.
+// The arc is filled with the specified color.
 func (c *Canvas) Arc(x, y, r float32, a1, a2 float64, fillcolor color.RGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
 	pr := pct(r, c.Width)
 	c.AbsArc(x, y, pr, a1, a2, fillcolor)
+}
+
+// ArcLine makes a stroked arc, using percentage-based measures
+// center is (x, y), the arc begins at angle a1, and ends at a2, with radius r.
+// The arc is stroked with the specified stroke size and color
+func (c *Canvas) ArcLine(x, y, r float32, a1, a2 float64, size float32, fillcolor color.RGBA) {
+	step := (a2 - a1) / 100
+	x1, y1 := c.Polar(x, y, r, float32(a1))
+	for t := a1 + step; t <= a2; t += step {
+		x2, y2 := c.Polar(x, y, r, float32(t))
+		c.Line(x1, y1, x2, y2, size, fillcolor)
+		x1 = x2
+		y1 = y2
+	}
 }
 
 // Text methods
