@@ -269,7 +269,7 @@ func (c *Canvas) AbsArc(x, y, radius float32, start, end float64, fillcolor colo
 			angle = end
 		}
 		sins, coss := sine, cose
-		sine, cose = math.Sincos(-angle)
+		sine, cose = math.Sincos(angle)
 
 		// https://pomax.github.io/bezierinfo/#circles
 		div := 1.0 / (coss*sine - cose*sins)
