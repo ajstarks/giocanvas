@@ -24,7 +24,7 @@ func sunearth(s string, w, h int) {
 
 	for e := range win.Events() {
 		if e, ok := e.(system.FrameEvent); ok {
-			canvas := giocanvas.NewCanvas(width, height, e.Config, e.Queue, e.Size)
+			canvas := giocanvas.NewCanvas(width, height, e)
 
 			canvas.CenterRect(50, 50, 100, 100, black)
 			canvas.Circle(100, 0, sunsize, yellow)

@@ -18,7 +18,7 @@ func concentric(s string, w, h int) {
 	g := uint8(5)
 	for e := range win.Events() {
 		if e, ok := e.(system.FrameEvent); ok {
-			canvas := giocanvas.NewCanvas(width, height, e.Config, e.Queue, e.Size)
+			canvas := giocanvas.NewCanvas(width, height, e)
 			canvas.CenterRect(50, 50, 100, 100, color.RGBA{0, 0, 0, 255})
 			for i := 0; i < 6; i++ {
 				canvas.Circle(50, 50, r, color.RGBA{128, g, g, 255})

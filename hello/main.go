@@ -15,7 +15,7 @@ func hello(title string, w, h int) {
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 	for e := range win.Events() {
 		if e, ok := e.(system.FrameEvent); ok {
-			canvas := giocanvas.NewCanvas(width, height, e.Config, e.Queue, e.Size)
+			canvas := giocanvas.NewCanvas(width, height, e)
 			canvas.CenterRect(50, 50, 100, 100, color.RGBA{0, 0, 0, 255})
 			canvas.Circle(50, 0, 50, color.RGBA{0, 0, 255, 255})
 			canvas.TextMid(50, 20, 10, "hello, world", color.RGBA{255, 255, 255, 0})

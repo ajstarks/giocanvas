@@ -13,7 +13,6 @@ import (
 
 	"gioui.org/f32"
 	"gioui.org/font/gofont"
-	"gioui.org/io/event"
 	"gioui.org/io/system"
 	"gioui.org/layout"
 	"gioui.org/op"
@@ -32,14 +31,14 @@ type Canvas struct {
 }
 
 // NewCanvas initializes a Canvas
-func NewCanvas(width, height float32, cfg system.Config, q event.Queue, size image.Point) *Canvas {
+func NewCanvas(width, height float32, e system.FrameEvent) *Canvas {
 	canvas := new(Canvas)
 	canvas.Width = width
 	canvas.Height = height
 	canvas.TextColor = color.RGBA{0, 0, 0, 255}
-	size.X = int(width)
-	size.Y = int(height)
-	canvas.Context = layout.NewContext(new(op.Ops), q, cfg, size)
+	e.Size.X = int(width)
+	e.Size.Y = int(height)
+	canvas.Context = layout.NewContext(new(op.Ops), e)
 	return canvas
 }
 
@@ -277,7 +276,7 @@ func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string,
 		offset = x - c.Width/2
 	}
 	defer op.Push(c.Context.Ops).Pop()
-	op.TransformOp{}.Offset(f32.Point{X: offset, Y: y - size}).Add(c.Context.Ops) // shift to use baseline
+	op.Offset(f32.Point{X: offset, Y: y - size}).Add(c.Context.Ops) // shift to use baseline
 	l := material.Label(material.NewTheme(gofont.Collection()), unit.Px(size), s)
 	l.Color = fillcolor
 	l.Alignment = alignment

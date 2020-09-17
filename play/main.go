@@ -29,7 +29,7 @@ func play(appname string, w, h int, showgrid bool) {
 	win := app.NewWindow(title, size)
 	for e := range win.Events() {
 		if e, ok := e.(system.FrameEvent); ok {
-			canvas := giocanvas.NewCanvas(width, height, e.Config, e.Queue, e.Size)
+			canvas := giocanvas.NewCanvas(width, height, e)
 
 			// Title
 			canvas.Background(bgcolor)

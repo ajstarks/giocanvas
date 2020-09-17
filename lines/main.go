@@ -15,7 +15,9 @@ func linetest(title string, w, h int) {
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 	for e := range win.Events() {
 		if e, ok := e.(system.FrameEvent); ok {
-			canvas := giocanvas.NewCanvas(width, height, e.Config, e.Queue, e.Size)
+			// uncomment this to auto-resize
+			// width, height = float32(e.Size.X), float32(e.Size.Y)
+			canvas := giocanvas.NewCanvas(width, height, e)
 			var x, y, lw, ls float32
 			lw = 0.1
 			ls = 1
