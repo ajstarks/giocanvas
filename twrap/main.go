@@ -22,10 +22,10 @@ func twrap(title string, width, height float32) {
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 	var ts float32 = 2.8
 	subsize := ts * 0.6
-	gray := color.RGBA{100, 100, 100, 255}
-	red := color.RGBA{128, 0, 0, 255}
-	green := color.RGBA{0, 128, 0, 255}
-	blue := color.RGBA{0, 0, 128, 255}
+	gray := color.NRGBA{100, 100, 100, 255}
+	red := color.NRGBA{128, 0, 0, 255}
+	green := color.NRGBA{0, 128, 0, 255}
+	blue := color.NRGBA{0, 0, 128, 255}
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.FrameEvent:

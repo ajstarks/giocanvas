@@ -32,7 +32,7 @@ func rgb(title string, width, height float32) {
 			canvas := giocanvas.NewCanvas(width, height, e)
 
 			for _, c := range colortab {
-				canvas.EText(x-10, y, 3, c, color.RGBA{0, 0, 0, 255})
+				canvas.EText(x-10, y, 3, c, color.NRGBA{0, 0, 0, 255})
 				canvas.Circle(x, y, 4, giocanvas.ColorLookup(c))
 				y -= 10
 			}

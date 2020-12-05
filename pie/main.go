@@ -37,15 +37,18 @@ func piechart(canvas *giocanvas.Canvas, x, y, r float32, data []piedata) {
 	ts := r / 10
 	for _, d := range data {
 		color := giocanvas.ColorLookup(d.color)
-		pct := (d.value / sum)
-		a2 := (fullcircle * pct) + a1
+		p := (d.value / sum)
+		angle := p * fullcircle
+		a2 := a1 + angle
 		mid := fullcircle - (a1 + (a2-a1)/2)
 		canvas.Arc(x, y, r, a1, a2, color)
+		fmt.Fprintf(os.Stderr, "p=%.2f a1=%.2f a2=%.2f\n", p, a1, a2)
 		tx, ty := canvas.Polar(x, y, labelr, float32(mid))
 		lx, ly := canvas.Polar(x, y, labelr-ts, float32(mid))
-		canvas.CText(tx, ty, ts, fmt.Sprintf("%s (%.2f%%)", d.name, pct*100), color)
+		canvas.CText(tx, ty, ts, fmt.Sprintf("%s (%.2f%%)", d.name, p*100), color)
 		canvas.Line(x, y, lx, ly, 0.1, color)
 		a1 = a2
+
 	}
 }
 
@@ -65,8 +68,8 @@ func pie(title string, width, height float32) {
 		switch e := e.(type) {
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, e)
-			canvas.CText(50, 92, 4, "Browser Market Share, 2020-06", color.RGBA{20, 20, 20, 255})
-			canvas.CText(50, 5, 2, "Source: Statcounter Global Stats, July 2020", color.RGBA{100, 100, 100, 255})
+			canvas.CText(50, 92, 4, "Browser Market Share, 2020-06", color.NRGBA{20, 20, 20, 255})
+			canvas.CText(50, 5, 2, "Source: Statcounter Global Stats, July 2020", color.NRGBA{100, 100, 100, 255})
 			piechart(canvas, 50, 50, 25, data)
 			e.Frame(canvas.Context.Ops)
 		case key.Event:

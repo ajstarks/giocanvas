@@ -24,7 +24,7 @@ type NameValue struct {
 type ChartBox struct {
 	Title                    string
 	Data                     []NameValue
-	Color                    color.RGBA
+	Color                    color.NRGBA
 	Top, Bottom, Left, Right float64
 	Minvalue, Maxvalue       float64
 	Zerobased                bool
@@ -36,7 +36,7 @@ const (
 	fullcircle = 3.14159265358979323846264338327950288419716939937510582097494459 * 2
 )
 
-var labelcolor = color.RGBA{100, 100, 100, 255}
+var labelcolor = color.NRGBA{100, 100, 100, 255}
 
 // DataRead reads tab separated values into a ChartBox
 // default values for the top, bottom, left, right (90,50,10,90) are filled in
@@ -86,7 +86,7 @@ func DataRead(r io.Reader) (ChartBox, error) {
 		Data:      data,
 		Minvalue:  minval,
 		Maxvalue:  maxval,
-		Color:     color.RGBA{0, 0, 0, 255},
+		Color:     color.NRGBA{0, 0, 0, 255},
 		Left:      10,
 		Right:     90,
 		Top:       90,
@@ -199,7 +199,7 @@ func (c *ChartBox) Pie(canvas *gc.Canvas, r float64) {
 }
 
 // dotgrid makes a grid 10x10 grid of dots colored by value
-func dotgrid(canvas *gc.Canvas, x, y, left, step float32, n int, fillcolor color.RGBA) (float32, float32) {
+func dotgrid(canvas *gc.Canvas, x, y, left, step float32, n int, fillcolor color.NRGBA) (float32, float32) {
 	edge := (((step * 0.3) + step) * 7) + left
 	for i := 0; i < n; i++ {
 		if x > edge {
@@ -264,7 +264,7 @@ func (c *ChartBox) Scatter(canvas *gc.Canvas, size float64) {
 }
 
 // Grid makes a grid
-func Grid(canvas *gc.Canvas, left, bottom, width, height, size float64, color color.RGBA) {
+func Grid(canvas *gc.Canvas, left, bottom, width, height, size float64, color color.NRGBA) {
 	for x := float32(left); x <= float32(left+width); x += float32(size) {
 		canvas.Line(x, float32(bottom), x, float32(bottom+height), 0.1, color)
 	}
@@ -280,7 +280,7 @@ func (c *ChartBox) YAxis(canvas *gc.Canvas, size, min, max, step float64, format
 	for v := min; v <= max; v += step {
 		y := float32(gc.MapRange(v, ymin, c.Maxvalue, c.Bottom, c.Top))
 		if gridlines {
-			canvas.Line(float32(c.Left), y, float32(c.Left+w), y, 0.05, color.RGBA{128, 128, 128, 255})
+			canvas.Line(float32(c.Left), y, float32(c.Left+w), y, 0.05, color.NRGBA{128, 128, 128, 255})
 		}
 		canvas.EText(float32(c.Left-2), (y - float32(size/3)), float32(size), fmt.Sprintf(format, v), c.Color)
 	}

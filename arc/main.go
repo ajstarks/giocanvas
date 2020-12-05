@@ -7,8 +7,12 @@ import (
 	"os"
 
 	"gioui.org/app"
+	"gioui.org/f32"
 	"gioui.org/io/key"
 	"gioui.org/io/system"
+	"gioui.org/op"
+	"gioui.org/op/clip"
+	"gioui.org/op/paint"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -23,6 +27,19 @@ func degrees(radians float64) float64 {
 	return radians * (180 / pi)
 }
 
+func absarc(c *giocanvas.Canvas, x, y, x1, y1, x2, y2, angle float32, fillcolor color.NRGBA) {
+	p := new(clip.Path)
+	ops := c.Context.Ops
+	//r := f32.Rect(0, 0, c.Width, c.Height)
+	defer op.Push(c.Context.Ops).Pop()
+	p.Begin(ops)
+	p.Move(f32.Pt(x, y))
+	p.Arc(f32.Pt(x1, y1), f32.Pt(x2, y2), angle)
+	p.Outline().Add(ops)
+	paint.ColorOp{Color: fillcolor}.Add(ops)
+	paint.PaintOp{}.Add(ops)
+}
+
 func arc(title string, width, height float32) {
 	defer os.Exit(0)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
@@ -32,15 +49,21 @@ func arc(title string, width, height float32) {
 	ts := width * .01800
 	radius := width / 20
 	dotsize := width * 0.005
-	bgcolor := color.RGBA{0, 0, 0, 50}
-	arcolor := color.RGBA{0, 0, 128, 100}
-	centercolor := color.RGBA{128, 128, 128, 128}
-	black := color.RGBA{0, 0, 0, 255}
+	bgcolor := color.NRGBA{0, 0, 0, 50}
+	arcolor := color.NRGBA{0, 0, 128, 100}
+	centercolor := color.NRGBA{128, 128, 128, 128}
+	black := color.NRGBA{0, 0, 0, 255}
 
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, e)
+			//absarc(canvas, 250, 500, 100, 0, 50, 20, math.Pi, black)
+			//absarc(canvas, 255, 500, 195, 0, math.Pi, color.NRGBA{255, 255, 255, 255})
+
+			//canvas.Arc(50, 50, 50, radians(0), radians(180), centercolor)
+			//canvas.CText(50, 30, 3, "giocanvas", black)
+			//canvas.CText(50, 70, 3, "Arc", centercolor)
 			angle := 45.0 // Pi / 4
 			y = height * 0.2
 			canvas.CText(50, 50, 10, "Arcs", black)
@@ -59,7 +82,7 @@ func arc(title string, width, height float32) {
 				canvas.Circle(x, y, 5, bgcolor)
 				canvas.Circle(x, y, 0.5, centercolor)
 				canvas.Arc(x, y, 5, 0, angle, arcolor)
-				canvas.ArcLine(x, y, 5, 0, angle, 0.2, color.RGBA{128, 0, 0, 255})
+				canvas.ArcLine(x, y, 5, 0, angle, 0.2, color.NRGBA{128, 0, 0, 255})
 				canvas.CText(x, y-10, 1.8, fmt.Sprintf("%.1f°", degrees(angle)), black)
 				canvas.CText(x, y+8, 1.8, fmt.Sprintf("%.4f rad", angle), black)
 				angle -= pi / 4

@@ -19,7 +19,7 @@ type pdata struct {
 	fill  string
 }
 
-func wdata(canvas *giocanvas.Canvas, x, y, left, step float32, n int, fillcolor color.RGBA) (float32, float32) {
+func wdata(canvas *giocanvas.Canvas, x, y, left, step float32, n int, fillcolor color.NRGBA) (float32, float32) {
 	edge := (((step * 0.3) + step) * 7) + left
 	for i := 0; i < n; i++ {
 		if x > edge {
@@ -52,7 +52,7 @@ func waffle(canvas *giocanvas.Canvas, data []pdata, left, top, step float32) {
 	}
 }
 
-func grid(canvas *giocanvas.Canvas, x, y, step float32, bcolor, dcolor color.RGBA) {
+func grid(canvas *giocanvas.Canvas, x, y, step float32, bcolor, dcolor color.NRGBA) {
 	sx := x
 	for r := 0; r < 10; r++ {
 		x = sx

@@ -32,10 +32,10 @@ func play(appname string, width, height float32, showgrid bool) {
 	defer os.Exit(0)
 	size := app.Size(unit.Px(width), unit.Px(height))
 	title := app.Title(appname)
-	tcolor := color.RGBA{128, 0, 0, 100}
-	fcolor := color.RGBA{0, 0, 128, 100}
-	bgcolor := color.RGBA{255, 255, 255, 255}
-	labelcolor := color.RGBA{50, 50, 50, 255}
+	tcolor := color.NRGBA{128, 0, 0, 150}
+	fcolor := color.NRGBA{0, 0, 128, 150}
+	bgcolor := color.NRGBA{255, 255, 255, 255}
+	labelcolor := color.NRGBA{50, 50, 50, 255}
 
 	var colx float32
 	var lw float32 = 0.2
@@ -133,11 +133,11 @@ func play(appname string, width, height float32, showgrid bool) {
 			// Image
 			canvas.TextMid(colx, 30, labelsize, "Image", labelcolor)
 			canvas.Image("earth.jpg", colx, 15, int(width*.15), int(width*.15), 100)
-			canvas.Coord(colx, 15, subsize, "", color.RGBA{255, 255, 255, 255})
+			canvas.Coord(colx, 15, subsize, "", color.NRGBA{255, 255, 255, 255})
 
 			// Grid
 			if showgrid {
-				gridcolor := color.RGBA{0, 0, 128, 50}
+				gridcolor := color.NRGBA{0, 0, 128, 50}
 				var gridsize float32 = 1.2
 				for x := float32(5); x <= 95; x += 5 {
 					v := fmt.Sprintf("%v", x)

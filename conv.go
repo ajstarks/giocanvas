@@ -39,13 +39,13 @@ func (c *Canvas) Polar(cx, cy, r, theta float32) (float32, float32) {
 }
 
 // Background makes a filled rectangle covering the whole canvas
-func (c *Canvas) Background(fillcolor color.RGBA) {
+func (c *Canvas) Background(fillcolor color.NRGBA) {
 	c.AbsRect(0, 0, c.Width, c.Height, fillcolor)
 }
 
 // Coord shows the specified coordinate, using percentage-based coordinates
 // the (x, y) label is above the point, with a label below
-func (c *Canvas) Coord(x, y, size float32, s string, fillcolor color.RGBA) {
+func (c *Canvas) Coord(x, y, size float32, s string, fillcolor color.NRGBA) {
 	c.Square(x, y, size/2, fillcolor)
 	b := []byte("(")
 	b = strconv.AppendFloat(b, float64(x), 'g', -1, 32)
@@ -59,7 +59,7 @@ func (c *Canvas) Coord(x, y, size float32, s string, fillcolor color.RGBA) {
 }
 
 // Grid makes vertical and horizontal grid lines, percentage-based coordinates
-func (c *Canvas) Grid(x, y, w, h, size, interval float32, linecolor color.RGBA) {
+func (c *Canvas) Grid(x, y, w, h, size, interval float32, linecolor color.NRGBA) {
 	for xp := x; xp <= x+w; xp += interval {
 		c.Line(xp, y, xp, y+h, size, linecolor) // vertical line
 	}

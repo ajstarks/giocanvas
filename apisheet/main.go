@@ -41,7 +41,7 @@ func ref(title string, width, height float32, showgrid bool) {
 	dotcolor := giocanvas.ColorLookup("rgb(100,100,100,180)")
 	bgcolor := giocanvas.ColorLookup("rgb(250,250,250)")
 	apicolor := giocanvas.ColorLookup("rgb(75,75,75)")
-	shapecolor := color.RGBA{70, 130, 180, 150}
+	shapecolor := color.NRGBA{70, 130, 180, 150}
 	tcolor := titlecolor
 	quote := "If there is no struggle, there is no progress. Those who profess to favor freedom, and yet depreciate agitation, are men who want crops without plowing up the ground. They want rain without thunder and lightning. They want the ocean without the awful roar of its many waters."
 	desc := "A canvas API for Gio applications, using hight-level objects and a percentage-based coordinate system (https://github.com/ajstarks/giocanvas)"
@@ -67,22 +67,22 @@ func ref(title string, width, height float32, showgrid bool) {
 			y := subtop - 10
 			canvas.Text(col1, y, headsize, "hello", tcolor)
 			canvas.Circle(col1, y, dotsize, dotcolor)
-			canvas.CText(col1, y-5, apisize, "Text(x, y, size float32, s string, c color.RGBA)", apicolor)
+			canvas.CText(col1, y-5, apisize, "Text(x, y, size float32, s string, c color.NRGBA)", apicolor)
 
 			y -= 15
 			canvas.EText(col1, y, headsize, "hello", tcolor)
 			canvas.Circle(col1, y, dotsize, dotcolor)
-			canvas.CText(col1, y-5, apisize, "EText(x, y, size float32, s string, c color.RGBA)", apicolor)
+			canvas.CText(col1, y-5, apisize, "EText(x, y, size float32, s string, c color.NRGBA)", apicolor)
 
 			y -= 15
 			canvas.CText(col1, y, headsize, "hello", tcolor)
 			canvas.Circle(col1, y, dotsize, dotcolor)
-			canvas.CText(col1, y-5, apisize, "CText(x, y, size float32, s string, c color.RGBA)", apicolor)
+			canvas.CText(col1, y-5, apisize, "CText(x, y, size float32, s string, c color.NRGBA)", apicolor)
 
 			y -= 15
 			canvas.TextWrap(col1-10, y, headsize*0.4, 18, quote, tcolor)
 			canvas.Circle(col1-10, y, dotsize, dotcolor)
-			canvas.CText(col1, y-20, apisize, "TextWrap(x, y, size, width float32, s string, c color.RGBA)", apicolor)
+			canvas.CText(col1, y-20, apisize, "TextWrap(x, y, size, width float32, s string, c color.NRGBA)", apicolor)
 
 			// graphics
 			x1 := col2 - 10
@@ -92,33 +92,33 @@ func ref(title string, width, height float32, showgrid bool) {
 			canvas.Line(x1, y, x2, y, 0.2, shapecolor)
 			canvas.Circle(x1, y, dotsize, dotcolor)
 			canvas.Circle(x2, y, dotsize, dotcolor)
-			canvas.CText(col2, y-5, apisize, "Line(x1, y1, x2, y2, width float32, c color.RGBA)", apicolor)
+			canvas.CText(col2, y-5, apisize, "Line(x1, y1, x2, y2, width float32, c color.NRGBA)", apicolor)
 
 			y -= 15
 			canvas.Circle(x1, y, 2.5, shapecolor)
 			canvas.Ellipse(x2, y, 5, 2.5, shapecolor)
-			canvas.CText(x1, y-5, apisize, "Circle(x, y, size float32, c color.RGBA)", apicolor)
-			canvas.CText(x2, y-5, apisize, "Ellipse(x, y, w, h float32, c color.RGBA)", apicolor)
+			canvas.CText(x1, y-5, apisize, "Circle(x, y, size float32, c color.NRGBA)", apicolor)
+			canvas.CText(x2, y-5, apisize, "Ellipse(x, y, w, h float32, c color.NRGBA)", apicolor)
 			canvas.Circle(x1, y, dotsize, dotcolor)
 			canvas.Circle(x2, y, dotsize, dotcolor)
 
 			y -= 15
 			canvas.Square(x1, y, 5, shapecolor)
 			canvas.Rect(x2, y, 10, 5, shapecolor)
-			canvas.CText(x1, y-5, apisize, "Square(x, y, size float32, c color.RGBA)", apicolor)
-			canvas.CText(x2, y-5, apisize, "Rect(x, y, w, h float32, c color.RGBA)", apicolor)
+			canvas.CText(x1, y-5, apisize, "Square(x, y, size float32, c color.NRGBA)", apicolor)
+			canvas.CText(x2, y-5, apisize, "Rect(x, y, w, h float32, c color.NRGBA)", apicolor)
 			canvas.Circle(x1, y, dotsize, dotcolor)
 			canvas.Circle(x2, y, dotsize, dotcolor)
 
 			y -= 15
 			canvas.Curve(x1-5, y, x1-5, y+7, col2-5, y, shapecolor)
-			canvas.CText(x1, y-5, apisize, "QuadCurve(x, y, cx, cy, ex, ey float32, c color.RGBA)", apicolor)
+			canvas.CText(x1, y-5, apisize, "QuadCurve(x, y, cx, cy, ex, ey float32, c color.NRGBA)", apicolor)
 			canvas.Circle(x1-5, y, dotsize, dotcolor)
 			canvas.Circle(x1-5, y+7, dotsize, dotcolor)
 			canvas.Circle(col2-5, y, dotsize, dotcolor)
 
 			canvas.CubeCurve(col2+5, y, x2, y+5, col2+15, y+7, x2+5, y, shapecolor)
-			canvas.CText(x2+5, y-5, apisize, "CubeCurve(x, y, cx1, cy1, cx2, cy2, ex, ey float32, c color.RGBA)", apicolor)
+			canvas.CText(x2+5, y-5, apisize, "CubeCurve(x, y, cx1, cy1, cx2, cy2, ex, ey float32, c color.NRGBA)", apicolor)
 			canvas.Circle(col2+5, y, dotsize, dotcolor)
 			canvas.Circle(x2, y+5, dotsize, dotcolor)
 			canvas.Circle(col2+15, y+7, dotsize, dotcolor)
@@ -128,14 +128,14 @@ func ref(title string, width, height float32, showgrid bool) {
 			px := []float32{x1 - 5, x1, x1 + 5}
 			py := []float32{y, y + 5, y}
 			canvas.Polygon(px, py, shapecolor)
-			canvas.CText(x1, y-5, apisize, "Polygon(x, y []float32, c color.RGBA)", apicolor)
+			canvas.CText(x1, y-5, apisize, "Polygon(x, y []float32, c color.NRGBA)", apicolor)
 			canvas.Circle(x1-5, y, dotsize, dotcolor)
 			canvas.Circle(x1, y+5, dotsize, dotcolor)
 			canvas.Circle(x1+5, y, dotsize, dotcolor)
 
 			canvas.Arc(x2, y+5, 5, 0, pi/2, shapecolor)
 			canvas.Circle(x2, y+5, dotsize, dotcolor)
-			canvas.CText(x2, y-5, apisize, "Arc(x, y, radius, a1, a2, c color.RGBA)", apicolor)
+			canvas.CText(x2, y-5, apisize, "Arc(x, y, radius, a1, a2, c color.NRGBA)", apicolor)
 
 			// Transforms
 			var rectw, recth, ts, ts2 float32
@@ -173,7 +173,7 @@ func ref(title string, width, height float32, showgrid bool) {
 
 			// Grid
 			if showgrid {
-				gridcolor := color.RGBA{0, 0, 128, 40}
+				gridcolor := color.NRGBA{0, 0, 128, 40}
 				var gridsize float32 = 1.2
 				for x := float32(5); x <= 95; x += 5 {
 					v := strconv.FormatInt(int64(x), 10)

@@ -14,7 +14,7 @@ import (
 	gc "github.com/ajstarks/giocanvas"
 )
 
-func flower(canvas *gc.Canvas, x, y, w, h float32, fill color.RGBA) {
+func flower(canvas *gc.Canvas, x, y, w, h float32, fill color.NRGBA) {
 	var a float32
 	for a = 0; a < math.Pi*2; a += math.Pi / 9 {
 		stack := canvas.Rotate(x, y, a)
@@ -26,9 +26,9 @@ func flower(canvas *gc.Canvas, x, y, w, h float32, fill color.RGBA) {
 func work(title string, width, height float32) {
 	defer os.Exit(0)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
-	red := color.RGBA{128, 0, 0, 100}
-	blue := color.RGBA{0, 0, 128, 100}
-	green := color.RGBA{0, 128, 0, 100}
+	red := color.NRGBA{128, 0, 0, 100}
+	blue := color.NRGBA{0, 0, 128, 100}
+	green := color.NRGBA{0, 128, 0, 100}
 	orange := gc.ColorLookup("orange")
 	bgcolor := gc.ColorLookup("linen")
 

@@ -16,9 +16,9 @@ func sunearth(s string, width, height float32) {
 	defer os.Exit(0)
 	win := app.NewWindow(app.Title(s), app.Size(unit.Px(width), unit.Px(height)))
 
-	yellow := color.RGBA{255, 248, 231, 255}
-	blue := color.RGBA{44, 77, 232, 255}
-	black := color.RGBA{0, 0, 0, 255}
+	yellow := color.NRGBA{255, 248, 231, 255}
+	blue := color.NRGBA{44, 77, 232, 255}
+	black := color.NRGBA{0, 0, 0, 255}
 
 	var earthsize float32 = 0.8
 	sunsize := earthsize * 109

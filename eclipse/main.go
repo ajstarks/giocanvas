@@ -17,8 +17,8 @@ func eclipse(s string, width, height float32) {
 	defer os.Exit(0)
 	size := app.Size(unit.Px(width), unit.Px(height))
 	title := app.Title(s)
-	black := color.RGBA{0, 0, 0, 255}
-	white := color.RGBA{255, 255, 255, 255}
+	black := color.NRGBA{0, 0, 0, 255}
+	white := color.NRGBA{255, 255, 255, 255}
 
 	win := app.NewWindow(title, size)
 	for e := range win.Events() {

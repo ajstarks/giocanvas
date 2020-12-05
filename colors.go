@@ -7,7 +7,7 @@ import (
 )
 
 // colornames maps SVG color names to RGB triples.
-var colornames = map[string]color.RGBA{
+var colornames = map[string]color.NRGBA{
 	"aliceblue":            {240, 248, 255, 255},
 	"antiquewhite":         {250, 235, 215, 255},
 	"aqua":                 {0, 255, 255, 255},
@@ -169,12 +169,12 @@ func cc(s string) uint8 {
 // ColorLookup returns a color.RGBA corresponding to the named color or
 // "rgb(r)", "rgb(r,b)", "rgb(r,g,b), "rgb(r,g,b,a)" string.
 // On error, return black.
-func ColorLookup(s string) color.RGBA {
+func ColorLookup(s string) color.NRGBA {
 	c, ok := colornames[s]
 	if ok {
 		return c
 	}
-	black := color.RGBA{0, 0, 0, 255}
+	black := color.NRGBA{0, 0, 0, 255}
 	if strings.HasPrefix(s, "rgb(") && strings.HasSuffix(s, ")") && len(s) > 5 {
 		c.R, c.G, c.B, c.A = 0, 0, 0, 255
 		v := strings.Split(s[4:len(s)-1], ",")

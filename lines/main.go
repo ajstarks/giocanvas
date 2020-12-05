@@ -24,19 +24,19 @@ func linetest(title string, width, height float32) {
 			lw = 0.1
 			ls = 1
 			for y = 5; y <= 95; y += 5 {
-				canvas.Line(50, 50, 95, y, lw, color.RGBA{128, 0, 0, 128})
-				canvas.Line(50, 50, 5, y, lw, color.RGBA{0, 0, 128, 128})
-				canvas.Coord(95, y, ls, "", color.RGBA{0, 0, 0, 255})
-				canvas.Coord(5, y, ls, "", color.RGBA{0, 0, 0, 255})
+				canvas.Line(50, 50, 95, y, lw, color.NRGBA{128, 0, 0, 128})
+				canvas.Line(50, 50, 5, y, lw, color.NRGBA{0, 0, 128, 128})
+				canvas.Coord(95, y, ls, "", color.NRGBA{0, 0, 0, 255})
+				canvas.Coord(5, y, ls, "", color.NRGBA{0, 0, 0, 255})
 				lw += 0.1
 			}
 
 			lw = 0.1
 			for x = 5; x <= 95; x += 5 {
-				canvas.Line(50, 50, x, 95, lw, color.RGBA{0, 128, 0, 128})
-				canvas.Line(50, 50, x, 5, lw, color.RGBA{0, 0, 0, 128})
-				canvas.Coord(x, 95, ls, "", color.RGBA{0, 0, 0, 255})
-				canvas.Coord(x, 5, ls, "", color.RGBA{0, 0, 0, 255})
+				canvas.Line(50, 50, x, 95, lw, color.NRGBA{0, 128, 0, 128})
+				canvas.Line(50, 50, x, 5, lw, color.NRGBA{0, 0, 0, 128})
+				canvas.Coord(x, 95, ls, "", color.NRGBA{0, 0, 0, 255})
+				canvas.Coord(x, 5, ls, "", color.NRGBA{0, 0, 0, 255})
 				lw += 0.1
 			}
 

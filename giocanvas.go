@@ -12,7 +12,7 @@ import (
 // Canvas defines the Gio canvas
 type Canvas struct {
 	Width, Height float32
-	TextColor     color.RGBA
+	TextColor     color.NRGBA
 	Context       layout.Context
 }
 
@@ -21,7 +21,7 @@ func NewCanvas(width, height float32, e system.FrameEvent) *Canvas {
 	canvas := new(Canvas)
 	canvas.Width = width
 	canvas.Height = height
-	canvas.TextColor = color.RGBA{0, 0, 0, 255}
+	canvas.TextColor = color.NRGBA{0, 0, 0, 255}
 	canvas.Context = layout.NewContext(new(op.Ops), e)
 	iw, ih := int(width), int(height)
 	canvas.Context.Constraints.Min.X = iw

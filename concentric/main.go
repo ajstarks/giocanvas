@@ -24,7 +24,7 @@ func concentric(s string, width, height float32) {
 			canvas.Background(gc.ColorLookup("white"))
 			var r float32 = 50
 			for g := uint8(0); g < 250; g += 50 {
-				canvas.Circle(50, 50, r, color.RGBA{g, g, g, 255})
+				canvas.Circle(50, 50, r, color.NRGBA{g, g, g, 255})
 				r -= 10
 			}
 			e.Frame(canvas.Context.Ops)
