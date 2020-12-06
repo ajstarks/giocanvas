@@ -55,7 +55,7 @@ func ref(title string, width, height float32, showgrid bool) {
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, e)
 			canvas.Background(bgcolor)
-			canvas.Img(logoimg, col1, 94, 400, 400, 25)
+			canvas.Img(logoimg, col1, 94, 400, 400, 20)
 			canvas.Text(col1+3, top, titlesize, "Canvas API Reference", titlecolor)
 			canvas.TextWrap(col3-20, 95, headsize*0.4, 35, desc, subcolor)
 			canvas.CText(col1, subtop, headsize, "Text", subcolor)
@@ -167,7 +167,7 @@ func ref(title string, width, height float32, showgrid bool) {
 			canvas.CText(col3, y-5, apisize, "Rotate(x, y, angle float32) op.StackOp", apicolor)
 
 			y -= 30
-			canvas.Image("earth.jpg", midx, y+2, 1000, 1000, 15)
+			canvas.Image("earth.jpg", midx, y+2, 1000, 1000, 10)
 			canvas.CText(midx, y-5, apisize, "Image(file string, x, y float32, w, h int, scale float32)", apicolor)
 			canvas.CText(midx, y-7, apisize, "Img(img image.Image, x, y float32, w, h int, scale float32)", apicolor)
 
@@ -196,8 +196,8 @@ func ref(title string, width, height float32, showgrid bool) {
 func main() {
 	var w, h int
 	var showgrid bool
-	flag.IntVar(&w, "width", 2400, "canvas width")
-	flag.IntVar(&h, "height", 1800, "canvas height")
+	flag.IntVar(&w, "width", 1600, "canvas width")
+	flag.IntVar(&h, "height", 1000, "canvas height")
 	flag.BoolVar(&showgrid, "grid", false, "show grid")
 	flag.Parse()
 	go ref("API Reference", float32(w), float32(h), showgrid)
