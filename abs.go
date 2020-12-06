@@ -132,11 +132,14 @@ func (c *Canvas) AbsImg(im image.Image, x, y float32, w, h int, scale float32) {
 	// center the image
 	x = x - (imw / 2)
 	y = y - (imh / 2)
-	ops := c.Context.Ops
 
+	ops := c.Context.Ops
+	stack := op.Push(ops)
+	op.Offset(f32.Pt(x, y)).Add(ops)
+	op.Affine(f32.Affine2D{}.Scale(f32.Pt(0, 0), f32.Pt(sc, sc))).Add(ops)
 	paint.NewImageOp(im).Add(ops)
-	op.Affine(f32.Affine2D{}.Scale(f32.Pt(0, 0), f32.Pt(0.5, 0.5)))
 	paint.PaintOp{}.Add(ops)
+	stack.Pop()
 }
 
 // AbsPolygon makes a closed, filled polygon with vertices in x and y

@@ -132,7 +132,7 @@ func play(appname string, width, height float32, showgrid bool) {
 
 			// Image
 			canvas.TextMid(colx, 30, labelsize, "Image", labelcolor)
-			canvas.Image("earth.jpg", colx, 15, int(width*.15), int(width*.15), 100)
+			canvas.Image("earth.jpg", colx, 15, 1000, 1000, 15)
 			canvas.Coord(colx, 15, subsize, "", color.NRGBA{255, 255, 255, 255})
 
 			// Grid
