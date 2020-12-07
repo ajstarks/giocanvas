@@ -11,7 +11,6 @@ import (
 
 	"gioui.org/f32"
 	"gioui.org/font/gofont"
-	"gioui.org/layout"
 	"gioui.org/op"
 	"gioui.org/op/clip"
 	"gioui.org/op/paint"
@@ -168,7 +167,14 @@ func (c *Canvas) AbsPolygon(x, y []float32, fillcolor color.NRGBA) {
 
 // AbsLine makes a line from (x0,y0) to (x1, y1) using absolute coordinates
 func (c *Canvas) AbsLine(x0, y0, x1, y1, size float32, fillcolor color.NRGBA) {
-	lv{f32.Point{X: x0, Y: y0}, f32.Point{X: x1, Y: y1}}.stroke(fillcolor, size, &c.Context)
+	path := new(clip.Path)
+	ops := c.Context.Ops
+	defer op.Push(c.Context.Ops).Pop()
+	path.Begin(ops)
+	path.MoveTo(f32.Point{X: x0, Y: y0})
+	path.LineTo(f32.Point{X: x1, Y: y1})
+	path.Stroke(size, clip.StrokeStyle{Cap: clip.RoundCap, Join: clip.BevelJoin}).Add(ops)
+	paint.Fill(ops, fillcolor)
 }
 
 // AbsQuadBezier makes a quadratic curve
@@ -280,111 +286,6 @@ func (c *Canvas) AbsArc(x, y, radius float32, start, end float64, fillcolor colo
 	path.Outline().Add(ops)
 	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{}.Add(ops)
-}
-
-// Line implementation from github.com/wrnrlr/shape
-
-type lv []f32.Point
-
-const (
-	rad45  = float32(45 * math.Pi / 180)
-	rad135 = float32(135 * math.Pi / 180)
-	rad315 = float32(315 * math.Pi / 180)
-	rad225 = float32(225 * math.Pi / 180)
-	rad90  = float32(90 * math.Pi / 180)
-	rad180 = float32(180 * math.Pi / 180)
-)
-
-func (l lv) stroke(c color.NRGBA, width float32, gtx *layout.Context) (box f32.Rectangle) {
-	if len(l) < 2 {
-		return box
-	}
-	defer op.Push(gtx.Ops).Pop()
-	paint.ColorOp{Color: c}.Add(gtx.Ops)
-	var path clip.Path
-	path.Begin(gtx.Ops)
-	distance := width
-	var offsetPoints []f32.Point
-	var tilt float32
-	var prevDelta f32.Point
-	for i, point := range l {
-		if i == 0 {
-			nextPoint := l[i+1]
-			tilt = angle(point, nextPoint) + rad225
-		} else if i == len(l)-1 {
-			prevPoint := l[i-1]
-			tilt = angle(prevPoint, point) + rad315
-		}
-		point = offsetPoint(point, distance, tilt)
-		offsetPoints = append(offsetPoints, point)
-		newPoint := point.Sub(prevDelta)
-		prevDelta = point
-		if i == 0 {
-			path.Move(newPoint)
-		} else {
-			path.Line(newPoint)
-		}
-	}
-	for i := len(l) - 1; i >= 0; i-- {
-		point := l[i]
-		if i == 0 {
-			nextPoint := l[i+1]
-			tilt = angle(point, nextPoint) + rad135
-		} else if i == len(l)-1 {
-			prevPoint := l[i-1]
-			tilt = angle(prevPoint, point) + rad45
-		}
-		point = offsetPoint(point, distance, tilt)
-		offsetPoints = append(offsetPoints, point)
-		newPoint := point.Sub(prevDelta)
-		prevDelta = point
-		path.Line(newPoint)
-	}
-	point := l[0]
-	nextPoint := l[1]
-	tilt = angle(point, nextPoint) + rad225
-
-	point = offsetPoint(point, distance, tilt)
-	offsetPoints = append(offsetPoints, point)
-	point = point.Sub(prevDelta)
-	path.Line(point)
-
-	for _, p := range offsetPoints {
-		box.Min.X = f32Min(box.Min.X, p.X)
-		box.Min.Y = f32Min(box.Min.Y, p.Y)
-		box.Max.X = f32Max(box.Max.X, p.X)
-		box.Max.Y = f32Max(box.Max.Y, p.Y)
-	}
-
-	path.Outline().Add(gtx.Ops)
-	paint.PaintOp{}.Add(gtx.Ops)
-	return box
-}
-
-func angle(p1, p2 f32.Point) float32 {
-	return float32(math.Atan2(float64(p2.Y-p1.Y), float64(p2.X-p1.X)))
-}
-
-func offsetPoint(point f32.Point, distance, angle float32) f32.Point {
-	x := point.X + distance*cos(angle)
-	y := point.Y + distance*sin(angle)
-	return f32.Point{X: x, Y: y}
-}
-
-func cos(v float32) float32 {
-	return float32(math.Cos(float64(v)))
-}
-
-func sin(v float32) float32 {
-	return float32(math.Sin(float64(v)))
-}
-
-func f32Min(x, y float32) float32 {
-	return float32(math.Min(float64(x), float64(y)))
-}
-
-func f32Max(x, y float32) float32 {
-	return float32(math.Max(float64(x), float64(y)))
 }
 
 // AbsTranslate moves current location by (x,y)
