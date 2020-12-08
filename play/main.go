@@ -45,11 +45,11 @@ func play(appname string, width, height float32, showgrid bool) {
 	subtitle := `A canvas API for Gio applications using high-level objects and a percentage-based coordinate system (https://github.com/ajstarks/giocanvas)`
 	logoimg := getImage("logo.png")
 	win := app.NewWindow(title, size)
+	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	const pi = 3.14159265
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, e)
 
 			// Title
 			canvas.Background(bgcolor)

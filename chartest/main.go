@@ -84,19 +84,19 @@ func xaxis(canvas *gc.Canvas, x, y, width, height float32, interval int, data []
 	for i, d := range data {
 		xp := float32(gc.MapRange(float64(i), 0, float64(len(data)-1), float64(x), float64(width)))
 		if interval > 0 && i%interval == 0 {
-			canvas.TextMid(xp, y-3, 1.5, d.name, color.RGBA{0, 0, 0, 255})
-			canvas.Line(xp, y, xp, height, 0.1, color.RGBA{0, 0, 0, 128})
+			canvas.TextMid(xp, y-3, 1.5, d.name, color.NRGBA{0, 0, 0, 255})
+			canvas.Line(xp, y, xp, height, 0.1, color.NRGBA{0, 0, 0, 128})
 		}
 	}
-	canvas.Line(x, height, width, height, 0.1, color.RGBA{0, 0, 0, 128})
-	canvas.Line(width, height, width, y, 0.1, color.RGBA{0, 0, 0, 128})
+	canvas.Line(x, height, width, height, 0.1, color.NRGBA{0, 0, 0, 128})
+	canvas.Line(width, height, width, y, 0.1, color.NRGBA{0, 0, 0, 128})
 }
 
-func frame(canvas *gc.Canvas, x, y, width, height float32, color color.RGBA) {
+func frame(canvas *gc.Canvas, x, y, width, height float32, color color.NRGBA) {
 	canvas.CornerRect(x, height, width-x, height-y, color)
 }
 
-func dotchart(canvas *gc.Canvas, x, y, width, height float32, data []NameValue, datacolor color.RGBA) {
+func dotchart(canvas *gc.Canvas, x, y, width, height float32, data []NameValue, datacolor color.NRGBA) {
 	min, max := minmax(data)
 	for i, d := range data {
 		xp := float32(gc.MapRange(float64(i), 0, float64(len(data)-1), float64(x), float64(width)))
@@ -105,7 +105,7 @@ func dotchart(canvas *gc.Canvas, x, y, width, height float32, data []NameValue, 
 	}
 }
 
-func barchart(canvas *gc.Canvas, x, y, width, height float32, data []NameValue, datacolor color.RGBA) {
+func barchart(canvas *gc.Canvas, x, y, width, height float32, data []NameValue, datacolor color.NRGBA) {
 	min, max := minmax(data)
 	for i, d := range data {
 		xp := float32(gc.MapRange(float64(i), 0, float64(len(data)-1), float64(x), float64(width)))
@@ -114,7 +114,7 @@ func barchart(canvas *gc.Canvas, x, y, width, height float32, data []NameValue, 
 	}
 }
 
-func areachart(canvas *gc.Canvas, x, y, width, height float32, data []NameValue, datacolor color.RGBA) {
+func areachart(canvas *gc.Canvas, x, y, width, height float32, data []NameValue, datacolor color.NRGBA) {
 	min, max := minmax(data)
 	l := len(data)
 
@@ -141,13 +141,13 @@ func chart(s string, w, h int, data []NameValue, chartopts ChartOptions) {
 	size := app.Size(unit.Px(width), unit.Px(height))
 	title := app.Title(s)
 	win := app.NewWindow(title, size)
-	black := color.RGBA{0, 0, 0, 255}
+	black := color.NRGBA{0, 0, 0, 255}
 	datacolor := gc.ColorLookup(chartopts.color)
-	framecolor := color.RGBA{0, 0, 0, 20}
+	framecolor := color.NRGBA{0, 0, 0, 20}
+	canvas := gc.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.FrameEvent:
-			canvas := gc.NewCanvas(width, height, e)
 			if chartopts.showtitle {
 				canvas.Text(10, 90, 3, chartopts.title, black)
 			}

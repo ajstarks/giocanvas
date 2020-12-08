@@ -16,11 +16,10 @@ import (
 func concentric(s string, width, height float32) {
 	defer os.Exit(0)
 	win := app.NewWindow(app.Title(s), app.Size(unit.Px(width), unit.Px(height)))
-
+	canvas := gc.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.FrameEvent:
-			canvas := gc.NewCanvas(width, height, e)
 			canvas.Background(gc.ColorLookup("white"))
 			var r float32 = 50
 			for g := uint8(0); g < 250; g += 50 {

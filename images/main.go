@@ -16,10 +16,10 @@ import (
 func images(title string, width, height float32) {
 	defer os.Exit(0)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
+	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, e)
 			var x, y, scale float32
 			scale = 5.0
 			canvas.Grid(0, 0, 100, 100, 0.1, 10, color.NRGBA{128, 128, 128, 255})

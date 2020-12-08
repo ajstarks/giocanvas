@@ -24,37 +24,36 @@ func transforms(title string, width, height float32) {
 	recth = rectw / 4
 	ts = 5
 	ts2 = ts / 3
-	black := color.NRGBA{0, 0, 0, 255}
+	textcolor := color.NRGBA{255, 255, 255, 255}
+	canvas := gc.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.FrameEvent:
-			canvas := gc.NewCanvas(width, height, e)
-
 			recty = 90
 			canvas.CenterRect(midx, recty, rectw, recth, color.NRGBA{128, 128, 128, 128})
-			canvas.TextMid(midx, recty-ts2, ts, "Reference", black)
+			canvas.TextMid(midx, recty-ts2, ts, "Reference", textcolor)
 
 			recty = 70
 			stack := canvas.Scale(midx, recty, 2)
 			canvas.CenterRect(midx, recty, rectw, recth, color.NRGBA{0, 0, 128, 128})
-			canvas.TextMid(midx, recty-ts2, ts, "scale", black)
+			canvas.TextMid(midx, recty-ts2, ts, "scale", textcolor)
 			gc.EndTransform(stack)
 
 			recty = 50
 			stack = canvas.Shear(midx, midx, math.Pi/4, 0)
 			canvas.CenterRect(midx, recty, rectw, recth, color.NRGBA{128, 0, 0, 128})
-			canvas.TextMid(midx, recty-ts2, ts, "shear", black)
+			canvas.TextMid(midx, recty-ts2, ts, "shear", textcolor)
 			gc.EndTransform(stack)
 
 			stack = canvas.Translate(20, 85)
 			canvas.CenterRect(midx, recty, rectw, recth, color.NRGBA{0, 128, 0, 128})
-			canvas.TextMid(midx, recty-ts2, ts, "translate", black)
+			canvas.TextMid(midx, recty-ts2, ts, "translate", textcolor)
 			gc.EndTransform(stack)
 
 			recty = 20
 			stack = canvas.Rotate(midx, recty, math.Pi/4)
 			canvas.CenterRect(midx, recty, rectw, recth, color.NRGBA{255, 50, 0, 200})
-			canvas.TextMid(midx, recty-ts2, ts, "rotate", black)
+			canvas.TextMid(midx, recty-ts2, ts, "rotate", textcolor)
 			gc.EndTransform(stack)
 
 			e.Frame(canvas.Context.Ops)

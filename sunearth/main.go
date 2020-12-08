@@ -23,11 +23,10 @@ func sunearth(s string, width, height float32) {
 	var earthsize float32 = 0.8
 	sunsize := earthsize * 109
 
+	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, e)
-
 			canvas.CenterRect(50, 50, 100, 100, black)
 			canvas.Circle(100, 0, sunsize, yellow)
 			canvas.Circle(30, 90, earthsize, blue)

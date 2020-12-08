@@ -43,6 +43,7 @@ func absarc(c *giocanvas.Canvas, x, y, x1, y1, x2, y2, angle float32, fillcolor 
 func arc(title string, width, height float32) {
 	defer os.Exit(0)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
+	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	var x, y, step float32
 	size := width / 10
 	step = width * 0.11
@@ -57,7 +58,6 @@ func arc(title string, width, height float32) {
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, e)
 			//absarc(canvas, 250, 500, 100, 0, 50, 20, math.Pi, black)
 			//absarc(canvas, 255, 500, 195, 0, math.Pi, color.NRGBA{255, 255, 255, 255})
 

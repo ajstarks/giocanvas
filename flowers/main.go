@@ -11,6 +11,7 @@ import (
 	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
+	"github.com/ajstarks/giocanvas"
 	gc "github.com/ajstarks/giocanvas"
 )
 
@@ -32,10 +33,10 @@ func work(title string, width, height float32) {
 	orange := gc.ColorLookup("orange")
 	bgcolor := gc.ColorLookup("linen")
 
+	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.FrameEvent:
-			canvas := gc.NewCanvas(width, height, e)
 			canvas.Background(bgcolor)
 			flower(canvas, 10, 90, 5, 1, red)
 			flower(canvas, 25, 75, 10, 1.5, green)

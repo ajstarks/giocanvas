@@ -50,10 +50,10 @@ func ref(title string, width, height float32, showgrid bool) {
 		io.WriteString(os.Stderr, "unable to open the logo file\n")
 		os.Exit(1)
 	}
+	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, e)
 			canvas.Background(bgcolor)
 			canvas.Img(logoimg, col1, 94, 400, 400, 20)
 			canvas.Text(col1+3, top, titlesize, "Canvas API Reference", titlecolor)
