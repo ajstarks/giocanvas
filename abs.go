@@ -108,6 +108,7 @@ func (c *Canvas) AbsCenterImage(name string, x, y float32, w, h int, scale float
 	if err != nil {
 		return
 	}
+	defer r.Close()
 	im, _, err := image.Decode(r)
 	if err != nil {
 		return
