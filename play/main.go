@@ -29,7 +29,6 @@ func getImage(name string) image.Image {
 }
 
 func play(appname string, width, height float32, showgrid bool) {
-	defer os.Exit(0)
 	size := app.Size(unit.Px(width), unit.Px(height))
 	title := app.Title(appname)
 	tcolor := color.NRGBA{128, 0, 0, 150}
@@ -49,6 +48,8 @@ func play(appname string, width, height float32, showgrid bool) {
 	const pi = 3.14159265
 	for e := range win.Events() {
 		switch e := e.(type) {
+		case system.DestroyEvent:
+			os.Exit(0)
 		case system.FrameEvent:
 
 			// Title

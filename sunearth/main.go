@@ -13,7 +13,6 @@ import (
 )
 
 func sunearth(s string, width, height float32) {
-	defer os.Exit(0)
 	win := app.NewWindow(app.Title(s), app.Size(unit.Px(width), unit.Px(height)))
 
 	yellow := color.NRGBA{255, 248, 231, 255}
@@ -26,6 +25,8 @@ func sunearth(s string, width, height float32) {
 	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
+		case system.DestroyEvent:
+			os.Exit(0)
 		case system.FrameEvent:
 			canvas.CenterRect(50, 50, 100, 100, black)
 			canvas.Circle(100, 0, sunsize, yellow)

@@ -61,10 +61,11 @@ func comp(canvas *giocanvas.Canvas) error {
 }
 
 func work(title string, width, height float32) {
-	defer os.Exit(0)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 	for e := range win.Events() {
 		switch e := e.(type) {
+		case system.DestroyEvent:
+			os.Exit(0)
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, e)
 			// your code here

@@ -7,6 +7,7 @@ confetti
 eclipse
 flowers
 hello
+images
 lego
 lines
 mondrian

@@ -66,7 +66,6 @@ func grid(canvas *giocanvas.Canvas, x, y, step float32, bcolor, dcolor color.NRG
 }
 
 func lego(title string, width, height float32) {
-	defer os.Exit(0)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 	incar := []pdata{
 		{name: "White", value: 39, fill: "rgb(160,82,45,120)"},
@@ -86,6 +85,8 @@ func lego(title string, width, height float32) {
 	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
+		case system.DestroyEvent:
+			os.Exit(0)
 		case system.FrameEvent:
 			canvas.Text(c1, 85, 3, "Incarceration Rate", giocanvas.ColorLookup("black"))
 			canvas.Text(c2, 85, 3, "US Population", giocanvas.ColorLookup("black"))

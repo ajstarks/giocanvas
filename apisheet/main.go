@@ -31,7 +31,6 @@ func getimage(s string) (image.Image, error) {
 }
 
 func ref(title string, width, height float32, showgrid bool) {
-	defer os.Exit(0)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 	var col1, col2, col3 float32 = 15, 50, 85
 	var top, subtop float32 = 92, 82
@@ -53,6 +52,8 @@ func ref(title string, width, height float32, showgrid bool) {
 	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
+		case system.DestroyEvent:
+			os.Exit(0)
 		case system.FrameEvent:
 			canvas.Background(bgcolor)
 			canvas.Img(logoimg, col1, 94, 400, 400, 20)

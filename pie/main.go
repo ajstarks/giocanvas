@@ -53,7 +53,6 @@ func piechart(canvas *giocanvas.Canvas, x, y, r float32, data []piedata) {
 }
 
 func pie(title string, width, height float32) {
-	defer os.Exit(0)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 
 	data := []piedata{
@@ -67,6 +66,8 @@ func pie(title string, width, height float32) {
 	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
+		case system.DestroyEvent:
+			os.Exit(0)
 		case system.FrameEvent:
 			canvas.CText(50, 92, 4, "Browser Market Share, 2020-06", color.NRGBA{20, 20, 20, 255})
 			canvas.CText(50, 5, 2, "Source: Statcounter Global Stats, July 2020", color.NRGBA{100, 100, 100, 255})

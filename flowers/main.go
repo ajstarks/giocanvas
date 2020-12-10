@@ -25,7 +25,6 @@ func flower(canvas *gc.Canvas, x, y, w, h float32, fill color.NRGBA) {
 }
 
 func work(title string, width, height float32) {
-	defer os.Exit(0)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 	red := color.NRGBA{128, 0, 0, 100}
 	blue := color.NRGBA{0, 0, 128, 100}
@@ -36,6 +35,8 @@ func work(title string, width, height float32) {
 	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
+		case system.DestroyEvent:
+			os.Exit(0)
 		case system.FrameEvent:
 			canvas.Background(bgcolor)
 			flower(canvas, 10, 90, 5, 1, red)

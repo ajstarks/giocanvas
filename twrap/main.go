@@ -18,7 +18,6 @@ func pct(p float32, m float32) float32 {
 }
 
 func twrap(title string, width, height float32) {
-	defer os.Exit(0)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 	var ts float32 = 2.8
 	subsize := ts * 0.6
@@ -30,6 +29,8 @@ func twrap(title string, width, height float32) {
 	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
+		case system.DestroyEvent:
+			os.Exit(0)
 		case system.FrameEvent:
 			s := "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
 			var left float32 = 15

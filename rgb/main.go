@@ -13,7 +13,6 @@ import (
 )
 
 func rgb(title string, width, height float32) {
-	defer os.Exit(0)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 
 	colortab := []string{
@@ -29,6 +28,8 @@ func rgb(title string, width, height float32) {
 	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
+		case system.DestroyEvent:
+			os.Exit(0)
 		case system.FrameEvent:
 			for _, c := range colortab {
 				canvas.EText(x-10, y, 3, c, color.NRGBA{0, 0, 0, 255})

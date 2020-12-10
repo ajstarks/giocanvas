@@ -23,7 +23,6 @@ func rn8(n int) uint8 {
 }
 
 func confetti(s string, w, h, nshapes, maxsize int) {
-	defer os.Exit(0)
 	width := float32(w)
 	height := float32(h)
 	size := app.Size(unit.Px(width), unit.Px(height))
@@ -32,6 +31,8 @@ func confetti(s string, w, h, nshapes, maxsize int) {
 	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
+		case system.DestroyEvent:
+			os.Exit(0)
 		case system.FrameEvent:
 			canvas.CenterRect(50, 50, 100, 100, color.NRGBA{0, 0, 0, 255})
 			for i := 0; i < nshapes; i++ {

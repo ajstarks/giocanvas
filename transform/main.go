@@ -15,7 +15,6 @@ import (
 )
 
 func transforms(title string, width, height float32) {
-	defer os.Exit(0)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
 
 	var midx, rectw, recth, recty, ts, ts2 float32
@@ -28,6 +27,8 @@ func transforms(title string, width, height float32) {
 	canvas := gc.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
+		case system.DestroyEvent:
+			os.Exit(0)
 		case system.FrameEvent:
 			recty = 90
 			canvas.CenterRect(midx, recty, rectw, recth, color.NRGBA{128, 128, 128, 128})
