@@ -284,6 +284,7 @@ func (c *Canvas) AbsArc(x, y, radius float32, start, end float64, fillcolor colo
 		path.Quad(ctrlPt.Sub(pen), endPt.Sub(pen))
 		pen = endPt
 	}
+	path.Close()
 	clip.Outline{Path: path.End()}.Op().Add(ops)
 	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{}.Add(ops)
