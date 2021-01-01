@@ -35,7 +35,7 @@ func absarc(c *giocanvas.Canvas, x, y, x1, y1, x2, y2, angle float32, fillcolor 
 	p.Begin(ops)
 	p.Move(f32.Pt(x, y))
 	p.Arc(f32.Pt(x1, y1), f32.Pt(x2, y2), angle)
-	p.Outline().Add(ops)
+	clip.Outline{Path: p.End()}.Op().Add(ops)
 	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{}.Add(ops)
 }
