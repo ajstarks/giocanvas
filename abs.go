@@ -161,7 +161,7 @@ func (c *Canvas) AbsPolygon(x, y []float32, fillcolor color.NRGBA) {
 	}
 	path.Line(f32.Point{X: x[0] - x[l-1], Y: y[0] - y[l-1]})
 	path.Line(point)
-	path.Outline().Add(ops)
+	clip.Outline{Path: path.End()}.Op().Add(ops)
 	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{}.Add(ops)
 }
@@ -174,7 +174,7 @@ func (c *Canvas) AbsLine(x0, y0, x1, y1, size float32, fillcolor color.NRGBA) {
 	path.Begin(ops)
 	path.MoveTo(f32.Point{X: x0, Y: y0})
 	path.LineTo(f32.Point{X: x1, Y: y1})
-	path.Stroke(size, clip.StrokeStyle{Cap: clip.RoundCap, Join: clip.BevelJoin}).Add(ops)
+	clip.Stroke{Path: path.End(), Style: clip.StrokeStyle{Width: size, Cap: clip.RoundCap, Join: clip.BevelJoin}}.Op().Add(ops)
 	paint.Fill(ops, fillcolor)
 }
 
@@ -191,7 +191,7 @@ func (c *Canvas) AbsQuadBezier(x, y, cx, cy, ex, ey, size float32, fillcolor col
 	path.Begin(ops)
 	path.Move(f32.Point{X: x, Y: y})
 	path.Quad(ctrl, to)
-	path.Outline().Add(ops)
+	clip.Outline{Path: path.End()}.Op().Add(ops)
 	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{}.Add(ops)
 }
@@ -210,7 +210,7 @@ func (c *Canvas) AbsCubicBezier(x, y, cx1, cy1, cx2, cy2, ex, ey, size float32, 
 	path.Begin(ops)
 	path.Move(sp)
 	path.Cube(cp0, cp1, ep)
-	path.Outline().Add(ops)
+	clip.Outline{Path: path.End()}.Op().Add(ops)
 	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{}.Add(ops)
 }
@@ -228,7 +228,7 @@ func (c *Canvas) AbsCircle(x, y, radius float32, fillcolor color.NRGBA) {
 	path.Cube(f32.Point{X: -radius * k, Y: 0}, f32.Point{X: -radius, Y: -radius + radius*k}, f32.Point{X: -radius, Y: -radius}) // SW
 	path.Cube(f32.Point{X: 0, Y: -radius * k}, f32.Point{X: radius - radius*k, Y: -radius}, f32.Point{X: radius, Y: -radius})   // NW
 	path.Cube(f32.Point{X: radius * k, Y: 0}, f32.Point{X: radius, Y: radius - radius*k}, f32.Point{X: radius, Y: radius})      // NE
-	path.Outline().Add(ops)
+	clip.Outline{Path: path.End()}.Op().Add(ops)
 	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{}.Add(ops)
 }
@@ -245,12 +245,12 @@ func (c *Canvas) AbsEllipse(x, y, w, h float32, fillcolor color.NRGBA) {
 	path.Cube(f32.Point{X: -w * k, Y: 0}, f32.Point{X: -w, Y: -h + h*k}, f32.Point{X: -w, Y: -h}) // SW
 	path.Cube(f32.Point{X: 0, Y: -h * k}, f32.Point{X: w - w*k, Y: -h}, f32.Point{X: w, Y: -h})   // NW
 	path.Cube(f32.Point{X: w * k, Y: 0}, f32.Point{X: w, Y: h - h*k}, f32.Point{X: w, Y: h})      // NE
-	path.Outline().Add(ops)
+	clip.Outline{Path: path.End()}.Op().Add(ops)
 	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{}.Add(ops)
 }
 
-// AbsArc makes circulr arc centered at (x, y), through angles start and end;
+// AbsArc makes circular arc centered at (x, y), through angles start and end;
 // the angles are measured in radians and increase counter-clockwise.
 // N.B: derived from the clipLoader function in widget/material/loader.go
 func (c *Canvas) AbsArc(x, y, radius float32, start, end float64, fillcolor color.NRGBA) {
@@ -284,7 +284,7 @@ func (c *Canvas) AbsArc(x, y, radius float32, start, end float64, fillcolor colo
 		path.Quad(ctrlPt.Sub(pen), endPt.Sub(pen))
 		pen = endPt
 	}
-	path.Outline().Add(ops)
+	clip.Outline{Path: path.End()}.Op().Add(ops)
 	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{}.Add(ops)
 }
