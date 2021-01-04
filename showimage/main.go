@@ -17,6 +17,27 @@ import (
 	"github.com/ajstarks/giocanvas"
 )
 
+// imageinfo opens an image file, returning an image.Image, with dimensions
+func imageinfo(imagefile string, w, h int) (image.Image, int, int, error) {
+	f, err := os.Open(imagefile)
+	if err != nil {
+		return nil, 0, 0, err
+	}
+	im, _, err := image.Decode(f)
+	if err != nil {
+		return nil, 0, 0, err
+	}
+	if w == 0 {
+		w = im.Bounds().Dx()
+	}
+	if h == 0 {
+		h = im.Bounds().Dy()
+	}
+	f.Close()
+	return im, w, h, nil
+}
+
+// showimage shows an image, centered on the canvas at the specified scale and size
 func showimage(title string, im image.Image, width, height int, scale float64) {
 	sw, sh, sc := float32(width), float32(height), float32(scale)
 	if sc != 100 {
@@ -42,8 +63,12 @@ func showimage(title string, im image.Image, width, height int, scale float64) {
 }
 
 func main() {
-	var w, h int
-	var scale float64
+	var (
+		w, h  int
+		scale float64
+		err   error
+		im    image.Image
+	)
 	flag.IntVar(&w, "width", 0, "canvas width")
 	flag.IntVar(&h, "height", 0, "canvas height")
 	flag.Float64Var(&scale, "scale", 100, "scale (0-100)")
@@ -51,29 +76,15 @@ func main() {
 
 	args := flag.Args()
 	if len(args) == 0 {
-		fmt.Fprintln(os.Stderr, "specify an image file")
+		fmt.Fprintln(os.Stderr, "specify an image file (JPEG, PNG, or GIF)")
 		os.Exit(1)
 	}
 	imagefile := args[0]
-	f, ferr := os.Open(imagefile)
-	if ferr != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", ferr)
+	im, w, h, err = imageinfo(imagefile, w, h)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(2)
 	}
-	im, _, err := image.Decode(f)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s: %v\n", imagefile, err)
-		os.Exit(3)
-	}
-	imw := im.Bounds().Dx()
-	imh := im.Bounds().Dy()
-	if w == 0 {
-		w = imw
-	}
-	if h == 0 {
-		h = imh
-	}
-	f.Close()
 	go showimage(imagefile, im, w, h, scale)
 	app.Main()
 }
