@@ -7,12 +7,8 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/f32"
 	"gioui.org/io/key"
 	"gioui.org/io/system"
-	"gioui.org/op"
-	"gioui.org/op/clip"
-	"gioui.org/op/paint"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -25,19 +21,6 @@ func radians(degrees float64) float64 {
 
 func degrees(radians float64) float64 {
 	return radians * (180 / pi)
-}
-
-func absarc(c *giocanvas.Canvas, x, y, x1, y1, x2, y2, angle float32, fillcolor color.NRGBA) {
-	p := new(clip.Path)
-	ops := c.Context.Ops
-	//r := f32.Rect(0, 0, c.Width, c.Height)
-	defer op.Push(c.Context.Ops).Pop()
-	p.Begin(ops)
-	p.Move(f32.Pt(x, y))
-	p.Arc(f32.Pt(x1, y1), f32.Pt(x2, y2), angle)
-	clip.Outline{Path: p.End()}.Op().Add(ops)
-	paint.ColorOp{Color: fillcolor}.Add(ops)
-	paint.PaintOp{}.Add(ops)
 }
 
 func arc(title string, width, height float32) {
@@ -59,12 +42,6 @@ func arc(title string, width, height float32) {
 		case system.DestroyEvent:
 			os.Exit(0)
 		case system.FrameEvent:
-			//absarc(canvas, 250, 500, 100, 0, 50, 20, math.Pi, black)
-			//absarc(canvas, 255, 500, 195, 0, math.Pi, color.NRGBA{255, 255, 255, 255})
-
-			//canvas.Arc(50, 50, 50, radians(0), radians(180), centercolor)
-			//canvas.CText(50, 30, 3, "giocanvas", black)
-			//canvas.CText(50, 70, 3, "Arc", centercolor)
 			angle := 45.0 // Pi / 4
 			y = height * 0.2
 			canvas.CText(50, 50, 10, "Arcs", black)
