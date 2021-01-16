@@ -14,7 +14,6 @@ import (
 	"gioui.org/app"
 	"gioui.org/io/key"
 	"gioui.org/io/system"
-	"gioui.org/op"
 	"gioui.org/unit"
 	gc "github.com/ajstarks/giocanvas"
 )
@@ -193,25 +192,24 @@ func elect(title string, opts options, elections []election) {
 		case system.DestroyEvent:
 			os.Exit(0)
 		case system.FrameEvent:
-
 			process(canvas, opts, elections[n])
 			e.Frame(canvas.Context.Ops)
 		case key.Event:
 			switch e.Name {
 			case "Q", key.NameEscape:
 				os.Exit(0)
-			case "F":
+			case key.NameDownArrow, key.NameLeftArrow:
 				n++
 				if n > ne {
 					n = 0
 				}
-				op.InvalidateOp{}.Add(canvas.Context.Ops)
-			case "B":
+				win.Invalidate()
+			case key.NameUpArrow, key.NameRightArrow:
 				n--
-				if n < ne {
+				if n < 0 {
 					n = ne
 				}
-				op.InvalidateOp{}.Add(canvas.Context.Ops)
+				win.Invalidate()
 			}
 		}
 	}
