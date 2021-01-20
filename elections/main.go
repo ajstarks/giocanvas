@@ -13,6 +13,7 @@ import (
 
 	"gioui.org/app"
 	"gioui.org/io/key"
+	"gioui.org/io/pointer"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	gc "github.com/ajstarks/giocanvas"
@@ -192,24 +193,18 @@ func elect(title string, opts options, elections []election) {
 		case system.DestroyEvent:
 			os.Exit(0)
 		case system.FrameEvent:
+			gtx := canvas.Context
+			pointer.InputOp{Tag: win, Grab: false, Types: pointer.Press}.Add(gtx.Ops)
+			if n > ne {
+				n = 0
+			}
 			process(canvas, opts, elections[n])
+			n++
 			e.Frame(canvas.Context.Ops)
 		case key.Event:
 			switch e.Name {
 			case "Q", key.NameEscape:
 				os.Exit(0)
-			case key.NameDownArrow, key.NameLeftArrow:
-				n++
-				if n > ne {
-					n = 0
-				}
-				win.Invalidate()
-			case key.NameUpArrow, key.NameRightArrow:
-				n--
-				if n < 0 {
-					n = ne
-				}
-				win.Invalidate()
 			}
 		}
 	}
