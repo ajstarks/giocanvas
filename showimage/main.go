@@ -48,7 +48,7 @@ func showimage(title string, im image.Image, width, height int, scale float64) {
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.DestroyEvent:
-			os.Exit(0)
+			return
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(sw, sh, system.FrameEvent{})
 			canvas.Img(im, 50, 50, width, height, sc)
@@ -79,12 +79,13 @@ func main() {
 		fmt.Fprintln(os.Stderr, "specify an image file (JPEG, PNG, or GIF)")
 		os.Exit(1)
 	}
-	imagefile := args[0]
-	im, w, h, err = imageinfo(imagefile, w, h)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
-		os.Exit(2)
+	for _, imagefile := range args {
+		im, w, h, err = imageinfo(imagefile, w, h)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%v\n", err)
+			continue
+		}
+		go showimage(imagefile, im, w, h, scale)
 	}
-	go showimage(imagefile, im, w, h, scale)
 	app.Main()
 }
