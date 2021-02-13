@@ -48,7 +48,7 @@ func showimage(title string, im image.Image, width, height int, scale float64) {
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.DestroyEvent:
-			return
+			os.Exit(0)
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(sw, sh, system.FrameEvent{})
 			canvas.Img(im, 50, 50, width, height, sc)
