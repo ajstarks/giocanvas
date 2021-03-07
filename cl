@@ -14,6 +14,7 @@ mondrian
 pie
 polar
 rgb
+showimage
 sunearth
 tile
 transform
