@@ -174,7 +174,7 @@ func (c *Canvas) AbsLine(x0, y0, x1, y1, size float32, fillcolor color.NRGBA) {
 	path.Begin(ops)
 	path.MoveTo(f32.Point{X: x0, Y: y0})
 	path.LineTo(f32.Point{X: x1, Y: y1})
-	clip.Stroke{Path: path.End(), Style: clip.StrokeStyle{Width: size, Cap: clip.RoundCap, Join: clip.BevelJoin}}.Op().Add(ops)
+	clip.Stroke{Path: path.End(), Style: clip.StrokeStyle{Width: size, Cap: clip.SquareCap, Join: clip.BevelJoin}}.Op().Add(ops)
 	paint.Fill(ops, fillcolor)
 }
 
