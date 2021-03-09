@@ -3,10 +3,9 @@ module github.com/ajstarks/giocanvas
 go 1.15
 
 require (
-	gioui.org v0.0.0-20210112202859-d331dd2de80d
+	gioui.org v0.0.0-20210309172710-4b377aa89637
 	github.com/disintegration/gift v1.2.1
-	golang.org/x/exp v0.0.0-20201229011636-eab1b5eb1a03 // indirect
-	golang.org/x/image v0.0.0-20201208152932-35266b937fa6 // indirect
-	golang.org/x/sys v0.0.0-20201231184435-2d18734c6014 // indirect
+	golang.org/x/exp v0.0.0-20210220032938-85be41e4509f // indirect
+	golang.org/x/image v0.0.0-20210220032944-ac19c3e999fb // indirect
 	golang.org/x/text v0.3.5 // indirect
 )
