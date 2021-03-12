@@ -1,3 +1,4 @@
+// test the chart package
 package main
 
 import (

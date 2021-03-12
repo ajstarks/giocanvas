@@ -1,3 +1,4 @@
+// rgb shows RGB values
 package main
 
 import (

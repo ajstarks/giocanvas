@@ -1,3 +1,4 @@
+// sunearth shows the relative size of the Sun and Earth
 package main
 
 import (

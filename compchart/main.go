@@ -1,3 +1,4 @@
+// component charts
 package main
 
 import (
