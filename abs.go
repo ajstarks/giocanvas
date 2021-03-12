@@ -191,6 +191,7 @@ func (c *Canvas) AbsQuadBezier(x, y, cx, cy, ex, ey, size float32, fillcolor col
 	path.Begin(ops)
 	path.Move(f32.Point{X: x, Y: y})
 	path.Quad(ctrl, to)
+	path.Close()
 	clip.Outline{Path: path.End()}.Op().Add(ops)
 	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{}.Add(ops)
@@ -210,6 +211,7 @@ func (c *Canvas) AbsCubicBezier(x, y, cx1, cy1, cx2, cy2, ex, ey, size float32, 
 	path.Begin(ops)
 	path.Move(sp)
 	path.Cube(cp0, cp1, ep)
+	path.Close()
 	clip.Outline{Path: path.End()}.Op().Add(ops)
 	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{}.Add(ops)
@@ -228,6 +230,7 @@ func (c *Canvas) AbsCircle(x, y, radius float32, fillcolor color.NRGBA) {
 	path.Cube(f32.Point{X: -radius * k, Y: 0}, f32.Point{X: -radius, Y: -radius + radius*k}, f32.Point{X: -radius, Y: -radius}) // SW
 	path.Cube(f32.Point{X: 0, Y: -radius * k}, f32.Point{X: radius - radius*k, Y: -radius}, f32.Point{X: radius, Y: -radius})   // NW
 	path.Cube(f32.Point{X: radius * k, Y: 0}, f32.Point{X: radius, Y: radius - radius*k}, f32.Point{X: radius, Y: radius})      // NE
+	path.Close()
 	clip.Outline{Path: path.End()}.Op().Add(ops)
 	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{}.Add(ops)
