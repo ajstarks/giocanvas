@@ -2,6 +2,7 @@
 for i in $(cat cl)
 do
 	cd $i
+	echo -n "$i "
 	if test $i == "showimage"
 	then
 		showimage showimage.png &
@@ -10,3 +11,4 @@ do
 	fi
 	cd ..
 done
+echo
