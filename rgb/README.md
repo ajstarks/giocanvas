@@ -1,2 +1,2 @@
-# rgb lookup test
-![rgb](rgb.png)
+# color lookup test
+![colorlookup](rgb.png)
