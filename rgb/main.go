@@ -19,13 +19,19 @@ func rgb(title string, width, height float32) {
 	colortab := []string{
 		"orange",
 		"rgb(100)",
-		"rgb(100,100)",
-		"rgb(100,100,100)",
-		"rgb(100,100,100,100)",
+		"rgb(100,50)",
+		"rgb(100,50,2)",
+		"rgb(100,50,2,100)",
+		"#aa",
+		"#aabb",
+		"#aabbcc",
+		"#aabbcc64",
 		"rgb()",
+		"#",
+		"#error",
 		"nonsense",
 	}
-	var x, y float32 = 50, 80
+	var x, y float32 = 50, 90
 	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
@@ -34,8 +40,8 @@ func rgb(title string, width, height float32) {
 		case system.FrameEvent:
 			for _, c := range colortab {
 				canvas.EText(x-10, y, 3, c, color.NRGBA{0, 0, 0, 255})
-				canvas.Circle(x, y, 4, giocanvas.ColorLookup(c))
-				y -= 10
+				canvas.Circle(x, y+1, 2, giocanvas.ColorLookup(c))
+				y -= 7
 			}
 			e.Frame(canvas.Context.Ops)
 		case key.Event:

@@ -166,8 +166,18 @@ func cc(s string) uint8 {
 	return uint8(v)
 }
 
+// hc converts a hex color string to number
+func hc(s string) uint8 {
+	v, err := strconv.ParseInt(s, 16, 32)
+	if err != nil {
+		return 0
+	}
+	return uint8(v)
+}
+
 // ColorLookup returns a color.RGBA corresponding to the named color or
-// "rgb(r)", "rgb(r,b)", "rgb(r,g,b), "rgb(r,g,b,a)" string.
+// "rgb(r)", "rgb(r,b)", "rgb(r,g,b), "rgb(r,g,b,a)",
+// "#rr",     "#rrgg",   "#rrggbb",   "#rrggbbaa" string.
 // On error, return black.
 func ColorLookup(s string) color.NRGBA {
 	c, ok := colornames[s]
@@ -175,9 +185,11 @@ func ColorLookup(s string) color.NRGBA {
 		return c
 	}
 	black := color.NRGBA{0, 0, 0, 255}
-	if strings.HasPrefix(s, "rgb(") && strings.HasSuffix(s, ")") && len(s) > 5 {
+	ls := len(s)
+	// rgb(...)
+	if strings.HasPrefix(s, "rgb(") && strings.HasSuffix(s, ")") && ls > 5 {
 		c.R, c.G, c.B, c.A = 0, 0, 0, 255
-		v := strings.Split(s[4:len(s)-1], ",")
+		v := strings.Split(s[4:ls-1], ",")
 		switch len(v) {
 		case 1:
 			c.R = cc(v[0])
@@ -200,6 +212,29 @@ func ColorLookup(s string) color.NRGBA {
 		default:
 			return black
 		}
+	}
+	// #rrggbb
+	if strings.HasPrefix(s, "#") && (ls >= 3) {
+		c.R, c.G, c.B, c.A = 0, 0, 0, 255
+		switch ls {
+		case 3:
+			c.R = hc(s[1:3])
+		case 5:
+			c.R = hc(s[1:3])
+			c.G = hc(s[3:5])
+		case 7:
+			c.R = hc(s[1:3])
+			c.G = hc(s[3:5])
+			c.B = hc(s[5:7])
+		case 9:
+			c.R = hc(s[1:3])
+			c.G = hc(s[3:5])
+			c.B = hc(s[5:7])
+			c.A = hc(s[7:9])
+		default:
+			return black
+		}
+		return c
 	}
 	return black
 }
