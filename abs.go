@@ -178,7 +178,7 @@ func (c *Canvas) AbsLine(x0, y0, x1, y1, size float32, fillcolor color.NRGBA) {
 	paint.Fill(ops, fillcolor)
 }
 
-// AbsQuadBezier makes a quadratic curve
+// AbsQuadBezier makes a filled quadratic curve
 // starting at (x, y), control point at (cx, cy), end point (ex, ey)
 func (c *Canvas) AbsQuadBezier(x, y, cx, cy, ex, ey, size float32, fillcolor color.NRGBA) {
 	path := new(clip.Path)
@@ -197,7 +197,24 @@ func (c *Canvas) AbsQuadBezier(x, y, cx, cy, ex, ey, size float32, fillcolor col
 	paint.PaintOp{}.Add(ops)
 }
 
-// AbsCubicBezier makes a cubic bezier curve
+// AbsStrokedQuadBezier makes a stroked quadratic curve
+// starting at (x, y), control point at (cx, cy), end point (ex, ey)
+func (c *Canvas) AbsStrokedQuadBezier(x, y, cx, cy, ex, ey, size float32, strokecolor color.NRGBA) {
+	path := new(clip.Path)
+	ops := c.Context.Ops
+	// control and endpoints are relative to the starting point
+	ctrl := f32.Point{X: cx - x, Y: cy - y}
+	to := f32.Point{X: ex - x, Y: ey - y}
+
+	defer op.Save(c.Context.Ops).Load()
+	path.Begin(ops)
+	path.Move(f32.Point{X: x, Y: y})
+	path.Quad(ctrl, to)
+	clip.Stroke{Path: path.End(), Style: clip.StrokeStyle{Width: size, Cap: clip.SquareCap, Join: clip.BevelJoin}}.Op().Add(ops)
+	paint.Fill(ops, strokecolor)
+}
+
+// AbsCubicBezier makes a filled cubic bezier curve
 func (c *Canvas) AbsCubicBezier(x, y, cx1, cy1, cx2, cy2, ex, ey, size float32, fillcolor color.NRGBA) {
 	path := new(clip.Path)
 	ops := c.Context.Ops
@@ -215,6 +232,24 @@ func (c *Canvas) AbsCubicBezier(x, y, cx1, cy1, cx2, cy2, ex, ey, size float32, 
 	clip.Outline{Path: path.End()}.Op().Add(ops)
 	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{}.Add(ops)
+}
+
+// AbsStrokedCubicBezier makes a stroked cubic bezier curve
+func (c *Canvas) AbsStrokedCubicBezier(x, y, cx1, cy1, cx2, cy2, ex, ey, size float32, strokecolor color.NRGBA) {
+	path := new(clip.Path)
+	ops := c.Context.Ops
+	// control and end points are relative to the starting point
+	sp := f32.Point{X: x, Y: y}
+	cp0 := f32.Point{X: cx1 - x, Y: cy1 - y}
+	cp1 := f32.Point{X: cx2 - x, Y: cy2 - y}
+	ep := f32.Point{X: ex - x, Y: ey - y}
+
+	defer op.Save(c.Context.Ops).Load()
+	path.Begin(ops)
+	path.Move(sp)
+	path.Cube(cp0, cp1, ep)
+	clip.Stroke{Path: path.End(), Style: clip.StrokeStyle{Width: size, Cap: clip.SquareCap, Join: clip.BevelJoin}}.Op().Add(ops)
+	paint.Fill(ops, strokecolor)
 }
 
 // AbsCircle makes a circle centered at (x, y), radius r

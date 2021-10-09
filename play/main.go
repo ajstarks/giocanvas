@@ -93,7 +93,7 @@ func play(appname string, width, height float32, showgrid bool) {
 			c1 := f32.Point{X: 70, Y: 85}
 			end := f32.Point{X: 70, Y: 65}
 			canvas.TextMid(60, 80, labelsize, "Quadratic Bezier Curve", labelcolor)
-			canvas.Curve(start.X, start.Y, c1.X, c1.Y, end.X, end.Y, tcolor)
+			canvas.StrokedCurve(start.X, start.Y, c1.X, c1.Y, end.X, end.Y, lw, tcolor)
 			canvas.Coord(start.X, start.Y, subsize, "start", labelcolor)
 			canvas.Coord(c1.X, c1.Y, subsize, "control", labelcolor)
 			canvas.Coord(end.X, end.Y, subsize, "end", labelcolor)
@@ -105,7 +105,7 @@ func play(appname string, width, height float32, showgrid bool) {
 			c2 := f32.Point{X: colx, Y: 50}
 			end = f32.Point{X: 70, Y: 40}
 			canvas.TextMid(colx, 55, labelsize, "Cubic Bezier Curve", labelcolor)
-			canvas.CubeCurve(start.X, start.Y, c1.X, c1.Y, c2.X, c2.Y, end.X, end.Y, fcolor)
+			canvas.StrokedCubeCurve(start.X, start.Y, c1.X, c1.Y, c2.X, c2.Y, end.X, end.Y, lw, fcolor)
 			canvas.Coord(start.X, start.Y, subsize, "start", labelcolor)
 			canvas.Coord(end.X, end.Y, subsize, "end", labelcolor)
 			canvas.Coord(c1.X, c1.Y, subsize, "control 1", labelcolor)

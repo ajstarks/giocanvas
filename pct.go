@@ -47,7 +47,7 @@ func (c *Canvas) Polygon(x, y []float32, fillcolor color.NRGBA) {
 	c.AbsPolygon(nx, ny, fillcolor)
 }
 
-// QuadCurve makes a quadric Bezier curve, using percentage-based measures
+// QuadCurve makes a filled quadradic Bezier curve, using percentage-based measures
 // starting at (x, y), control point at (cx, cy), end point (ex, ey)
 func (c *Canvas) QuadCurve(x, y, cx, cy, ex, ey float32, fillcolor color.NRGBA) {
 	x, y = dimen(x, y, c.Width, c.Height)
@@ -56,10 +56,25 @@ func (c *Canvas) QuadCurve(x, y, cx, cy, ex, ey float32, fillcolor color.NRGBA) 
 	c.AbsQuadBezier(x, y, cx, cy, ex, ey, 0, fillcolor)
 }
 
-// Curve makes a quadric Bezier curve, using percentage-based measures
+// Curve makes a filled quadradic Bezier curve, using percentage-based measures
 // starting at (x, y), control point at (cx, cy), end point (ex, ey)
 func (c *Canvas) Curve(x, y, cx, cy, ex, ey float32, fillcolor color.NRGBA) {
 	c.QuadCurve(x, y, cx, cy, ex, ey, fillcolor)
+}
+
+// QuadStrokedCurve makes a stroked quadradic Bezier curve, using percentage-based measures
+// starting at (x, y), control point at (cx, cy), end point (ex, ey)
+func (c *Canvas) QuadStrokedCurve(x, y, cx, cy, ex, ey, size float32, strokecolor color.NRGBA) {
+	x, y = dimen(x, y, c.Width, c.Height)
+	cx, cy = dimen(cx, cy, c.Width, c.Height)
+	ex, ey = dimen(ex, ey, c.Width, c.Height)
+	size = pct(size, c.Width)
+	c.AbsStrokedQuadBezier(x, y, cx, cy, ex, ey, size, strokecolor)
+}
+
+// StrokedCurve makes a stroked quadradic bezier curve
+func (c *Canvas) StrokedCurve(x, y, cx, cy, ex, ey, size float32, fillcolor color.NRGBA) {
+	c.QuadStrokedCurve(x, y, cx, cy, ex, ey, size, fillcolor)
 }
 
 // CubeCurve makes a cubic Bezier curve, using percentage-based measures
@@ -70,6 +85,20 @@ func (c *Canvas) CubeCurve(x, y, cx1, cy1, cx2, cy2, ex, ey float32, fillcolor c
 	cx2, cy2 = dimen(cx2, cy2, c.Width, c.Height)
 	ex, ey = dimen(ex, ey, c.Width, c.Height)
 	c.AbsCubicBezier(x, y, cx1, cy1, cx2, cy2, ex, ey, 0, fillcolor)
+}
+
+func (c *Canvas) CubeStrokedCurve(x, y, cx1, cy1, cx2, cy2, ex, ey, size float32, fillcolor color.NRGBA) {
+	x, y = dimen(x, y, c.Width, c.Height)
+	cx1, cy1 = dimen(cx1, cy1, c.Width, c.Height)
+	cx2, cy2 = dimen(cx2, cy2, c.Width, c.Height)
+	ex, ey = dimen(ex, ey, c.Width, c.Height)
+	size = pct(size, c.Width)
+	c.AbsStrokedCubicBezier(x, y, cx1, cy1, cx2, cy2, ex, ey, size, fillcolor)
+}
+
+// StrokedCubeCurve makes a stroked cubic bezier curve
+func (c *Canvas) StrokedCubeCurve(x, y, cx1, cy1, cx2, cy2, ex, ey, size float32, strokecolor color.NRGBA) {
+	c.CubeStrokedCurve(x, y, cx1, cy1, cx2, cy2, ex, ey, size, strokecolor)
 }
 
 // Circle makes a filled circle, using percentage-based measures
