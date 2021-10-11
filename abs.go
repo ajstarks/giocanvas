@@ -174,7 +174,7 @@ func (c *Canvas) AbsLine(x0, y0, x1, y1, size float32, fillcolor color.NRGBA) {
 	path.Begin(ops)
 	path.MoveTo(f32.Point{X: x0, Y: y0})
 	path.LineTo(f32.Point{X: x1, Y: y1})
-	clip.Stroke{Path: path.End(), Style: clip.StrokeStyle{Width: size, Cap: clip.SquareCap, Join: clip.BevelJoin}}.Op().Add(ops)
+	clip.Stroke{Path: path.End(), Width: size}.Op().Add(ops)
 	paint.Fill(ops, fillcolor)
 }
 
@@ -210,7 +210,7 @@ func (c *Canvas) AbsStrokedQuadBezier(x, y, cx, cy, ex, ey, size float32, stroke
 	path.Begin(ops)
 	path.Move(f32.Point{X: x, Y: y})
 	path.Quad(ctrl, to)
-	clip.Stroke{Path: path.End(), Style: clip.StrokeStyle{Width: size, Cap: clip.SquareCap, Join: clip.BevelJoin}}.Op().Add(ops)
+	clip.Stroke{Path: path.End(), Width: size}.Op().Add(ops)
 	paint.Fill(ops, strokecolor)
 }
 
@@ -248,7 +248,7 @@ func (c *Canvas) AbsStrokedCubicBezier(x, y, cx1, cy1, cx2, cy2, ex, ey, size fl
 	path.Begin(ops)
 	path.Move(sp)
 	path.Cube(cp0, cp1, ep)
-	clip.Stroke{Path: path.End(), Style: clip.StrokeStyle{Width: size, Cap: clip.SquareCap, Join: clip.BevelJoin}}.Op().Add(ops)
+	clip.Stroke{Path: path.End(), Width: size}.Op().Add(ops)
 	paint.Fill(ops, strokecolor)
 }
 
@@ -329,10 +329,10 @@ func (c *Canvas) AbsArc(x, y, radius float32, start, end float64, fillcolor colo
 }
 
 // AbsTranslate moves current location by (x,y)
-func (c *Canvas) AbsTranslate(x, y float32) op.StateOp {
+func (c *Canvas) AbsTranslate(x, y float32) op.TransformStack {
 	ops := c.Context.Ops
 	op.InvalidateOp{}.Add(ops)
-	stack := op.Save(ops)
+	stack := op.Offset(f32.Pt(0, 0)).Push(ops)
 	tr := f32.Affine2D{}
 	tr = tr.Offset(f32.Pt(x, y))
 	op.Affine(tr).Add(ops)
@@ -340,30 +340,30 @@ func (c *Canvas) AbsTranslate(x, y float32) op.StateOp {
 }
 
 // AbsRotate rotates around (x,y) using angle (radians)
-func (c *Canvas) AbsRotate(x, y, angle float32) op.StateOp {
+func (c *Canvas) AbsRotate(x, y, angle float32) op.TransformStack {
 	ops := c.Context.Ops
 	op.InvalidateOp{}.Add(ops)
-	stack := op.Save(ops)
+	stack := op.Offset(f32.Pt(0, 0)).Push(ops)
 	tr := f32.Affine2D{}.Rotate(f32.Pt(x, y), angle)
 	op.Affine(tr).Add(ops)
 	return stack
 }
 
 // AbsScale scales by factor at (x,y)
-func (c *Canvas) AbsScale(x, y, factor float32) op.StateOp {
+func (c *Canvas) AbsScale(x, y, factor float32) op.TransformStack {
 	ops := c.Context.Ops
 	op.InvalidateOp{}.Add(ops)
-	stack := op.Save(ops)
+	stack := op.Offset(f32.Pt(0, 0)).Push(ops)
 	tr := f32.Affine2D{}.Scale(f32.Pt(x, y), f32.Pt(factor, factor))
 	op.Affine(tr).Add(ops)
 	return stack
 }
 
 // AbsShear shears at (x,y) using angle ax and ay
-func (c *Canvas) AbsShear(x, y, ax, ay float32) op.StateOp {
+func (c *Canvas) AbsShear(x, y, ax, ay float32) op.TransformStack {
 	ops := c.Context.Ops
 	op.InvalidateOp{}.Add(ops)
-	stack := op.Save(ops)
+	stack := op.Offset(f32.Pt(0, 0)).Push(ops)
 	tr := f32.Affine2D{}.Shear(f32.Pt(x, y), ax, ay)
 	op.Affine(tr).Add(ops)
 	return stack
