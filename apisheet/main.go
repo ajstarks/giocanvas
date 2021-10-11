@@ -64,7 +64,7 @@ func ref(title string, width, height float32, showgrid bool) {
 			canvas.CText(col1, subtop, headsize, "Text", subcolor)
 			canvas.CText(col2, subtop, headsize, "Graphics", subcolor)
 			canvas.CText(col3, subtop, headsize, "Transforms", subcolor)
-			canvas.CText(col3, subtop-60, headsize, "Image", subcolor)
+			canvas.CText(col3, subtop-64, headsize, "Image", subcolor)
 
 			// Text
 			y := subtop - 10
@@ -153,23 +153,25 @@ func ref(title string, width, height float32, showgrid bool) {
 			canvas.CenterRect(midx, y, rectw, recth, shapecolor)
 			canvas.TextMid(midx, y-ts2, ts, "scale", tcolor)
 			giocanvas.EndTransform(stack)
-			canvas.CText(col3, y-5, apisize, "Scale(x, y, factor float32) op.StackOp", apicolor)
+			canvas.CText(col3, y-5, apisize, "Scale(x, y, factor float32) op.TransformStack", apicolor)
 
 			y -= 15
 			stack = canvas.Shear(midx, y, pi/4, 0)
 			canvas.CenterRect(midx, y, rectw, recth, shapecolor)
 			canvas.TextMid(midx, y-ts2, ts, "shear", tcolor)
 			giocanvas.EndTransform(stack)
-			canvas.CText(col3, y-5, apisize, "Shear(x, y, ax, ay float32) op.StackOp", apicolor)
+			canvas.CText(col3, y-5, apisize, "Shear(x, y, ax, ay float32) op.TransformStack", apicolor)
 
 			y -= 15
 			stack = canvas.Rotate(midx, y, pi/6)
 			canvas.CenterRect(midx, y, rectw, recth, shapecolor)
 			canvas.TextMid(midx, y-ts2, ts, "rotate", tcolor)
 			giocanvas.EndTransform(stack)
-			canvas.CText(col3, y-5, apisize, "Rotate(x, y, angle float32) op.StackOp", apicolor)
+			canvas.CText(col3, y-5, apisize, "Rotate(x, y, angle float32) op.TransformStack", apicolor)
 
-			y -= 30
+			canvas.CText(col3, y-15, apisize, "Translate(x, y float32) op.TransformStack", apicolor)
+
+			y -= 33
 			canvas.Image("earth.jpg", midx, y+2, 1000, 1000, 10)
 			canvas.CText(midx, y-5, apisize, "Image(file string, x, y float32, w, h int, scale float32)", apicolor)
 			canvas.CText(midx, y-7, apisize, "Img(img image.Image, x, y float32, w, h int, scale float32)", apicolor)
