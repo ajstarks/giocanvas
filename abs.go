@@ -161,6 +161,7 @@ func (c *Canvas) AbsPolygon(x, y []float32, fillcolor color.NRGBA) {
 	}
 	path.Line(f32.Point{X: x[0] - x[l-1], Y: y[0] - y[l-1]})
 	path.Line(point)
+	path.Close()
 	clip.Outline{Path: path.End()}.Op().Add(ops)
 	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{}.Add(ops)
