@@ -7,13 +7,13 @@ import (
 	"strconv"
 
 	"gioui.org/app"
+	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
 
 func alpha(s string, width, height float32, color string) {
-	defer os.Exit(0)
 	size := app.Size(unit.Px(width), unit.Px(height))
 	title := app.Title(s)
 	win := app.NewWindow(title, size)
@@ -26,7 +26,10 @@ func alpha(s string, width, height float32, color string) {
 	dotsize = 0.8
 	interval = dotsize * 2.4
 	for e := range win.Events() {
-		if e, ok := e.(system.FrameEvent); ok {
+		switch e := e.(type) {
+		case system.DestroyEvent:
+			os.Exit(0)
+		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, e)
 			canvas.CText(50, y+12, 1.5, "Alpha", blue)
 			canvas.CText(50, y-18, 1.5, "% Alpha", gray)
@@ -38,6 +41,11 @@ func alpha(s string, width, height float32, color string) {
 				px += interval
 			}
 			e.Frame(canvas.Context.Ops)
+		case key.Event:
+			switch e.Name {
+			case "Q", key.NameEscape:
+				os.Exit(0)
+			}
 		}
 	}
 }
