@@ -30,23 +30,23 @@ func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string,
 	case text.Middle:
 		offset = x - c.Width/2
 	}
-	defer op.Save(c.Context.Ops).Load()
-	op.Offset(f32.Point{X: offset, Y: y - size}).Add(c.Context.Ops) // shift to use baseline
+	stack := op.Offset(f32.Point{X: offset, Y: y - size}).Push(c.Context.Ops) // shift to use baseline
 	l := material.Label(material.NewTheme(gofont.Collection()), unit.Px(size), s)
 	l.Color = fillcolor
 	l.Alignment = alignment
 	l.Layout(c.Context)
+	stack.Pop()
 }
 
 // AbsTextWrap places and wraps text at (x, y), wrapped at width
 func (c *Canvas) AbsTextWrap(x, y, size, width float32, s string, fillcolor color.NRGBA) {
-	defer op.Save(c.Context.Ops).Load()
-	op.Offset(f32.Point{X: x, Y: y - size}).Add(c.Context.Ops) // shift to use baseline
+	stack := op.Offset(f32.Point{X: x, Y: y - size}).Push(c.Context.Ops) // shift to use baseline
 	l := material.Label(material.NewTheme(gofont.Collection()), unit.Px(size), s)
 	l.Color = fillcolor
 	c.Context.Constraints.Max.X = int(width)
 	l.Layout(c.Context)
 	c.Context.Constraints.Max.X = int(c.Width) // restore width...
+	stack.Pop()
 }
 
 // AbsText places text at (x,y)
@@ -134,12 +134,11 @@ func (c *Canvas) AbsImg(im image.Image, x, y float32, w, h int, scale float32) {
 	y = y - (imh / 2)
 
 	ops := c.Context.Ops
-	stack := op.Save(ops)
-	op.Offset(f32.Pt(x, y)).Add(ops)
+	stack := op.Offset(f32.Pt(x, y)).Push(ops)
 	op.Affine(f32.Affine2D{}.Scale(f32.Pt(0, 0), f32.Pt(sc, sc))).Add(ops)
 	paint.NewImageOp(im).Add(ops)
 	paint.PaintOp{}.Add(ops)
-	stack.Load()
+	stack.Pop()
 }
 
 // AbsPolygon makes a closed, filled polygon with vertices in x and y
@@ -150,7 +149,6 @@ func (c *Canvas) AbsPolygon(x, y []float32, fillcolor color.NRGBA) {
 	path := new(clip.Path)
 	ops := c.Context.Ops
 
-	defer op.Save(c.Context.Ops).Load()
 	path.Begin(ops)
 	path.Move(f32.Point{X: x[0], Y: y[0]})
 
@@ -162,21 +160,23 @@ func (c *Canvas) AbsPolygon(x, y []float32, fillcolor color.NRGBA) {
 	path.Line(f32.Point{X: x[0] - x[l-1], Y: y[0] - y[l-1]})
 	path.Line(point)
 	path.Close()
-	clip.Outline{Path: path.End()}.Op().Add(ops)
+	stack := clip.Outline{Path: path.End()}.Op().Push(ops)
 	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{}.Add(ops)
+	stack.Pop()
+
 }
 
 // AbsLine makes a line from (x0,y0) to (x1, y1) using absolute coordinates
 func (c *Canvas) AbsLine(x0, y0, x1, y1, size float32, fillcolor color.NRGBA) {
 	path := new(clip.Path)
 	ops := c.Context.Ops
-	defer op.Save(c.Context.Ops).Load()
 	path.Begin(ops)
 	path.MoveTo(f32.Point{X: x0, Y: y0})
 	path.LineTo(f32.Point{X: x1, Y: y1})
-	clip.Stroke{Path: path.End(), Width: size}.Op().Add(ops)
+	stack := clip.Stroke{Path: path.End(), Width: size}.Op().Push(ops)
 	paint.Fill(ops, fillcolor)
+	stack.Pop()
 }
 
 // AbsQuadBezier makes a filled quadratic curve
@@ -188,14 +188,14 @@ func (c *Canvas) AbsQuadBezier(x, y, cx, cy, ex, ey, size float32, fillcolor col
 	ctrl := f32.Point{X: cx - x, Y: cy - y}
 	to := f32.Point{X: ex - x, Y: ey - y}
 
-	defer op.Save(c.Context.Ops).Load()
 	path.Begin(ops)
 	path.Move(f32.Point{X: x, Y: y})
 	path.Quad(ctrl, to)
 	path.Close()
-	clip.Outline{Path: path.End()}.Op().Add(ops)
+	stack := clip.Outline{Path: path.End()}.Op().Push(ops)
 	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{}.Add(ops)
+	stack.Pop()
 }
 
 // AbsStrokedQuadBezier makes a stroked quadratic curve
@@ -207,12 +207,13 @@ func (c *Canvas) AbsStrokedQuadBezier(x, y, cx, cy, ex, ey, size float32, stroke
 	ctrl := f32.Point{X: cx - x, Y: cy - y}
 	to := f32.Point{X: ex - x, Y: ey - y}
 
-	defer op.Save(c.Context.Ops).Load()
 	path.Begin(ops)
 	path.Move(f32.Point{X: x, Y: y})
 	path.Quad(ctrl, to)
-	clip.Stroke{Path: path.End(), Width: size}.Op().Add(ops)
+	stack := clip.Stroke{Path: path.End(), Width: size}.Op().Push(ops)
 	paint.Fill(ops, strokecolor)
+	stack.Pop()
+
 }
 
 // AbsCubicBezier makes a filled cubic bezier curve
@@ -225,14 +226,14 @@ func (c *Canvas) AbsCubicBezier(x, y, cx1, cy1, cx2, cy2, ex, ey, size float32, 
 	cp1 := f32.Point{X: cx2 - x, Y: cy2 - y}
 	ep := f32.Point{X: ex - x, Y: ey - y}
 
-	defer op.Save(c.Context.Ops).Load()
 	path.Begin(ops)
 	path.Move(sp)
 	path.Cube(cp0, cp1, ep)
 	path.Close()
-	clip.Outline{Path: path.End()}.Op().Add(ops)
+	stack := clip.Outline{Path: path.End()}.Op().Push(ops)
 	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{}.Add(ops)
+	stack.Pop()
 }
 
 // AbsStrokedCubicBezier makes a stroked cubic bezier curve
@@ -245,12 +246,12 @@ func (c *Canvas) AbsStrokedCubicBezier(x, y, cx1, cy1, cx2, cy2, ex, ey, size fl
 	cp1 := f32.Point{X: cx2 - x, Y: cy2 - y}
 	ep := f32.Point{X: ex - x, Y: ey - y}
 
-	defer op.Save(c.Context.Ops).Load()
 	path.Begin(ops)
 	path.Move(sp)
 	path.Cube(cp0, cp1, ep)
-	clip.Stroke{Path: path.End(), Width: size}.Op().Add(ops)
+	stack := clip.Stroke{Path: path.End(), Width: size}.Op().Push(ops)
 	paint.Fill(ops, strokecolor)
+	stack.Pop()
 }
 
 // AbsCircle makes a circle centered at (x, y), radius r
@@ -259,7 +260,6 @@ func (c *Canvas) AbsCircle(x, y, radius float32, fillcolor color.NRGBA) {
 	ops := c.Context.Ops
 	const k = 0.551915024494 // http://spencermortensen.com/articles/bezier-circle/
 
-	defer op.Save(c.Context.Ops).Load()
 	path.Begin(ops)
 	path.Move(f32.Point{X: x + radius, Y: y})
 	path.Cube(f32.Point{X: 0, Y: radius * k}, f32.Point{X: -radius + radius*k, Y: radius}, f32.Point{X: -radius, Y: radius})    // SE
@@ -267,9 +267,10 @@ func (c *Canvas) AbsCircle(x, y, radius float32, fillcolor color.NRGBA) {
 	path.Cube(f32.Point{X: 0, Y: -radius * k}, f32.Point{X: radius - radius*k, Y: -radius}, f32.Point{X: radius, Y: -radius})   // NW
 	path.Cube(f32.Point{X: radius * k, Y: 0}, f32.Point{X: radius, Y: radius - radius*k}, f32.Point{X: radius, Y: radius})      // NE
 	path.Close()
-	clip.Outline{Path: path.End()}.Op().Add(ops)
+	stack := clip.Outline{Path: path.End()}.Op().Push(ops)
 	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{}.Add(ops)
+	stack.Pop()
 }
 
 // AbsEllipse makes a ellipse centered at (x, y) radii (w, h)
@@ -277,16 +278,16 @@ func (c *Canvas) AbsEllipse(x, y, w, h float32, fillcolor color.NRGBA) {
 	path := new(clip.Path)
 	ops := c.Context.Ops
 	const k = 0.551915024494 // http://spencermortensen.com/articles/bezier-circle/
-	defer op.Save(c.Context.Ops).Load()
 	path.Begin(ops)
 	path.Move(f32.Point{X: x + w, Y: y})
 	path.Cube(f32.Point{X: 0, Y: h * k}, f32.Point{X: -w + w*k, Y: h}, f32.Point{X: -w, Y: h})    // SE
 	path.Cube(f32.Point{X: -w * k, Y: 0}, f32.Point{X: -w, Y: -h + h*k}, f32.Point{X: -w, Y: -h}) // SW
 	path.Cube(f32.Point{X: 0, Y: -h * k}, f32.Point{X: w - w*k, Y: -h}, f32.Point{X: w, Y: -h})   // NW
 	path.Cube(f32.Point{X: w * k, Y: 0}, f32.Point{X: w, Y: h - h*k}, f32.Point{X: w, Y: h})      // NE
-	clip.Outline{Path: path.End()}.Op().Add(ops)
+	stack := clip.Outline{Path: path.End()}.Op().Push(ops)
 	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{}.Add(ops)
+	stack.Pop()
 }
 
 // AbsArc makes circular arc centered at (x, y), through angles start and end;
@@ -295,7 +296,6 @@ func (c *Canvas) AbsEllipse(x, y, w, h float32, fillcolor color.NRGBA) {
 func (c *Canvas) AbsArc(x, y, radius float32, start, end float64, fillcolor color.NRGBA) {
 	ops := c.Context.Ops
 	sine, cose := math.Sincos(start)
-	defer op.Save(ops).Load()
 	path := new(clip.Path)
 	path.Begin(ops)
 	path.Move(f32.Pt(x, y))                                 // move to the center
@@ -324,9 +324,10 @@ func (c *Canvas) AbsArc(x, y, radius float32, start, end float64, fillcolor colo
 		pen = endPt
 	}
 	path.Close()
-	clip.Outline{Path: path.End()}.Op().Add(ops)
+	stack := clip.Outline{Path: path.End()}.Op().Push(ops)
 	paint.ColorOp{Color: fillcolor}.Add(ops)
 	paint.PaintOp{}.Add(ops)
+	stack.Pop()
 }
 
 // AbsTranslate moves current location by (x,y)
