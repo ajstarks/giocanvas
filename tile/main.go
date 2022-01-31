@@ -51,12 +51,12 @@ func tile(title string, opts options) {
 	bgcolor := gc.ColorLookup(opts.bgcolor)
 
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
-	canvas := gc.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			os.Exit(0)
 		case system.FrameEvent:
+			canvas := gc.NewCanvas(width, height, system.FrameEvent{})
 			canvas.Background(bgcolor)
 			var x, y float32
 			for x = opts.left; x < opts.right; x += opts.step {

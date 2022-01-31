@@ -32,12 +32,12 @@ func work(title string, width, height float32) {
 	orange := gc.ColorLookup("orange")
 	bgcolor := gc.ColorLookup("linen")
 
-	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			os.Exit(0)
 		case system.FrameEvent:
+			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 			canvas.Background(bgcolor)
 			flower(canvas, 10, 90, 5, 1, red)
 			flower(canvas, 25, 75, 10, 1.5, green)

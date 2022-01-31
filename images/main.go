@@ -30,7 +30,6 @@ func getimage(s string) (image.Image, error) {
 func images(title string, width, height float32) {
 	defer os.Exit(0)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
-	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	im, err := getimage("earth.jpg")
 	if err != nil {
 		return
@@ -39,6 +38,7 @@ func images(title string, width, height float32) {
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.FrameEvent:
+			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 			var x, y, scale float32
 			scale = 2.0
 			canvas.Background(bgcolor)

@@ -15,12 +15,12 @@ import (
 
 func linetest(title string, width, height float32) {
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
-	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			os.Exit(0)
 		case system.FrameEvent:
+			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 			var x, y, lw, ls float32
 			lw = 0.1
 			ls = 1

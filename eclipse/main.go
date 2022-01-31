@@ -20,12 +20,12 @@ func eclipse(s string, width, height float32) {
 	white := color.NRGBA{255, 255, 255, 255}
 
 	win := app.NewWindow(title, size)
-	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			os.Exit(0)
 		case system.FrameEvent:
+			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 			canvas.CenterRect(50, 50, 100, 100, black)
 			var r float32 = 5.0
 			var y float32 = 50.0

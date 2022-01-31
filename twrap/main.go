@@ -27,12 +27,13 @@ func twrap(title string, width, height float32) {
 	green := color.NRGBA{0, 128, 0, 255}
 	blue := color.NRGBA{0, 0, 128, 255}
 
-	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			os.Exit(0)
 		case system.FrameEvent:
+			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
+
 			s := "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
 			var left float32 = 15
 			var y1, y2, y3, ys float32

@@ -83,12 +83,12 @@ func lego(title string, width, height float32) {
 	}
 	var c1, c2 float32 = 15, 60
 
-	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			os.Exit(0)
 		case system.FrameEvent:
+			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 			canvas.Text(c1, 85, 3, "Incarceration Rate", giocanvas.ColorLookup("black"))
 			canvas.Text(c2, 85, 3, "US Population", giocanvas.ColorLookup("black"))
 			canvas.CText(50, 20, 1.5, "Source: Breaking Down Mass Incarceration in the 2010 Census: State-by-State Incarceration Rates by Race/Ethnicity", giocanvas.ColorLookup("gray"))

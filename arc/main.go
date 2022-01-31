@@ -26,7 +26,6 @@ func degrees(radians float64) float64 {
 
 func arc(title string, width, height float32) {
 	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
-	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	var x, y, step float32
 	size := width / 10
 	step = width * 0.11
@@ -43,6 +42,7 @@ func arc(title string, width, height float32) {
 		case system.DestroyEvent:
 			os.Exit(0)
 		case system.FrameEvent:
+			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 			angle := 45.0 // Pi / 4
 			y = height * 0.2
 			canvas.CText(50, 50, 10, "Arcs", black)

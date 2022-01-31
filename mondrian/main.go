@@ -31,12 +31,12 @@ func mondrian(s string, width, height float32) {
 	t2h := t2 + halft
 
 	win := app.NewWindow(title, size)
-	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			os.Exit(0)
 		case system.FrameEvent:
+			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 			canvas.Background(white)
 			canvas.CenterRect(halft, halft, third, third, blue)      // lower left blue square
 			canvas.CenterRect(t2, t2, t2, t2, red)                   // big red

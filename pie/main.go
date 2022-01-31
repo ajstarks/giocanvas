@@ -64,12 +64,12 @@ func pie(title string, width, height float32) {
 		{name: "IE/Edge", value: 2.06, color: "rgb(0,128,0)"},
 	}
 
-	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			os.Exit(0)
 		case system.FrameEvent:
+			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 			canvas.CText(50, 92, 4, "Browser Market Share, 2020-06", color.NRGBA{20, 20, 20, 255})
 			canvas.CText(50, 5, 2, "Source: Statcounter Global Stats, July 2020", color.NRGBA{100, 100, 100, 255})
 			piechart(canvas, 50, 50, 25, data)
