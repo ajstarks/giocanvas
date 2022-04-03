@@ -4,10 +4,10 @@ package main
 import (
 	"flag"
 	"image/color"
+	"io"
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
@@ -61,32 +61,36 @@ func comp(canvas *giocanvas.Canvas) error {
 	return nil
 }
 
-func work(title string, width, height float32) {
-	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
-	for e := range win.Events() {
+func sincos(w *app.Window, width, height float32) error {
+	for {
+		e := <-w.Events()
 		switch e := e.(type) {
 		case system.DestroyEvent:
-			os.Exit(0)
+			return e.Err
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, e)
-			// your code here
 			comp(canvas)
-
 			e.Frame(canvas.Context.Ops)
-		case key.Event:
-			switch e.Name {
-			case "Q", key.NameEscape:
-				os.Exit(0)
-			}
 		}
 	}
 }
 
 func main() {
-	var w, h int
-	flag.IntVar(&w, "width", 1000, "canvas width")
-	flag.IntVar(&h, "height", 1000, "canvas height")
+	var cw, ch int
+	flag.IntVar(&cw, "width", 1000, "canvas width")
+	flag.IntVar(&ch, "height", 1000, "canvas height")
 	flag.Parse()
-	go work("sine+cosine", float32(w), float32(h))
+	width := float32(cw)
+	height := float32(ch)
+
+	go func() {
+		w := app.NewWindow(app.Title("sine+cosine"), app.Size(unit.Px(width), unit.Px(height)))
+		if err := sincos(w, width, height); err != nil {
+			io.WriteString(os.Stderr, "Cannot create the window\n")
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}()
 	app.Main()
+
 }

@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"image"
 	"image/color"
+	"io"
 	"os"
 
 	"gioui.org/app"
 	"gioui.org/f32"
-	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
@@ -28,9 +28,7 @@ func getImage(name string) image.Image {
 	return im
 }
 
-func play(appname string, width, height float32, showgrid bool) {
-	size := app.Size(unit.Px(width), unit.Px(height))
-	title := app.Title(appname)
+func play(w *app.Window, width, height float32, showgrid bool) error {
 	tcolor := color.NRGBA{128, 0, 0, 150}
 	fcolor := color.NRGBA{0, 0, 128, 150}
 	bgcolor := color.NRGBA{255, 255, 255, 255}
@@ -43,12 +41,12 @@ func play(appname string, width, height float32, showgrid bool) {
 	subsize := labelsize * 0.7
 	subtitle := `A canvas API for Gio applications using high-level objects and a percentage-based coordinate system (https://github.com/ajstarks/giocanvas)`
 	logoimg := getImage("logo.png")
-	win := app.NewWindow(title, size)
 	const pi = 3.14159265
-	for e := range win.Events() {
+	for {
+		e := <-w.Events()
 		switch e := e.(type) {
 		case system.DestroyEvent:
-			os.Exit(0)
+			return e.Err
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 
@@ -57,7 +55,7 @@ func play(appname string, width, height float32, showgrid bool) {
 			canvas.Img(logoimg, 5, 95, 400, 400, 20)
 
 			colx = 20
-			canvas.TextMid(colx, 92, titlesize, appname, labelcolor)
+			canvas.TextMid(colx, 92, titlesize, "Canvas API", labelcolor)
 			canvas.TextWrap(colx+15, 95, titlesize*0.3, 50, subtitle, labelcolor)
 
 			// Lines
@@ -148,22 +146,28 @@ func play(appname string, width, height float32, showgrid bool) {
 				canvas.Grid(0, 0, 100, 100, 0.1, 5, gridcolor)
 			}
 			e.Frame(canvas.Context.Ops)
-		case key.Event:
-			switch e.Name {
-			case "Q", key.NameEscape:
-				os.Exit(0)
-			}
 		}
 	}
 }
 
 func main() {
-	var w, h int
+	var cw, ch int
 	var showgrid bool
-	flag.IntVar(&w, "width", 1600, "canvas width")
-	flag.IntVar(&h, "height", 1000, "canvas height")
+	flag.IntVar(&cw, "width", 1600, "canvas width")
+	flag.IntVar(&ch, "height", 1000, "canvas height")
 	flag.BoolVar(&showgrid, "grid", false, "show grid")
 	flag.Parse()
-	go play("Canvas API", float32(w), float32(h), showgrid)
+	width := float32(cw)
+	height := float32(ch)
+
+	go func() {
+		w := app.NewWindow(app.Title("Canvas API"), app.Size(unit.Px(width), unit.Px(height)))
+		if err := play(w, width, height, showgrid); err != nil {
+			io.WriteString(os.Stderr, "Cannot create the window\n")
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}()
 	app.Main()
+
 }

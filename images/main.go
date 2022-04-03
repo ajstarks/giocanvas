@@ -5,10 +5,10 @@ import (
 	"flag"
 	"image"
 	"image/color"
+	"io"
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
@@ -27,16 +27,17 @@ func getimage(s string) (image.Image, error) {
 	return im, nil
 }
 
-func images(title string, width, height float32) {
-	defer os.Exit(0)
-	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
+func images(w *app.Window, width, height float32) error {
 	im, err := getimage("earth.jpg")
 	if err != nil {
-		return
+		return err
 	}
 	bgcolor := color.NRGBA{0, 0, 0, 255}
-	for e := range win.Events() {
+	for {
+		e := <-w.Events()
 		switch e := e.(type) {
+		case system.DestroyEvent:
+			return e.Err
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 			var x, y, scale float32
@@ -49,20 +50,23 @@ func images(title string, width, height float32) {
 				scale += 2.0
 			}
 			e.Frame(canvas.Context.Ops)
-		case key.Event:
-			switch e.Name {
-			case "Q", key.NameEscape:
-				os.Exit(0)
-			}
 		}
 	}
 }
 
 func main() {
-	var w, h int
-	flag.IntVar(&w, "width", 1000, "canvas width")
-	flag.IntVar(&h, "height", 1000, "canvas height")
+	var cw, ch int
+	flag.IntVar(&cw, "width", 1000, "canvas width")
+	flag.IntVar(&ch, "height", 1000, "canvas height")
 	flag.Parse()
-	go images("images", float32(w), float32(h))
+	width, height := float32(cw), float32(ch)
+	go func() {
+		w := app.NewWindow(app.Title("images"), app.Size(unit.Px(width), unit.Px(height)))
+		if err := images(w, width, height); err != nil {
+			io.WriteString(os.Stderr, "Cannot create the window\n")
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}()
 	app.Main()
 }

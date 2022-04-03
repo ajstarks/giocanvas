@@ -4,17 +4,16 @@ package main
 import (
 	"flag"
 	"image/color"
+	"io"
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
 
-func sunearth(s string, width, height float32) {
-	win := app.NewWindow(app.Title(s), app.Size(unit.Px(width), unit.Px(height)))
+func sunearth(w *app.Window, width, height float32) error {
 
 	yellow := color.NRGBA{255, 248, 231, 255}
 	blue := color.NRGBA{44, 77, 232, 255}
@@ -23,32 +22,36 @@ func sunearth(s string, width, height float32) {
 	var earthsize float32 = 0.8
 	sunsize := earthsize * 109
 
-	canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
-	for e := range win.Events() {
+	for {
+		e := <-w.Events()
 		switch e := e.(type) {
 		case system.DestroyEvent:
-			os.Exit(0)
+			return e.Err
 		case system.FrameEvent:
+			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 			canvas.CenterRect(50, 50, 100, 100, black)
 			canvas.Circle(100, 0, sunsize, yellow)
 			canvas.Circle(30, 90, earthsize, blue)
-
 			e.Frame(canvas.Context.Ops)
-		case key.Event:
-			switch e.Name {
-			case "Q", key.NameEscape:
-				os.Exit(0)
-			}
-
 		}
 	}
 }
 
 func main() {
-	var w, h int
-	flag.IntVar(&w, "width", 1000, "canvas width")
-	flag.IntVar(&h, "height", 1000, "canvas height")
+	var cw, ch int
+	flag.IntVar(&cw, "width", 1000, "canvas width")
+	flag.IntVar(&ch, "height", 1000, "canvas height")
 	flag.Parse()
-	go sunearth("sun+earth", float32(w), float32(h))
+	width := float32(cw)
+	height := float32(ch)
+
+	go func() {
+		w := app.NewWindow(app.Title("hello"), app.Size(unit.Px(width), unit.Px(height)))
+		if err := sunearth(w, width, height); err != nil {
+			io.WriteString(os.Stderr, "Cannot create the window\n")
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}()
 	app.Main()
 }

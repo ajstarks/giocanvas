@@ -4,11 +4,11 @@ package main
 import (
 	"flag"
 	"image/color"
+	"io"
 	"math/rand"
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
@@ -22,19 +22,14 @@ func rn8(n int) uint8 {
 	return uint8(rand.Intn(n))
 }
 
-func confetti(s string, w, h, nshapes, maxsize int) {
-	width := float32(w)
-	height := float32(h)
-	size := app.Size(unit.Px(width), unit.Px(height))
-	title := app.Title(s)
-	win := app.NewWindow(title, size)
-	for e := range win.Events() {
+func confetti(w *app.Window, width, height float32, nshapes, maxsize int) error {
+	for {
+		e := <-w.Events()
 		switch e := e.(type) {
 		case system.DestroyEvent:
-			os.Exit(0)
+			return e.Err
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
-
 			canvas.CenterRect(50, 50, 100, 100, color.NRGBA{0, 0, 0, 255})
 			for i := 0; i < nshapes; i++ {
 				color := color.NRGBA{rn8(255), rn8(255), rn8(255), rn8(255)}
@@ -47,23 +42,28 @@ func confetti(s string, w, h, nshapes, maxsize int) {
 				}
 			}
 			e.Frame(canvas.Context.Ops)
-		case key.Event:
-			switch e.Name {
-			case "Q", key.NameEscape:
-				os.Exit(0)
-			}
 		}
 
 	}
 }
 
 func main() {
-	var w, h, nshapes, maxsize int
-	flag.IntVar(&w, "width", 1000, "canvas width")
-	flag.IntVar(&h, "height", 1000, "canvas height")
+	var cw, ch, nshapes, maxsize int
+	flag.IntVar(&cw, "width", 1000, "canvas width")
+	flag.IntVar(&ch, "height", 1000, "canvas height")
 	flag.IntVar(&nshapes, "n", 500, "number of shapes")
 	flag.IntVar(&maxsize, "size", 10, "max size")
 	flag.Parse()
-	go confetti("Confetti", w, h, nshapes, maxsize)
+
+	width := float32(cw)
+	height := float32(ch)
+	go func() {
+		w := app.NewWindow(app.Title("confetti"), app.Size(unit.Px(width), unit.Px(height)))
+		if err := confetti(w, width, height, nshapes, maxsize); err != nil {
+			io.WriteString(os.Stderr, "Cannot create the window\n")
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}()
 	app.Main()
 }

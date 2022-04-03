@@ -3,20 +3,17 @@ package main
 
 import (
 	"flag"
+	"io"
 	"os"
 	"strconv"
 
 	"gioui.org/app"
-	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
 
-func alpha(s string, width, height float32, color string) {
-	size := app.Size(unit.Px(width), unit.Px(height))
-	title := app.Title(s)
-	win := app.NewWindow(title, size)
+func alpha(w *app.Window, width, height float32, color string) error {
 	blue := giocanvas.ColorLookup("steelblue")
 	gray := giocanvas.ColorLookup("gray")
 	dotcolor := giocanvas.ColorLookup(color)
@@ -25,12 +22,13 @@ func alpha(s string, width, height float32, color string) {
 	px = 2
 	dotsize = 0.8
 	interval = dotsize * 2.4
-	for e := range win.Events() {
+	for {
+		e := <-w.Events()
 		switch e := e.(type) {
 		case system.DestroyEvent:
-			os.Exit(0)
+			return e.Err
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, e)
+			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 			canvas.CText(50, y+12, 1.5, "Alpha", blue)
 			canvas.CText(50, y-18, 1.5, "% Alpha", gray)
 			for x = 0; x <= 100; x += 2 {
@@ -41,22 +39,28 @@ func alpha(s string, width, height float32, color string) {
 				px += interval
 			}
 			e.Frame(canvas.Context.Ops)
-		case key.Event:
-			switch e.Name {
-			case "Q", key.NameEscape:
-				os.Exit(0)
-			}
 		}
 	}
 }
 
 func main() {
-	var w, h int
+	var cw, ch int
 	var color string
-	flag.IntVar(&w, "width", 2400, "canvas width")
-	flag.IntVar(&h, "height", 600, "canvas height")
+	flag.IntVar(&cw, "width", 2400, "canvas width")
+	flag.IntVar(&ch, "height", 600, "canvas height")
 	flag.StringVar(&color, "color", "black", "color")
 	flag.Parse()
-	go alpha("alpha", float32(w), float32(h), color)
+	width := float32(cw)
+	height := float32(ch)
+
+	go func() {
+		w := app.NewWindow(app.Title("alpha"), app.Size(unit.Px(width), unit.Px(height)))
+		if err := alpha(w, width, height, color); err != nil {
+			io.WriteString(os.Stderr, "Cannot create the window\n")
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}()
 	app.Main()
+
 }

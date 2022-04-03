@@ -5,7 +5,7 @@ do
 	echo -n "$i "
 	if test $i == "showimage"
 	then
-		showimage showimage.png &
+		./showimage showimage.png &
 	else 
 		./$i &
 	fi

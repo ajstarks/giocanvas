@@ -1,0 +1,5 @@
+#!/bin/sh
+go get gioui.org@latest  &&
+go mod tidy &&
+./bc.sh &&
+./rc.sh

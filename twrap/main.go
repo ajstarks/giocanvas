@@ -4,10 +4,10 @@ package main
 import (
 	"flag"
 	"image/color"
+	"io"
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
@@ -18,23 +18,23 @@ func pct(p float32, m float32) float32 {
 	return ((p / 100.0) * m)
 }
 
-func twrap(title string, width, height float32) {
-	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
+func twrap(w *app.Window, width, height float32) error {
 	var ts float32 = 2.8
 	subsize := ts * 0.6
 	gray := color.NRGBA{100, 100, 100, 255}
 	red := color.NRGBA{128, 0, 0, 255}
 	green := color.NRGBA{0, 128, 0, 255}
 	blue := color.NRGBA{0, 0, 128, 255}
+	s := "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
 
-	for e := range win.Events() {
+	for {
+		e := <-w.Events()
 		switch e := e.(type) {
 		case system.DestroyEvent:
-			os.Exit(0)
+			return e.Err
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 
-			s := "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
 			var left float32 = 15
 			var y1, y2, y3, ys float32
 
@@ -57,21 +57,26 @@ func twrap(title string, width, height float32) {
 			canvas.TextWrap(left, y2-ys, ts, 40, s, green)
 			canvas.TextWrap(left, y3-ys, ts, 20, s, blue)
 			e.Frame(canvas.Context.Ops)
-		case key.Event:
-			switch e.Name {
-			case "Q", key.NameEscape:
-				os.Exit(0)
-			}
-
 		}
 	}
 }
 
 func main() {
-	var w, h int
-	flag.IntVar(&w, "width", 1000, "canvas width")
-	flag.IntVar(&h, "height", 1000, "canvas height")
+	var cw, ch int
+	flag.IntVar(&cw, "width", 1000, "canvas width")
+	flag.IntVar(&ch, "height", 1000, "canvas height")
 	flag.Parse()
-	go twrap("Text Wrapping", float32(w), float32(h))
+	width := float32(cw)
+	height := float32(ch)
+
+	go func() {
+		w := app.NewWindow(app.Title("text wrapping"), app.Size(unit.Px(width), unit.Px(height)))
+		if err := twrap(w, width, height); err != nil {
+			io.WriteString(os.Stderr, "Cannot create the window\n")
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}()
+
 	app.Main()
 }

@@ -8,10 +8,10 @@ import (
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
+	"io"
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
@@ -38,26 +38,16 @@ func imageinfo(imagefile string, w, h int) (image.Image, int, int, error) {
 }
 
 // showimage shows an image, centered on the canvas at the specified scale and size
-func showimage(title string, im image.Image, width, height int, scale float64) {
-	sw, sh, sc := float32(width), float32(height), float32(scale)
-	if sc != 100 {
-		sw *= sc / 100
-		sh *= sc / 100
-	}
-	win := app.NewWindow(app.Title(title), app.Size(unit.Px(sw), unit.Px(sh)))
-	for e := range win.Events() {
+func showimage(win *app.Window, im image.Image, w, h int, sw, sh, scale float32) error {
+	for {
+		e := <-win.Events()
 		switch e := e.(type) {
 		case system.DestroyEvent:
-			os.Exit(0)
+			return e.Err
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(sw, sh, system.FrameEvent{})
-			canvas.Img(im, 50, 50, width, height, sc)
+			canvas.Img(im, 50, 50, w, h, scale)
 			e.Frame(canvas.Context.Ops)
-		case key.Event:
-			switch e.Name {
-			case "Q", key.NameEscape:
-				os.Exit(0)
-			}
 		}
 	}
 }
@@ -69,8 +59,6 @@ func main() {
 		err   error
 		im    image.Image
 	)
-	flag.IntVar(&w, "width", 0, "canvas width")
-	flag.IntVar(&h, "height", 0, "canvas height")
 	flag.Float64Var(&scale, "scale", 100, "scale (0-100)")
 	flag.Parse()
 
@@ -85,7 +73,20 @@ func main() {
 			fmt.Fprintf(os.Stderr, "%v\n", err)
 			continue
 		}
-		go showimage(imagefile, im, w, h, scale)
+		go func() {
+			sw, sh, sc := float32(w), float32(h), float32(scale)
+			if sc != 100 {
+				sw *= sc / 100
+				sh *= sc / 100
+			}
+			win := app.NewWindow(app.Title(imagefile), app.Size(unit.Px(sw), unit.Px(sh)))
+			if err := showimage(win, im, w, h, sw, sh, sc); err != nil {
+				io.WriteString(os.Stderr, "Cannot create the window\n")
+				os.Exit(1)
+			}
+			os.Exit(0)
+		}()
 	}
 	app.Main()
+
 }

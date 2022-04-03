@@ -3,13 +3,14 @@ package main
 
 import (
 	"flag"
+	"io"
 	"math/rand"
 	"os"
 	"time"
 
 	"gioui.org/app"
-	"gioui.org/io/key"
 	"gioui.org/io/system"
+
 	"gioui.org/unit"
 	gc "github.com/ajstarks/giocanvas"
 )
@@ -39,22 +40,30 @@ func main() {
 	opts.top, opts.bottom, opts.right, opts.left = float32(top), float32(bottom), float32(right), float32(left)
 
 	rand.Seed(time.Now().Unix() % 1e6)
-	go tile("tile", opts)
+
+	go func() {
+		w := app.NewWindow(app.Title("tile"), app.Size(unit.Px(float32(opts.width)), unit.Px(float32(opts.height))))
+		if err := tile(w, opts); err != nil {
+			io.WriteString(os.Stderr, "Cannot create the window\n")
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}()
 	app.Main()
 }
 
-func tile(title string, opts options) {
+func tile(w *app.Window, opts options) error {
 	width := float32(opts.width)
 	height := float32(opts.height)
 	leftColor := gc.ColorLookup(opts.leftcolor)
 	rightColor := gc.ColorLookup(opts.rightcolor)
 	bgcolor := gc.ColorLookup(opts.bgcolor)
 
-	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
-	for e := range win.Events() {
+	for {
+		e := <-w.Events()
 		switch e := e.(type) {
 		case system.DestroyEvent:
-			os.Exit(0)
+			return e.Err
 		case system.FrameEvent:
 			canvas := gc.NewCanvas(width, height, system.FrameEvent{})
 			canvas.Background(bgcolor)
@@ -68,13 +77,7 @@ func tile(title string, opts options) {
 					}
 				}
 			}
-
 			e.Frame(canvas.Context.Ops)
-		case key.Event:
-			switch e.Name {
-			case "Q", key.NameEscape:
-				os.Exit(0)
-			}
 		}
 	}
 }

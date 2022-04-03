@@ -2,19 +2,18 @@
 package main
 
 import (
+	"flag"
 	"image/color"
+	"io"
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
 
-func mondrian(s string, width, height float32) {
-	size := app.Size(unit.Px(width), unit.Px(height))
-	title := app.Title(s)
+func mondrian(w *app.Window, width, height float32) error {
 
 	black := color.NRGBA{0, 0, 0, 255}
 	white := color.NRGBA{255, 255, 255, 255}
@@ -30,11 +29,11 @@ func mondrian(s string, width, height float32) {
 	tq := 100.0 - qt
 	t2h := t2 + halft
 
-	win := app.NewWindow(title, size)
-	for e := range win.Events() {
+	for {
+		e := <-w.Events()
 		switch e := e.(type) {
 		case system.DestroyEvent:
-			os.Exit(0)
+			return e.Err
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 			canvas.Background(white)
@@ -50,19 +49,26 @@ func mondrian(s string, width, height float32) {
 			canvas.Line(t2h, 0, t2h, third, border, black)           // left of small right squares
 			canvas.Line(0, third, 100, third, border, black)         // top of bottom squares
 			canvas.Line(0, t2, third, t2, border, black)             // border between left white squares
-
 			e.Frame(canvas.Context.Ops)
-		case key.Event:
-			switch e.Name {
-			case "Q", key.NameEscape:
-				os.Exit(0)
-			}
-
 		}
 	}
 }
 
 func main() {
-	go mondrian("Mondrian", 1000, 1000)
+	var cw, ch int
+	flag.IntVar(&cw, "width", 1000, "canvas width")
+	flag.IntVar(&ch, "height", 1000, "canvas height")
+	flag.Parse()
+	width := float32(cw)
+	height := float32(ch)
+	go func() {
+		w := app.NewWindow(app.Title("hello"), app.Size(unit.Px(width), unit.Px(height)))
+		if err := mondrian(w, width, height); err != nil {
+			io.WriteString(os.Stderr, "Cannot create the window\n")
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}()
 	app.Main()
+
 }

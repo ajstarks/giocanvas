@@ -5,17 +5,16 @@ import (
 	"flag"
 	"fmt"
 	"image/color"
-	"math"
+	"io"
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
 
-const fullcircle = math.Pi * 2
+const fullcircle = 3.14159265358979323846264338327950288419716939937510582097494459 * 2
 
 type piedata struct {
 	name  string
@@ -53,8 +52,7 @@ func piechart(canvas *giocanvas.Canvas, x, y, r float32, data []piedata) {
 	}
 }
 
-func pie(title string, width, height float32) {
-	win := app.NewWindow(app.Title(title), app.Size(unit.Px(width), unit.Px(height)))
+func pie(w *app.Window, width, height float32) error {
 
 	data := []piedata{
 		{name: "Chrome", value: 65.47, color: "rgb(211,57,53)"},
@@ -64,7 +62,8 @@ func pie(title string, width, height float32) {
 		{name: "IE/Edge", value: 2.06, color: "rgb(0,128,0)"},
 	}
 
-	for e := range win.Events() {
+	for {
+		e := <-w.Events()
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			os.Exit(0)
@@ -74,20 +73,26 @@ func pie(title string, width, height float32) {
 			canvas.CText(50, 5, 2, "Source: Statcounter Global Stats, July 2020", color.NRGBA{100, 100, 100, 255})
 			piechart(canvas, 50, 50, 25, data)
 			e.Frame(canvas.Context.Ops)
-		case key.Event:
-			switch e.Name {
-			case "Q", key.NameEscape:
-				os.Exit(0)
-			}
 		}
 	}
 }
 
 func main() {
-	var w, h int
-	flag.IntVar(&w, "width", 1000, "canvas width")
-	flag.IntVar(&h, "height", 1000, "canvas height")
+	var cw, ch int
+	flag.IntVar(&cw, "width", 1000, "canvas width")
+	flag.IntVar(&ch, "height", 1000, "canvas height")
 	flag.Parse()
-	go pie("piechart", float32(w), float32(h))
+
+	width := float32(cw)
+	height := float32(ch)
+
+	go func() {
+		w := app.NewWindow(app.Title("pie"), app.Size(unit.Px(width), unit.Px(height)))
+		if err := pie(w, width, height); err != nil {
+			io.WriteString(os.Stderr, "Cannot create the window\n")
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}()
 	app.Main()
 }
