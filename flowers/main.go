@@ -55,7 +55,7 @@ func main() {
 	width := float32(cw)
 	height := float32(ch)
 	go func() {
-		w := app.NewWindow(app.Title("concentric"), app.Size(unit.Px(width), unit.Px(height)))
+		w := app.NewWindow(app.Title("flowers"), app.Size(unit.Px(width), unit.Px(height)))
 		if err := flower(w, width, height); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
