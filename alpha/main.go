@@ -1,4 +1,4 @@
-// confetti -- random shapes
+// alpha
 package main
 
 import (
@@ -31,14 +31,17 @@ func alpha(w *app.Window, width, height float32, color string) error {
 			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 			canvas.CText(50, y+12, 1.5, "Alpha", blue)
 			canvas.CText(50, y-18, 1.5, "% Alpha", gray)
+			px, y = 2, 50
 			for x = 0; x <= 100; x += 2 {
 				dotcolor.A = uint8((x / 100) * 255)
 				canvas.Circle(px, y, dotsize, dotcolor)
 				canvas.TextMid(px, y-8, 0.75, strconv.FormatFloat(float64(x), 'g', -1, 32), gray)
 				canvas.TextMid(px, y+5, 0.75, strconv.FormatInt(int64(dotcolor.A), 10), blue)
 				px += interval
+
 			}
 			e.Frame(canvas.Context.Ops)
+
 		}
 	}
 }
