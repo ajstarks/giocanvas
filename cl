@@ -15,6 +15,7 @@ pie
 polar
 rgb
 showimage
+spiral
 sunearth
 tile
 transform

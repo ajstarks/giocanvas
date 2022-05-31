@@ -49,7 +49,7 @@ func alpha(w *app.Window, width, height float32, color string) error {
 func main() {
 	var cw, ch int
 	var color string
-	flag.IntVar(&cw, "width", 2400, "canvas width")
+	flag.IntVar(&cw, "width", 1800, "canvas width")
 	flag.IntVar(&ch, "height", 600, "canvas height")
 	flag.StringVar(&color, "color", "black", "color")
 	flag.Parse()
