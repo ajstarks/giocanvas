@@ -30,8 +30,8 @@ func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string,
 	case text.Middle:
 		offset = x - c.Width/2
 	}
-	stack := op.Offset(f32.Point{X: offset, Y: y - size}).Push(c.Context.Ops) // shift to use baseline
-	l := material.Label(material.NewTheme(gofont.Collection()), unit.Px(size), s)
+	stack := op.Offset(image.Point{X: int(offset), Y: int(y - size)}).Push(c.Context.Ops) // shift to use baseline
+	l := material.Label(material.NewTheme(gofont.Collection()), unit.Sp(size), s)
 	l.Color = fillcolor
 	l.Alignment = alignment
 	l.Layout(c.Context)
@@ -40,8 +40,8 @@ func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string,
 
 // AbsTextWrap places and wraps text at (x, y), wrapped at width
 func (c *Canvas) AbsTextWrap(x, y, size, width float32, s string, fillcolor color.NRGBA) {
-	stack := op.Offset(f32.Point{X: x, Y: y - size}).Push(c.Context.Ops) // shift to use baseline
-	l := material.Label(material.NewTheme(gofont.Collection()), unit.Px(size), s)
+	stack := op.Offset(image.Point{X: int(x), Y: int(y - size)}).Push(c.Context.Ops) // shift to use baseline
+	l := material.Label(material.NewTheme(gofont.Collection()), unit.Sp(size), s)
 	l.Color = fillcolor
 	c.Context.Constraints.Max.X = int(width)
 	l.Layout(c.Context)
@@ -134,7 +134,9 @@ func (c *Canvas) AbsImg(im image.Image, x, y float32, w, h int, scale float32) {
 	y = y - (imh / 2)
 
 	ops := c.Context.Ops
-	stack := op.Offset(f32.Pt(x, y)).Push(ops)
+	ix := int(x)
+	iy := int(y)
+	stack := op.Offset(image.Pt(ix, iy)).Push(ops)
 	op.Affine(f32.Affine2D{}.Scale(f32.Pt(0, 0), f32.Pt(sc, sc))).Add(ops)
 	paint.NewImageOp(im).Add(ops)
 	paint.PaintOp{}.Add(ops)
@@ -334,7 +336,7 @@ func (c *Canvas) AbsArc(x, y, radius float32, start, end float64, fillcolor colo
 func (c *Canvas) AbsTranslate(x, y float32) op.TransformStack {
 	ops := c.Context.Ops
 	op.InvalidateOp{}.Add(ops)
-	stack := op.Offset(f32.Pt(0, 0)).Push(ops)
+	stack := op.Offset(image.Pt(0, 0)).Push(ops)
 	tr := f32.Affine2D{}
 	tr = tr.Offset(f32.Pt(x, y))
 	op.Affine(tr).Add(ops)
@@ -345,7 +347,7 @@ func (c *Canvas) AbsTranslate(x, y float32) op.TransformStack {
 func (c *Canvas) AbsRotate(x, y, angle float32) op.TransformStack {
 	ops := c.Context.Ops
 	op.InvalidateOp{}.Add(ops)
-	stack := op.Offset(f32.Pt(0, 0)).Push(ops)
+	stack := op.Offset(image.Pt(0, 0)).Push(ops)
 	tr := f32.Affine2D{}.Rotate(f32.Pt(x, y), angle)
 	op.Affine(tr).Add(ops)
 	return stack
@@ -355,7 +357,7 @@ func (c *Canvas) AbsRotate(x, y, angle float32) op.TransformStack {
 func (c *Canvas) AbsScale(x, y, factor float32) op.TransformStack {
 	ops := c.Context.Ops
 	op.InvalidateOp{}.Add(ops)
-	stack := op.Offset(f32.Pt(0, 0)).Push(ops)
+	stack := op.Offset(image.Pt(0, 0)).Push(ops)
 	tr := f32.Affine2D{}.Scale(f32.Pt(x, y), f32.Pt(factor, factor))
 	op.Affine(tr).Add(ops)
 	return stack
@@ -365,7 +367,7 @@ func (c *Canvas) AbsScale(x, y, factor float32) op.TransformStack {
 func (c *Canvas) AbsShear(x, y, ax, ay float32) op.TransformStack {
 	ops := c.Context.Ops
 	op.InvalidateOp{}.Add(ops)
-	stack := op.Offset(f32.Pt(0, 0)).Push(ops)
+	stack := op.Offset(image.Pt(0, 0)).Push(ops)
 	tr := f32.Affine2D{}.Shear(f32.Pt(x, y), ax, ay)
 	op.Affine(tr).Add(ops)
 	return stack

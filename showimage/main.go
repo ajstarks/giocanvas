@@ -79,7 +79,7 @@ func main() {
 				sw *= sc / 100
 				sh *= sc / 100
 			}
-			win := app.NewWindow(app.Title(imagefile), app.Size(unit.Px(sw), unit.Px(sh)))
+			win := app.NewWindow(app.Title(imagefile), app.Size(unit.Dp(sw), unit.Dp(sh)))
 			if err := showimage(win, im, w, h, sw, sh, sc); err != nil {
 				io.WriteString(os.Stderr, "Cannot create the window\n")
 				os.Exit(1)

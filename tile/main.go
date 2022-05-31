@@ -42,7 +42,7 @@ func main() {
 	rand.Seed(time.Now().Unix() % 1e6)
 
 	go func() {
-		w := app.NewWindow(app.Title("tile"), app.Size(unit.Px(float32(opts.width)), unit.Px(float32(opts.height))))
+		w := app.NewWindow(app.Title("tile"), app.Size(unit.Dp(float32(opts.width)), unit.Dp(float32(opts.height))))
 		if err := tile(w, opts); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)

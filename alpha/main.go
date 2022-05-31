@@ -57,7 +57,7 @@ func main() {
 	height := float32(ch)
 
 	go func() {
-		w := app.NewWindow(app.Title("alpha"), app.Size(unit.Px(width), unit.Px(height)))
+		w := app.NewWindow(app.Title("alpha"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := alpha(w, width, height, color); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)

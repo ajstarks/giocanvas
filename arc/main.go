@@ -81,7 +81,7 @@ func main() {
 	width := float32(cw)
 	height := float32(ch)
 	go func() {
-		w := app.NewWindow(app.Title("Arc"), app.Size(unit.Px(width), unit.Px(height)))
+		w := app.NewWindow(app.Title("Arc"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := arc(w, width, height); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
