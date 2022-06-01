@@ -119,6 +119,9 @@ func (c *Canvas) AbsCenterImage(name string, x, y float32, w, h int, scale float
 // AbsImg places a image.Image centered at (x, y)
 // using the specified dimensions (w, h), and then scaled
 func (c *Canvas) AbsImg(im image.Image, x, y float32, w, h int, scale float32) {
+	if im == nil {
+		return
+	}
 	// compute scaled image dimensions
 	// if w and h are zero, use the natural dimensions
 	sc := scale / 100
