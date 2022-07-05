@@ -6,6 +6,7 @@ compchart
 confetti
 eclipse
 flowers
+grid
 hello
 images
 lego
