@@ -230,11 +230,11 @@ func ColorLookup(s string) color.NRGBA {
 			hue, _ := strconv.ParseFloat(v[0], 64)
 			sat, _ := strconv.ParseFloat(v[1], 64)
 			value, _ := strconv.ParseFloat(v[2], 64)
-			c.R, c.G, c.B = hsv2rgb(hue, sat, value)
 			a := cc(v[3])
 			if a > 100 {
 				a = 100
 			}
+			c.R, c.G, c.B = hsv2rgb(hue, sat, value)
 			c.A = uint8((float64(a) / 100.0) * 255.0)
 			return c
 		default:
