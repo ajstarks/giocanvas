@@ -2,6 +2,7 @@ package giocanvas
 
 import (
 	"image/color"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -178,6 +179,7 @@ func hc(s string) uint8 {
 // ColorLookup returns a color.RGBA corresponding to the named color or
 // "rgb(r)", "rgb(r,b)", "rgb(r,g,b), "rgb(r,g,b,a)",
 // "#rr",     "#rrgg",   "#rrggbb",   "#rrggbbaa" string.
+// "hsv(hue,sat,value)"
 // On error, return black.
 func ColorLookup(s string) color.NRGBA {
 	c, ok := colornames[s]
@@ -213,6 +215,32 @@ func ColorLookup(s string) color.NRGBA {
 			return black
 		}
 	}
+	// hsv(h,s,v) or hsv(h,s,v,a); h=0-360, s, v=0-100, a=0-100
+	if strings.HasPrefix(s, "hsv(") && strings.HasSuffix(s, ")") && ls > 5 {
+		v := strings.Split(s[4:ls-1], ",")
+		switch len(v) {
+		case 3:
+			hue, _ := strconv.ParseFloat(v[0], 64)
+			sat, _ := strconv.ParseFloat(v[1], 64)
+			value, _ := strconv.ParseFloat(v[2], 64)
+			c.R, c.G, c.B = hsv2rgb(hue, sat, value)
+			c.A = 255
+			return c
+		case 4:
+			hue, _ := strconv.ParseFloat(v[0], 64)
+			sat, _ := strconv.ParseFloat(v[1], 64)
+			value, _ := strconv.ParseFloat(v[2], 64)
+			c.R, c.G, c.B = hsv2rgb(hue, sat, value)
+			a := cc(v[3])
+			if a > 100 {
+				a = 100
+			}
+			c.A = uint8((float64(a) / 100.0) * 255.0)
+			return c
+		default:
+			return black
+		}
+	}
 	// #rrggbb
 	if strings.HasPrefix(s, "#") && (ls >= 3) {
 		c.R, c.G, c.B, c.A = 0, 0, 0, 255
@@ -237,4 +265,53 @@ func ColorLookup(s string) color.NRGBA {
 		return c
 	}
 	return black
+}
+
+// hsv2rgb converts hsv(h (0-360), s (0-100), v (0-100)) to rgb
+// reference: https://en.wikipedia.org/wiki/HSL_and_HSV#HSV_to_RGB
+func hsv2rgb(h, s, v float64) (uint8, uint8, uint8) {
+	s /= 100
+	v /= 100
+	if s > 1 || v > 1 {
+		return 0, 0, 0
+	}
+	h = math.Mod(h, 360)
+	c := v * s
+	section := h / 60
+	x := c * (1 - math.Abs(math.Mod(section, 2)-1))
+
+	var r, g, b float64
+	switch {
+	case section >= 0 && section <= 1:
+		r = c
+		g = x
+		b = 0
+	case section > 1 && section <= 2:
+		r = x
+		g = c
+		b = 0
+	case section > 2 && section <= 3:
+		r = 0
+		g = c
+		b = x
+	case section > 3 && section <= 4:
+		r = 0
+		g = x
+		b = c
+	case section > 4 && section <= 5:
+		r = x
+		g = 0
+		b = c
+	case section > 5 && section <= 6:
+		r = c
+		g = 0
+		b = x
+	default:
+		return 0, 0, 0
+	}
+	m := v - c
+	r += m
+	g += m
+	b += m
+	return uint8(r * 255), uint8(g * 255), uint8(b * 255)
 }

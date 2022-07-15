@@ -40,11 +40,14 @@ func rgb(w *app.Window, width, height float32) error {
 		"rgb(100,50)",
 		"rgb(100,50,2)",
 		"rgb(100,50,2,100)",
+		"hsv(0,100,100)",
+		"hsv(0,100,100,50)",
 		"#aa",
 		"#aabb",
 		"#aabbcc",
 		"#aabbcc64",
 		"rgb()",
+		"hsv()",
 		"#",
 		"#error",
 		"nonsense",
@@ -57,11 +60,11 @@ func rgb(w *app.Window, width, height float32) error {
 			return e.Err
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
-			x, y = 50, 90
+			x, y = 50, 95
 			for _, c := range colortab {
 				canvas.EText(x-10, y, 3, c, color.NRGBA{0, 0, 0, 255})
 				canvas.Circle(x, y+1, 2, giocanvas.ColorLookup(c))
-				y -= 7
+				y -= 6
 			}
 			e.Frame(canvas.Context.Ops)
 		}
