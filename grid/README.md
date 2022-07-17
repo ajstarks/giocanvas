@@ -2,24 +2,27 @@
 
 ![grid](grid.png)
 
+## options
 ```
-Usage of ./grid:
+  -color string
+      color (default "black")
   -height int
-    	canvas height (default 1000)
+      canvas height (default 1000)
   -lw float
-    	line width (default 0.2)
+      line width (default 0.2)
   -width int
-    	canvas width (default 1000)
+      canvas width (default 1000)
   -x1 float
-    	x begin
+      x begin
   -x2 float
-    	x end (default 100)
+      x end (default 100)
   -xincr float
-    	x increment (default 10)
+      x increment (default 10)
   -y1 float
-    	y begin
+      y begin
   -y2 float
-    	y end (default 100)
+      y end (default 100)
   -yincr float
-    	y increment (default 10)
+      y increment (default 10)
+
 ```
