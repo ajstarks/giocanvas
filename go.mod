@@ -3,7 +3,7 @@ module github.com/ajstarks/giocanvas
 go 1.17
 
 require (
-	gioui.org v0.0.0-20220726132227-f7bc744a24bf
+	gioui.org v0.0.0-20220731233321-5326ca5fbe51
 	github.com/disintegration/gift v1.2.1
 )
 
