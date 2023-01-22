@@ -4,6 +4,7 @@ apisheet
 concentric
 compchart
 confetti
+elections
 eclipse
 flowers
 grid

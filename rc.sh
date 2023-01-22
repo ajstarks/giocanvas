@@ -3,12 +3,17 @@ for i in $(cat cl)
 do
 	cd $i
 	echo -n "$i "
-	if test $i == "showimage"
-	then
-		./showimage showimage.png &
-	else 
-		./$i &
-	fi
+	case $i in
+		showimage)
+			./showimage showimage.png & 
+			;;
+		elections)
+			./elections nyt-????.d &
+			;;
+		*)
+			./$i &
+			;;
+	esac
 	cd ..
 done
 echo

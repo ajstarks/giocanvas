@@ -182,7 +182,7 @@ func endPage(canvas *gc.Canvas) {
 
 func elect(title string, opts options, elections []election) {
 	cw, ch := float32(opts.width), float32(opts.height)
-	win := app.NewWindow(app.Title(title), app.Size(unit.Px(cw), unit.Px(ch)))
+	win := app.NewWindow(app.Title(title), app.Size(unit.Dp(cw), unit.Dp(ch)))
 	n := 0
 	ne := len(elections) - 1
 
