@@ -86,7 +86,8 @@ func bezsketch(w *app.Window, width, height float32) error {
 			pointer.InputOp{Tag: pressed, Grab: false, Types: pointer.Press | pointer.Drag}.Add(canvas.Context.Ops)
 			textcoord(canvas, bx, by, 2, beginColor)
 			textcoord(canvas, ex, ey, 2, endColor)
-			canvas.QuadStrokedCurve(bx, by, cx, cy, ex, ey, 1, curveColor)
+			textcoord(canvas, cx, cy, 2, curveColor)
+			canvas.QuadStrokedCurve(bx, by, cx, cy, ex, ey, 0.75, curveColor)
 			fmt.Printf("curve %.1f %.1f %.1f %.1f %.1f %.1f\n", bx, by, cx, cy, ex, ey)
 			pctmousePos(e.Queue, width, height)
 			cx, cy = mouseX, mouseY
