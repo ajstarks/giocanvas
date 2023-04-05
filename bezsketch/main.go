@@ -1,4 +1,4 @@
-// bezsketch
+// bezsketch: sketch quadradic Bezier curves
 package main
 
 import (
@@ -46,7 +46,7 @@ func pctcoord(x, y, width, height float32) (float32, float32) {
 	return 100 * (x / width), 100 - (100 * (y / height))
 }
 
-// ftoa convert float to string, with leading space
+// ftoa converts float to string, with leading space
 func ftoa(x float32) string {
 	return " " + strconv.FormatFloat(float64(x), 'f', 1, 32)
 }
@@ -54,8 +54,7 @@ func ftoa(x float32) string {
 // textcoord displays a labelled coordinate
 func textcoord(canvas *giocanvas.Canvas, x, y, size float32, color color.NRGBA) {
 	canvas.Circle(x, y, size/2, color)
-	coord := ftoa(x) + "," + ftoa(y)
-	canvas.TextMid(x, y+size, size, coord, black)
+	canvas.TextMid(x, y+size, size, ftoa(x)+","+ftoa(y), black)
 }
 
 // pctmousePos records the mouse position in percent coordinates
@@ -79,7 +78,7 @@ func pctmousePos(q event.Queue, width, height float32) {
 }
 
 // bezsketch sketches quadratic bezier curves:
-// left mouse defines the begin point, right mouse the end, drag defines the control po
+// left mouse defines the begin point, right mouse the end, drag defines the control point
 func bezsketch(w *app.Window, width, height float32) error {
 	beginColor := color.NRGBA{R: 0, G: 255, B: 0, A: 255}
 	endColor := color.NRGBA{R: 255, G: 0, B: 0, A: 255}
@@ -89,11 +88,18 @@ func bezsketch(w *app.Window, width, height float32) error {
 	ex, ey = 75.0, 50.0
 	cx, cy = 10, 10
 	var ts float32 = 2.5
+
+	// event loop
 	for {
 		ev := <-w.Events()
 		switch e := ev.(type) {
 		case system.DestroyEvent:
 			return e.Err
+		// for each frame:
+		// register press and drag events,
+		// draw coordinates, and the curve,
+		// display curve defintion on stdout,
+		// track the mouse position
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 			pointer.InputOp{Tag: pressed, Grab: false, Types: pointer.Press | pointer.Drag}.Add(canvas.Context.Ops)
