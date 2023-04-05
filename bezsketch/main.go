@@ -54,13 +54,8 @@ func ftoa(x float32) string {
 // textcoord displays a labelled coordinate
 func textcoord(canvas *giocanvas.Canvas, x, y, size float32, color color.NRGBA) {
 	canvas.Circle(x, y, size/2, color)
-	coord := ftoa(x) + ", " + ftoa(y)
+	coord := ftoa(x) + "," + ftoa(y)
 	canvas.TextMid(x, y+size, size, coord, black)
-}
-
-// curvedef build a decksh curve definition
-func curvedef() string {
-	return "curve " + ftoa(bx) + ftoa(by) + ftoa(cx) + ftoa(cy) + ftoa(ex) + ftoa(ey) + "\n"
 }
 
 // pctmousePos records the mouse position in percent coordinates
@@ -93,6 +88,7 @@ func bezsketch(w *app.Window, width, height float32) error {
 	bx, by = 25.0, 50.0
 	ex, ey = 75.0, 50.0
 	cx, cy = 10, 10
+	var ts float32 = 2.5
 	for {
 		ev := <-w.Events()
 		switch e := ev.(type) {
@@ -101,11 +97,11 @@ func bezsketch(w *app.Window, width, height float32) error {
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
 			pointer.InputOp{Tag: pressed, Grab: false, Types: pointer.Press | pointer.Drag}.Add(canvas.Context.Ops)
-			textcoord(canvas, bx, by, 2, beginColor)
-			textcoord(canvas, ex, ey, 2, endColor)
-			textcoord(canvas, cx, cy, 2, curveColor)
+			textcoord(canvas, bx, by, ts, beginColor)
+			textcoord(canvas, ex, ey, ts, endColor)
+			textcoord(canvas, cx, cy, ts, curveColor)
 			canvas.QuadStrokedCurve(bx, by, cx, cy, ex, ey, 0.75, curveColor)
-			io.WriteString(os.Stdout, curvedef())
+			io.WriteString(os.Stdout, "curve"+ftoa(bx)+ftoa(by)+ftoa(cx)+ftoa(cy)+ftoa(ex)+ftoa(ey)+"\n")
 			pctmousePos(e.Queue, width, height)
 			cx, cy = mouseX, mouseY
 			e.Frame(canvas.Context.Ops)
