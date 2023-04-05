@@ -57,12 +57,12 @@ func textcoord(canvas *giocanvas.Canvas, x, y, size float32, color color.NRGBA) 
 	canvas.TextMid(x, y+size, size, ftoa(x)+","+ftoa(y), black)
 }
 
-// pctmousePos records the mouse position in percent coordinates
-func pctmousePos(q event.Queue, width, height float32) {
+// pctPointerPos records and processes the pointer events in percent coordinates
+func pctPointerPos(q event.Queue, width, height float32) {
 	for _, ev := range q.Events(pressed) {
 		if p, ok := ev.(pointer.Event); ok {
 			switch p.Type {
-			case pointer.Drag:
+			case pointer.Move:
 				mouseX, mouseY = pctcoord(p.Position.X, p.Position.Y, width, height)
 			case pointer.Press:
 				switch p.Buttons {
@@ -70,6 +70,8 @@ func pctmousePos(q event.Queue, width, height float32) {
 					bx, by = pctcoord(p.Position.X, p.Position.Y, width, height)
 				case pointer.ButtonSecondary:
 					ex, ey = pctcoord(p.Position.X, p.Position.Y, width, height)
+				case pointer.ButtonTertiary:
+					io.WriteString(os.Stdout, "curve"+ftoa(bx)+ftoa(by)+ftoa(cx)+ftoa(cy)+ftoa(ex)+ftoa(ey)+"\n")
 				}
 				pressed = true
 			}
@@ -77,8 +79,9 @@ func pctmousePos(q event.Queue, width, height float32) {
 	}
 }
 
-// bezsketch sketches quadratic bezier curves:
-// left mouse defines the begin point, right mouse the end, drag defines the control point
+// bezsketch sketches quadratic bezier curves: left pointer press defines the begin point,
+// right pointer press defines the end point, middle pointer press shows the curve spec,
+// pointer move defines the control point
 func bezsketch(w *app.Window, width, height float32) error {
 	beginColor := color.NRGBA{R: 0, G: 255, B: 0, A: 255}
 	endColor := color.NRGBA{R: 255, G: 0, B: 0, A: 255}
@@ -93,22 +96,21 @@ func bezsketch(w *app.Window, width, height float32) error {
 	for {
 		ev := <-w.Events()
 		switch e := ev.(type) {
+		// return an error on close
 		case system.DestroyEvent:
 			return e.Err
+
 		// for each frame:
-		// register press and drag events,
-		// draw coordinates, and the curve,
-		// display curve defintion on stdout,
-		// track the mouse position
+		// register press and move events, draw coordinates, and the curve,
+		// track the pointer position for the control point, show curve spec on middle click
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
-			pointer.InputOp{Tag: pressed, Grab: false, Types: pointer.Press | pointer.Drag}.Add(canvas.Context.Ops)
+			pointer.InputOp{Tag: pressed, Grab: false, Types: pointer.Press | pointer.Move}.Add(canvas.Context.Ops)
 			textcoord(canvas, bx, by, ts, beginColor)
 			textcoord(canvas, ex, ey, ts, endColor)
 			textcoord(canvas, cx, cy, ts, curveColor)
 			canvas.QuadStrokedCurve(bx, by, cx, cy, ex, ey, 0.75, curveColor)
-			io.WriteString(os.Stdout, "curve"+ftoa(bx)+ftoa(by)+ftoa(cx)+ftoa(cy)+ftoa(ex)+ftoa(ey)+"\n")
-			pctmousePos(e.Queue, width, height)
+			pctPointerPos(e.Queue, width, height)
 			cx, cy = mouseX, mouseY
 			e.Frame(canvas.Context.Ops)
 		}
