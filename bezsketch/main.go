@@ -3,10 +3,10 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"image/color"
 	"io"
 	"os"
+	"strconv"
 
 	"gioui.org/app"
 	"gioui.org/io/event"
@@ -38,17 +38,32 @@ func main() {
 
 var pressed bool
 var mouseX, mouseY float32
-var bx, by, ex, ey float32
+var bx, by, ex, ey, cx, cy float32
+var black = color.NRGBA{R: 0, G: 0, B: 0, A: 255}
 
+// pctcoord converts device coordinates to canvas percents
 func pctcoord(x, y, width, height float32) (float32, float32) {
 	return 100 * (x / width), 100 - (100 * (y / height))
 }
 
-func textcoord(canvas *giocanvas.Canvas, x, y, size float32, color color.NRGBA) {
-	canvas.Circle(x, y, size/2, color)
-	canvas.TextMid(x, y+size, size, fmt.Sprintf("(%.1f, %.1f)", x, y), giocanvas.ColorLookup("black"))
+// ftoa convert float to string, with leading space
+func ftoa(x float32) string {
+	return " " + strconv.FormatFloat(float64(x), 'f', 1, 32)
 }
 
+// textcoord displays a labelled coordinate
+func textcoord(canvas *giocanvas.Canvas, x, y, size float32, color color.NRGBA) {
+	canvas.Circle(x, y, size/2, color)
+	coord := ftoa(x) + ", " + ftoa(y)
+	canvas.TextMid(x, y+size, size, coord, black)
+}
+
+// curvedef build a decksh curve definition
+func curvedef() string {
+	return "curve " + ftoa(bx) + ftoa(by) + ftoa(cx) + ftoa(cy) + ftoa(ex) + ftoa(ey) + "\n"
+}
+
+// pctmousePos records the mouse position in percent coordinates
 func pctmousePos(q event.Queue, width, height float32) {
 	for _, ev := range q.Events(pressed) {
 		if p, ok := ev.(pointer.Event); ok {
@@ -68,6 +83,8 @@ func pctmousePos(q event.Queue, width, height float32) {
 	}
 }
 
+// bezsketch sketches quadratic bezier curves:
+// left mouse defines the begin point, right mouse the end, drag defines the control po
 func bezsketch(w *app.Window, width, height float32) error {
 	beginColor := color.NRGBA{R: 0, G: 255, B: 0, A: 255}
 	endColor := color.NRGBA{R: 255, G: 0, B: 0, A: 255}
@@ -75,7 +92,7 @@ func bezsketch(w *app.Window, width, height float32) error {
 
 	bx, by = 25.0, 50.0
 	ex, ey = 75.0, 50.0
-	var cx, cy float32 = 10, 10
+	cx, cy = 10, 10
 	for {
 		ev := <-w.Events()
 		switch e := ev.(type) {
@@ -88,7 +105,7 @@ func bezsketch(w *app.Window, width, height float32) error {
 			textcoord(canvas, ex, ey, 2, endColor)
 			textcoord(canvas, cx, cy, 2, curveColor)
 			canvas.QuadStrokedCurve(bx, by, cx, cy, ex, ey, 0.75, curveColor)
-			fmt.Printf("curve %.1f %.1f %.1f %.1f %.1f %.1f\n", bx, by, cx, cy, ex, ey)
+			io.WriteString(os.Stdout, curvedef())
 			pctmousePos(e.Queue, width, height)
 			cx, cy = mouseX, mouseY
 			e.Frame(canvas.Context.Ops)
