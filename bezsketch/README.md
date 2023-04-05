@@ -4,9 +4,10 @@
 
 Sketch quadratic bezier curves
 
-* Button 1: define begin point
-* Button 2: define ending point
-* Drag: define control point
+* Primary pointer press: define begin point
+* Secondary pointer press: define ending point
+* Tertiary pointer press: show the decksh curve spec
+* Move: define control point
 
 command flags:
 
