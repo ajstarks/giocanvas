@@ -1,6 +1,7 @@
 # bezsketch
 
-![bezsketch](bezsketch.png)
+![bezsketch](bezsketch-light.png)
+![bezsketch-dark](bezsketch-dark.png)
 
 Sketch quadratic bezier curves
 
@@ -11,6 +12,28 @@ Sketch quadratic bezier curves
 
 command flags:
 
-	-width n : canvas width
-	-height n : canvas height
+	  -begincolor string
+	    	begin coordinate color (default "green")
+	  -bgcolor string
+	    	background color (default "white")
+	  -controlcolor string
+	    	control coordinate color (default "gray")
+	  -csize float
+	    	coordinate size (default 1.25)
+	  -curvecolor string
+	    	curve color (default "#aaaaaaaa")
+	  -curvesize float
+	    	curve size (default 1)
+	  -endcolor string
+	    	end coordinate color (default "red")
+	  -height int
+	    	canvas height (default 1000)
+	  -precision int
+	    	coordinate precision
+	  -textcolor string
+	    	text color (default "black")
+	  -tsize float
+	    	text size (default 2.5)
+	  -width int
+	    	canvas width (default 1000)
 

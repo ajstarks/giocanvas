@@ -16,18 +16,46 @@ import (
 	"github.com/ajstarks/giocanvas"
 )
 
+type config struct {
+	precision                                                          int
+	width, height, textsize, coordsize, curvesize                      float32
+	curvecolor, bgcolor, textcolor, begincolor, controlcolor, endcolor color.NRGBA
+}
+
 func main() {
 	var cw, ch int
+	var ts, cs, cus float64
+	var curvecolor, bgcolor, textcolor, begincolor, endcolor, controlcolor string
+	var cfg config
 	flag.IntVar(&cw, "width", 1000, "canvas width")
 	flag.IntVar(&ch, "height", 1000, "canvas height")
+	flag.IntVar(&cfg.precision, "precision", 0, "coordinate precision")
+	flag.StringVar(&bgcolor, "bgcolor", "white", "background color")
+	flag.StringVar(&textcolor, "textcolor", "black", "text color")
+	flag.StringVar(&begincolor, "begincolor", "green", "begin coordinate color")
+	flag.StringVar(&endcolor, "endcolor", "red", "end coordinate color")
+	flag.StringVar(&controlcolor, "controlcolor", "gray", "control coordinate color")
+	flag.StringVar(&curvecolor, "curvecolor", "#aaaaaaaa", "curve color")
+	flag.Float64Var(&ts, "tsize", 2.5, "text size")
+	flag.Float64Var(&cs, "csize", 1.25, "coordinate size")
+	flag.Float64Var(&cus, "curvesize", 1.0, "curve size")
 	flag.Parse()
 
-	width := float32(cw)
-	height := float32(ch)
+	cfg.width = float32(cw)
+	cfg.height = float32(ch)
+	cfg.textsize = float32(ts)
+	cfg.coordsize = float32(cs)
+	cfg.curvesize = float32(cus)
+	cfg.bgcolor = giocanvas.ColorLookup(bgcolor)
+	cfg.textcolor = giocanvas.ColorLookup(textcolor)
+	cfg.curvecolor = giocanvas.ColorLookup(curvecolor)
+	cfg.begincolor = giocanvas.ColorLookup(begincolor)
+	cfg.endcolor = giocanvas.ColorLookup(endcolor)
+	cfg.controlcolor = giocanvas.ColorLookup(controlcolor)
 
 	go func() {
-		w := app.NewWindow(app.Title("bezsketch"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := bezsketch(w, width, height); err != nil {
+		w := app.NewWindow(app.Title("bezsketch"), app.Size(unit.Dp(cfg.width), unit.Dp(cfg.height)))
+		if err := bezsketch(w, cfg); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
 		}
@@ -39,7 +67,6 @@ func main() {
 var pressed bool
 var mouseX, mouseY float32
 var bx, by, ex, ey, cx, cy float32
-var black = color.NRGBA{R: 0, G: 0, B: 0, A: 255}
 
 // pctcoord converts device coordinates to canvas percents
 func pctcoord(x, y, width, height float32) (float32, float32) {
@@ -47,18 +74,24 @@ func pctcoord(x, y, width, height float32) (float32, float32) {
 }
 
 // ftoa converts float to string, with leading space
-func ftoa(x float32) string {
-	return " " + strconv.FormatFloat(float64(x), 'f', 1, 32)
+func ftoa(x float32, prec int) string {
+	return " " + strconv.FormatFloat(float64(x), 'f', prec, 32)
 }
 
 // textcoord displays a labelled coordinate
-func textcoord(canvas *giocanvas.Canvas, x, y, size float32, color color.NRGBA) {
-	canvas.Circle(x, y, size/2, color)
-	canvas.TextMid(x, y+size, size, ftoa(x)+","+ftoa(y), black)
+func textcoord(canvas *giocanvas.Canvas, x, y float32, color color.NRGBA, cfg config) {
+	size := cfg.coordsize
+	ts := cfg.textsize
+	prec := cfg.precision
+	canvas.Circle(x, y, size, color)
+	canvas.Circle(x, y, size/2, cfg.bgcolor)
+	canvas.TextMid(x, y+ts, ts, ftoa(x, prec)+","+ftoa(y, prec), cfg.textcolor)
 }
 
 // pctPointerPos records and processes the pointer events in percent coordinates
-func pctPointerPos(q event.Queue, width, height float32) {
+func pctPointerPos(q event.Queue, cfg config) {
+	width, height := cfg.width, cfg.height
+	prec := cfg.precision
 	for _, ev := range q.Events(pressed) {
 		if p, ok := ev.(pointer.Event); ok {
 			switch p.Type {
@@ -71,7 +104,7 @@ func pctPointerPos(q event.Queue, width, height float32) {
 				case pointer.ButtonSecondary:
 					ex, ey = pctcoord(p.Position.X, p.Position.Y, width, height)
 				case pointer.ButtonTertiary:
-					io.WriteString(os.Stdout, "curve"+ftoa(bx)+ftoa(by)+ftoa(cx)+ftoa(cy)+ftoa(ex)+ftoa(ey)+"\n")
+					io.WriteString(os.Stdout, "curve"+ftoa(bx, prec)+ftoa(by, prec)+ftoa(cx, prec)+ftoa(cy, prec)+ftoa(ex, prec)+ftoa(ey, prec)+"\n")
 				}
 				pressed = true
 			}
@@ -82,15 +115,11 @@ func pctPointerPos(q event.Queue, width, height float32) {
 // bezsketch sketches quadratic bezier curves: left pointer press defines the begin point,
 // right pointer press defines the end point, middle pointer press shows the curve spec,
 // pointer move defines the control point
-func bezsketch(w *app.Window, width, height float32) error {
-	beginColor := color.NRGBA{R: 0, G: 255, B: 0, A: 255}
-	endColor := color.NRGBA{R: 255, G: 0, B: 0, A: 255}
-	curveColor := color.NRGBA{R: 128, G: 128, B: 128, A: 128}
-
+func bezsketch(w *app.Window, cfg config) error {
 	bx, by = 25.0, 50.0
 	ex, ey = 75.0, 50.0
 	cx, cy = 10, 10
-	var ts float32 = 2.5
+	begincolor, endcolor, controlcolor := cfg.begincolor, cfg.endcolor, cfg.controlcolor
 
 	// event loop
 	for {
@@ -100,17 +129,17 @@ func bezsketch(w *app.Window, width, height float32) error {
 		case system.DestroyEvent:
 			return e.Err
 
-		// for each frame:
-		// register press and move events, draw coordinates, and the curve,
+		// for each frame: register press and move events, draw coordinates, and the curve,
 		// track the pointer position for the control point, show curve spec on middle click
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
+			canvas := giocanvas.NewCanvas(cfg.width, cfg.height, system.FrameEvent{})
 			pointer.InputOp{Tag: pressed, Grab: false, Types: pointer.Press | pointer.Move}.Add(canvas.Context.Ops)
-			textcoord(canvas, bx, by, ts, beginColor)
-			textcoord(canvas, ex, ey, ts, endColor)
-			textcoord(canvas, cx, cy, ts, curveColor)
-			canvas.QuadStrokedCurve(bx, by, cx, cy, ex, ey, 0.75, curveColor)
-			pctPointerPos(e.Queue, width, height)
+			canvas.Background(cfg.bgcolor)
+			textcoord(canvas, bx, by, begincolor, cfg)
+			textcoord(canvas, ex, ey, endcolor, cfg)
+			textcoord(canvas, cx, cy, controlcolor, cfg)
+			canvas.QuadStrokedCurve(bx, by, cx, cy, ex, ey, cfg.curvesize, cfg.curvecolor)
+			pctPointerPos(e.Queue, cfg)
 			cx, cy = mouseX, mouseY
 			e.Frame(canvas.Context.Ops)
 		}
