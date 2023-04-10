@@ -17,6 +17,7 @@ import (
 	"github.com/ajstarks/giocanvas"
 )
 
+// configuration options
 type config struct {
 	precision                                                          int
 	width, height, textsize, coordsize, curvesize                      float32
@@ -56,6 +57,7 @@ func main() {
 	cfg.endcolor = giocanvas.ColorLookup(endcolor)
 	cfg.controlcolor = giocanvas.ColorLookup(controlcolor)
 
+	// kick off the application
 	go func() {
 		w := app.NewWindow(app.Title("bezsketch"), app.Size(unit.Dp(cfg.width), unit.Dp(cfg.height)))
 		if err := bezsketch(w, cfg); err != nil {
@@ -103,8 +105,8 @@ func curvespec(prec int) {
 	io.WriteString(os.Stdout, "curve"+ftoa(bx, prec)+ftoa(by, prec)+ftoa(cx, prec)+ftoa(cy, prec)+ftoa(ex, prec)+ftoa(ey, prec)+"\n")
 }
 
-// pctPointerPos records and processes the pointer events in percent coordinates
-func pctPointerPos(q event.Queue, cfg config) {
+// kbpointer processes the keyboard and pointer events in percent coordinates
+func kbpointer(q event.Queue, cfg config) {
 	width, height := cfg.width, cfg.height
 	prec := cfg.precision
 	for _, ev := range q.Events(pressed) {
@@ -121,28 +123,28 @@ func pctPointerPos(q event.Queue, cfg config) {
 					switch k.Modifiers {
 					case 0:
 						bx += 1
-					case 4:
+					case key.ModCtrl:
 						ex += 1
 					}
 				case key.NameLeftArrow:
 					switch k.Modifiers {
 					case 0:
 						bx -= 1
-					case 4:
+					case key.ModCtrl:
 						ex -= 1
 					}
 				case key.NameUpArrow:
 					switch k.Modifiers {
 					case 0:
 						by += 1
-					case 4:
+					case key.ModCtrl:
 						ey += 1
 					}
 				case key.NameDownArrow:
 					switch k.Modifiers {
 					case 0:
 						by -= 1
-					case 4:
+					case key.ModCtrl:
 						ey -= 1
 					}
 				case key.NameEscape, "Q":
@@ -185,14 +187,13 @@ func bezsketch(w *app.Window, cfg config) error {
 	cx, cy = 10, 10
 	begincolor, endcolor, controlcolor := cfg.begincolor, cfg.endcolor, cfg.controlcolor
 
-	// event loop
+	// app loop
 	for {
 		ev := <-w.Events()
 		switch e := ev.(type) {
 		// return an error on close
 		case system.DestroyEvent:
 			return e.Err
-
 		// for each frame: register press and move events, draw coordinates, and the curve,
 		// track the pointer position for the control point.
 		case system.FrameEvent:
@@ -205,7 +206,7 @@ func bezsketch(w *app.Window, cfg config) error {
 			textcoord(canvas, ex, ey, endcolor, cfg)
 			textcoord(canvas, cx, cy, controlcolor, cfg)
 			canvas.QuadStrokedCurve(bx, by, cx, cy, ex, ey, cfg.curvesize, cfg.curvecolor)
-			pctPointerPos(e.Queue, cfg)
+			kbpointer(e.Queue, cfg)
 			cx, cy = mouseX, mouseY
 			e.Frame(canvas.Context.Ops)
 		}

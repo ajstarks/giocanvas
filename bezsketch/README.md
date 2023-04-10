@@ -15,7 +15,7 @@ Sketch quadratic bezier curves
 ## Keyboard controls
 
 * left, right, up, down arrow keys: adjust begin point 
-* shift+ left, up, down, arrow keys: adjust end point
+* Ctrl + left, up, down, arrow keys: adjust end point
 * C: show the decksh curve spec
 * G: toggle a coordinate grid
 * Q, ESC: quit
