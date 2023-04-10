@@ -5,10 +5,20 @@
 
 Sketch quadratic bezier curves
 
+## Pointer controls
+
 * Primary pointer press: define begin point
 * Secondary pointer press: define ending point
 * Tertiary pointer press: show the decksh curve spec
 * Move: define control point
+
+## Keyboard controls
+
+* left, right, up, down arrow keys: adjust begin point 
+* shift+ left, up, down, arrow keys: adjust end point
+* C: show the decksh curve spec
+* G: toggle a coordinate grid
+* Q, ESC: quit
 
 command flags:
 

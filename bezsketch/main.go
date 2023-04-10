@@ -10,6 +10,7 @@ import (
 
 	"gioui.org/app"
 	"gioui.org/io/event"
+	"gioui.org/io/key"
 	"gioui.org/io/pointer"
 	"gioui.org/io/system"
 	"gioui.org/unit"
@@ -27,6 +28,8 @@ func main() {
 	var ts, cs, cus float64
 	var curvecolor, bgcolor, textcolor, begincolor, endcolor, controlcolor string
 	var cfg config
+
+	// set up command flags
 	flag.IntVar(&cw, "width", 1000, "canvas width")
 	flag.IntVar(&ch, "height", 1000, "canvas height")
 	flag.IntVar(&cfg.precision, "precision", 0, "coordinate precision")
@@ -64,7 +67,7 @@ func main() {
 	app.Main()
 }
 
-var pressed bool
+var pressed, dogrid bool
 var mouseX, mouseY float32
 var bx, by, ex, ey, cx, cy float32
 
@@ -93,6 +96,48 @@ func pctPointerPos(q event.Queue, cfg config) {
 	width, height := cfg.width, cfg.height
 	prec := cfg.precision
 	for _, ev := range q.Events(pressed) {
+		if k, ok := ev.(key.Event); ok {
+
+			switch k.State {
+			case key.Press:
+				switch k.Name {
+				case "G":
+					dogrid = !dogrid
+				case "C":
+					io.WriteString(os.Stdout, "curve"+ftoa(bx, prec)+ftoa(by, prec)+ftoa(cx, prec)+ftoa(cy, prec)+ftoa(ex, prec)+ftoa(ey, prec)+"\n")
+				case key.NameRightArrow:
+					switch k.Modifiers {
+					case 0:
+						bx += 1
+					case 4:
+						ex += 1
+					}
+				case key.NameLeftArrow:
+					switch k.Modifiers {
+					case 0:
+						bx -= 1
+					case 4:
+						ex -= 1
+					}
+				case key.NameUpArrow:
+					switch k.Modifiers {
+					case 0:
+						by += 1
+					case 4:
+						ey += 1
+					}
+				case key.NameDownArrow:
+					switch k.Modifiers {
+					case 0:
+						by -= 1
+					case 4:
+						ey -= 1
+					}
+				case key.NameEscape, "Q":
+					os.Exit(0)
+				}
+			}
+		}
 		if p, ok := ev.(pointer.Event); ok {
 			switch p.Type {
 			case pointer.Move:
@@ -133,8 +178,12 @@ func bezsketch(w *app.Window, cfg config) error {
 		// track the pointer position for the control point, show curve spec on middle click
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(cfg.width, cfg.height, system.FrameEvent{})
+			key.InputOp{Tag: pressed, Hint: key.HintAny, Keys: "g|G"}.Add(canvas.Context.Ops)
 			pointer.InputOp{Tag: pressed, Grab: false, Types: pointer.Press | pointer.Move}.Add(canvas.Context.Ops)
 			canvas.Background(cfg.bgcolor)
+			if dogrid {
+				canvas.Grid(0, 0, 100, 100, 0.1, 5, cfg.textcolor)
+			}
 			textcoord(canvas, bx, by, begincolor, cfg)
 			textcoord(canvas, ex, ey, endcolor, cfg)
 			textcoord(canvas, cx, cy, controlcolor, cfg)
