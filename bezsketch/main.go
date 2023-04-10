@@ -81,6 +81,13 @@ func ftoa(x float32, prec int) string {
 	return " " + strconv.FormatFloat(float64(x), 'f', prec, 32)
 }
 
+// grid conditionalls shows a grid
+func grid(canvas *giocanvas.Canvas, interval float32, color color.NRGBA) {
+	if dogrid {
+		canvas.Grid(0, 0, 100, 100, 0.1, interval, color)
+	}
+}
+
 // textcoord displays a labelled coordinate
 func textcoord(canvas *giocanvas.Canvas, x, y float32, color color.NRGBA, cfg config) {
 	size := cfg.coordsize
@@ -91,20 +98,25 @@ func textcoord(canvas *giocanvas.Canvas, x, y float32, color color.NRGBA, cfg co
 	canvas.TextMid(x, y+ts, ts, ftoa(x, prec)+","+ftoa(y, prec), cfg.textcolor)
 }
 
+// curvespec displays the decksh curve specification
+func curvespec(prec int) {
+	io.WriteString(os.Stdout, "curve"+ftoa(bx, prec)+ftoa(by, prec)+ftoa(cx, prec)+ftoa(cy, prec)+ftoa(ex, prec)+ftoa(ey, prec)+"\n")
+}
+
 // pctPointerPos records and processes the pointer events in percent coordinates
 func pctPointerPos(q event.Queue, cfg config) {
 	width, height := cfg.width, cfg.height
 	prec := cfg.precision
 	for _, ev := range q.Events(pressed) {
+		// keyboard events
 		if k, ok := ev.(key.Event); ok {
-
 			switch k.State {
 			case key.Press:
 				switch k.Name {
 				case "G":
 					dogrid = !dogrid
 				case "C":
-					io.WriteString(os.Stdout, "curve"+ftoa(bx, prec)+ftoa(by, prec)+ftoa(cx, prec)+ftoa(cy, prec)+ftoa(ex, prec)+ftoa(ey, prec)+"\n")
+					curvespec(prec)
 				case key.NameRightArrow:
 					switch k.Modifiers {
 					case 0:
@@ -138,6 +150,7 @@ func pctPointerPos(q event.Queue, cfg config) {
 				}
 			}
 		}
+		// pointer events
 		if p, ok := ev.(pointer.Event); ok {
 			switch p.Type {
 			case pointer.Move:
@@ -149,7 +162,7 @@ func pctPointerPos(q event.Queue, cfg config) {
 				case pointer.ButtonSecondary:
 					ex, ey = pctcoord(p.Position.X, p.Position.Y, width, height)
 				case pointer.ButtonTertiary:
-					io.WriteString(os.Stdout, "curve"+ftoa(bx, prec)+ftoa(by, prec)+ftoa(cx, prec)+ftoa(cy, prec)+ftoa(ex, prec)+ftoa(ey, prec)+"\n")
+					curvespec(prec)
 				}
 				pressed = true
 			}
@@ -157,9 +170,15 @@ func pctPointerPos(q event.Queue, cfg config) {
 	}
 }
 
-// bezsketch sketches quadratic bezier curves: left pointer press defines the begin point,
-// right pointer press defines the end point, middle pointer press shows the curve spec,
-// pointer move defines the control point
+// bezsketch sketches quadratic bezier curves:
+// left pointer press defines the begin point,
+// right pointer press defines the end point,
+// middle pointer press shows the curve spec,
+// pointer move defines the control point.
+// "G" toggles a grid,
+// "C" shows the curve spec,
+// arrow keys (plain and shift) adjust begin and end points,
+// "Q" or Esc quits
 func bezsketch(w *app.Window, cfg config) error {
 	bx, by = 25.0, 50.0
 	ex, ey = 75.0, 50.0
@@ -175,15 +194,13 @@ func bezsketch(w *app.Window, cfg config) error {
 			return e.Err
 
 		// for each frame: register press and move events, draw coordinates, and the curve,
-		// track the pointer position for the control point, show curve spec on middle click
+		// track the pointer position for the control point.
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(cfg.width, cfg.height, system.FrameEvent{})
-			key.InputOp{Tag: pressed, Hint: key.HintAny, Keys: "g|G"}.Add(canvas.Context.Ops)
+			key.InputOp{Tag: pressed}.Add(canvas.Context.Ops)
 			pointer.InputOp{Tag: pressed, Grab: false, Types: pointer.Press | pointer.Move}.Add(canvas.Context.Ops)
 			canvas.Background(cfg.bgcolor)
-			if dogrid {
-				canvas.Grid(0, 0, 100, 100, 0.1, 5, cfg.textcolor)
-			}
+			grid(canvas, 5, cfg.textcolor)
 			textcoord(canvas, bx, by, begincolor, cfg)
 			textcoord(canvas, ex, ey, endcolor, cfg)
 			textcoord(canvas, cx, cy, controlcolor, cfg)
