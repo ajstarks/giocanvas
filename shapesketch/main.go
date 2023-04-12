@@ -21,13 +21,13 @@ import (
 // configuration options
 type config struct {
 	precision                                                                     int
-	width, height, textsize, coordsize, linesize, shapesize                       float32
+	width, height, textsize, coordsize, linesize, shapesize, stepsize             float32
 	linecolor, bgcolor, textcolor, begincolor, shapecolor, currentcolor, endcolor color.NRGBA
 }
 
 func main() {
 	var cw, ch int
-	var ts, cs, ls float64
+	var ts, cs, ls, ss float64
 	var shapecolor, bgcolor, textcolor, begincolor, endcolor, currentcolor string
 	var cfg config
 
@@ -44,6 +44,7 @@ func main() {
 	flag.Float64Var(&ts, "tsize", 2.5, "text size")
 	flag.Float64Var(&cs, "csize", 1.25, "coordinate size")
 	flag.Float64Var(&ls, "lsize", 1.0, "line size")
+	flag.Float64Var(&ss, "ssize", 0.5, "step size")
 	flag.Parse()
 
 	cfg.width = float32(cw)
@@ -51,6 +52,7 @@ func main() {
 	cfg.textsize = float32(ts)
 	cfg.coordsize = float32(cs)
 	cfg.linesize = float32(ls)
+	cfg.stepsize = float32(ss)
 	cfg.bgcolor = giocanvas.ColorLookup(bgcolor)
 	cfg.textcolor = giocanvas.ColorLookup(textcolor)
 	cfg.linecolor = giocanvas.ColorLookup(shapecolor)
@@ -134,6 +136,7 @@ func dist(x1, y1, x2, y2 float32) float32 {
 func kbpointer(q event.Queue, cfg config) {
 	width, height := cfg.width, cfg.height
 	prec := cfg.precision
+	stepsize := cfg.stepsize
 	for _, ev := range q.Events(pressed) {
 		// keyboard events
 		if k, ok := ev.(key.Event); ok {
@@ -159,30 +162,30 @@ func kbpointer(q event.Queue, cfg config) {
 				case key.NameRightArrow:
 					switch k.Modifiers {
 					case 0:
-						bx += 1
+						bx += stepsize
 					case key.ModCtrl:
-						ex += 1
+						ex += stepsize
 					}
 				case key.NameLeftArrow:
 					switch k.Modifiers {
 					case 0:
-						bx -= 1
+						bx -= stepsize
 					case key.ModCtrl:
-						ex -= 1
+						ex -= stepsize
 					}
 				case key.NameUpArrow:
 					switch k.Modifiers {
 					case 0:
-						by += 1
+						by += stepsize
 					case key.ModCtrl:
-						ey += 1
+						ey += stepsize
 					}
 				case key.NameDownArrow:
 					switch k.Modifiers {
 					case 0:
-						by -= 1
+						by -= stepsize
 					case key.ModCtrl:
-						ey -= 1
+						ey -= stepsize
 					}
 				case key.NameEscape, "Q":
 					os.Exit(0)
@@ -210,8 +213,8 @@ func kbpointer(q event.Queue, cfg config) {
 }
 
 // shapesketch sketches shapes
-// left pointer press defines the begin point, right pointer press defines the end point, pointer move defines the current point.
-// arrow keys (plain and shift) adjust begin and end points,
+// left pointer press defines the begin point, right pointer press defines the end point,
+// pointer move defines the current point, arrow keys (plain and shift) adjust begin and end points,
 // "G" toggles a grid
 // "D" shows the decksh spec
 // "L" line
@@ -222,6 +225,7 @@ func kbpointer(q event.Queue, cfg config) {
 // "S" square
 // "Q" or Esc quits
 func shapesketch(w *app.Window, cfg config) error {
+	// initial values
 	bx, by = 25.0, 50.0
 	ex, ey = 75.0, 50.0
 	cx, cy = 10, 10
@@ -235,8 +239,8 @@ func shapesketch(w *app.Window, cfg config) error {
 		// return an error on close
 		case system.DestroyEvent:
 			return e.Err
-		// for each frame: register press and move events, draw coordinates, and the curve,
-		// track the pointer position for the current point.
+		// for each frame: register keyboard, pointer press and move events, draw coordinates and
+		// specified shapes. Track the pointer position for the current point.
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(cfg.width, cfg.height, system.FrameEvent{})
 			key.InputOp{Tag: pressed}.Add(canvas.Context.Ops)

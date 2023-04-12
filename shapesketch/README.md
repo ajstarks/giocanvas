@@ -51,6 +51,8 @@ command flags:
     	coordinate precision
   -shapecolor string
     	curve color (default "#22222255")
+  -ssize float
+      step size for coordinate nudging (default 0.5)
   -textcolor string
     	text color (default "black")
   -tsize float
