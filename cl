@@ -1,7 +1,6 @@
 alpha
 arc
 apisheet
-bezsketch
 concentric
 compchart
 confetti
@@ -17,6 +16,7 @@ mondrian
 pie
 polar
 rgb
+shapesketch
 showimage
 spiral
 sunearth
