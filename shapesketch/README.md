@@ -9,6 +9,7 @@
 ![rect](rect.png)
 ![curve](curve.png)
 ![ellipse](ellipse.png)
+![arc](arc.png)
 
 ## Pointer controls
 
@@ -19,19 +20,30 @@
 
 ## Keyboard controls
 
+### Adjustments
+
 * left, right, up, down arrow keys: adjust begin point 
 * Ctrl + left, up, down, arrow keys: adjust end point
-* D: show the decksh spec
-* B: Bezier
-* L: line
+
+### Shapes
+
+* A: arc
+* B: quadradic Bezier
 * C: circle
 * E: ellipse
-* S: square
+* L: line
 * R: rectangle
+* S: square
+
+### Info
+
+* D: show the decksh spec
 * G: toggle coordinate grid
 * Q, ESC: quit
 
-command flags:
+
+
+## Command-line options
 ```
   -begincolor string
     	begin coordinate color (default "green")

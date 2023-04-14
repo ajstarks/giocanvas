@@ -145,6 +145,8 @@ func kbpointer(q event.Queue, cfg config) {
 				switch k.Name {
 				case "G":
 					dogrid = !dogrid
+				case "A":
+					shape = "arc"
 				case "L":
 					shape = "line"
 				case "B":
@@ -274,6 +276,18 @@ func shapesketch(w *app.Window, cfg config) error {
 				textcoord(canvas, bx, by, begincolor, cfg)
 				textcoord(canvas, cx, cy, shapecolor, cfg)
 				canvas.CenterRect(bx, by, (cx-bx)*2, (cy-by)*2, cfg.shapecolor)
+			case "arc":
+				textcoord(canvas, bx, by, begincolor, cfg)
+				textcoord(canvas, ex, ey, endcolor, cfg)
+				textcoord(canvas, cx, cy, shapecolor, cfg)
+				r := dist(bx, by, ex, ey)
+				dy1 := float64(by - cy)
+				dx1 := float64(bx - cx)
+				dy2 := float64(by - ey)
+				dx2 := float64(bx - ex)
+				a1 := math.Atan2(dy2, -dx2)
+				a2 := math.Atan2(dy1, -dx1)
+				canvas.Arc(bx, by, r, a1, a2, cfg.shapecolor)
 			}
 
 			kbpointer(e.Queue, cfg)
