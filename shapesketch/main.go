@@ -10,10 +10,13 @@ import (
 	"strconv"
 
 	"gioui.org/app"
+	"gioui.org/f32"
 	"gioui.org/io/event"
 	"gioui.org/io/key"
 	"gioui.org/io/pointer"
 	"gioui.org/io/system"
+	"gioui.org/op/clip"
+	"gioui.org/op/paint"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -104,24 +107,33 @@ func textcoord(canvas *giocanvas.Canvas, x, y float32, color color.NRGBA, cfg co
 	canvas.TextMid(x, y+ts, ts, ftoa(x, prec)+","+ftoa(y, prec), cfg.textcolor)
 }
 
+func puts(s string) {
+	io.WriteString(os.Stdout, s)
+}
+
 // deckspec displays the decksh curve specification
 func deckspec(prec int) {
 	switch shape {
+	case "arc":
+		r, a1, a2 := arcElements()
+		d1 := rad2deg(float32(a1))
+		d2 := rad2deg(float32(a2))
+		puts("arc" + ftoa(bx, prec) + ftoa(by, prec) + ftoa(r, prec) + ftoa(r, prec) + ftoa(d1, prec) + ftoa(d2, prec) + "\n")
 	case "bezier":
-		io.WriteString(os.Stdout, "curve"+ftoa(bx, prec)+ftoa(by, prec)+ftoa(cx, prec)+ftoa(cy, prec)+ftoa(ex, prec)+ftoa(ey, prec)+"\n")
+		puts("curve" + ftoa(bx, prec) + ftoa(by, prec) + ftoa(cx, prec) + ftoa(cy, prec) + ftoa(ex, prec) + ftoa(ey, prec) + "\n")
 	case "line":
-		io.WriteString(os.Stdout, "line"+ftoa(bx, prec)+ftoa(by, prec)+ftoa(ex, prec)+ftoa(ey, prec)+"\n")
+		puts("line" + ftoa(bx, prec) + ftoa(by, prec) + ftoa(ex, prec) + ftoa(ey, prec) + "\n")
 	case "rect", "ellipse":
 		dx := float64(cx-bx) * 2
 		dy := float64(cy-by) * 2
 		rw, rh := float32(math.Abs(dx)), float32(math.Abs(dy))
-		io.WriteString(os.Stdout, shape+ftoa(bx, prec)+ftoa(by, prec)+ftoa(rw, prec)+ftoa(rh, prec)+"\n")
+		puts(shape + ftoa(bx, prec) + ftoa(by, prec) + ftoa(rw, prec) + ftoa(rh, prec) + "\n")
 	case "square":
 		dx := float64(cx - bx)
 		sw := float32(math.Abs(dx) * 2)
-		io.WriteString(os.Stdout, shape+ftoa(bx, prec)+ftoa(by, prec)+ftoa(sw, prec)+"\n")
+		puts(shape + ftoa(bx, prec) + ftoa(by, prec) + ftoa(sw, prec) + "\n")
 	case "circle":
-		io.WriteString(os.Stdout, "circle"+ftoa(bx, prec)+ftoa(by, prec)+ftoa(dist(bx, by, cx, cy), prec)+"\n")
+		puts("circle" + ftoa(bx, prec) + ftoa(by, prec) + ftoa(dist(bx, by, cx, cy), prec) + "\n")
 	}
 }
 
@@ -130,6 +142,47 @@ func dist(x1, y1, x2, y2 float32) float32 {
 	x := float64(x2 - x1)
 	y := float64(y2 - y1)
 	return float32(math.Sqrt(x*x + y*y))
+}
+
+func rad2deg(r float32) float32 {
+	return float32((180 / math.Pi) * r)
+}
+
+func arcElements() (float32, float64, float64) {
+	r := dist(bx, by, cx, cy)
+	dy1 := float64(by - cy)
+	dx1 := float64(bx - cx)
+	dy2 := float64(by - ey)
+	dx2 := float64(bx - ex)
+	a1 := math.Atan2(dy2, dx2)
+	a2 := math.Atan2(dy1, dx1)
+	return r, a1, a2
+}
+
+// pct returns the percentage of its input
+func pct(p float32, m float32) float32 {
+	return ((p / 100.0) * m)
+}
+
+// dimen returns canvas dimensions from percentages
+// (converting from x increasing left-right, y increasing top-bottom)
+func dimen(xp, yp, w, h float32) (float32, float32) {
+	return pct(xp, w), pct(100-yp, h)
+}
+
+func arc(canvas *giocanvas.Canvas, size float32, fillcolor color.NRGBA) {
+	_, a1, a2 := arcElements()
+	f1x, f1y := dimen(bx, by, canvas.Width, canvas.Height)
+	curx, cury := dimen(cx, cy, canvas.Width, canvas.Height)
+	size = canvas.Width * (size / 100)
+	path := new(clip.Path)
+	ops := canvas.Context.Ops
+	path.Begin(ops)
+	path.Move(f32.Pt(curx, cury))
+	path.ArcTo(f32.Pt(f1x, f1y), f32.Pt(f1x, f1y), float32(a1+a2))
+	stack := clip.Stroke{Path: path.End(), Width: size}.Op().Push(ops)
+	paint.Fill(ops, fillcolor)
+	stack.Pop()
 }
 
 // kbpointer processes the keyboard events and pointer events in percent coordinates
@@ -280,14 +333,7 @@ func shapesketch(w *app.Window, cfg config) error {
 				textcoord(canvas, bx, by, begincolor, cfg)
 				textcoord(canvas, ex, ey, endcolor, cfg)
 				textcoord(canvas, cx, cy, shapecolor, cfg)
-				r := dist(bx, by, ex, ey)
-				dy1 := float64(by - cy)
-				dx1 := float64(bx - cx)
-				dy2 := float64(by - ey)
-				dx2 := float64(bx - ex)
-				a1 := math.Atan2(dy2, -dx2)
-				a2 := math.Atan2(dy1, -dx1)
-				canvas.Arc(bx, by, r, a1, a2, cfg.shapecolor)
+				arc(canvas, cfg.linesize, cfg.shapecolor)
 			}
 
 			kbpointer(e.Queue, cfg)
