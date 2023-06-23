@@ -10,6 +10,9 @@ do
 		elections)
 			./elections nyt-????.d &
 			;;
+		gcdeck)
+			./gcdeck test.xml &
+			;;
 		*)
 			./$i &
 			;;

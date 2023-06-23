@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	gioui.org v0.0.0-20230619141907-b183774063fc
+	github.com/ajstarks/deck v0.0.0-20230623153652-ebe7b794a4b1
 	github.com/disintegration/gift v1.2.1
 )
 
@@ -13,7 +14,7 @@ require (
 	github.com/go-text/typesetting v0.0.0-20230602202114-9797aefac433 // indirect
 	golang.org/x/exp v0.0.0-20221012211006-4de253d81b95 // indirect
 	golang.org/x/exp/shiny v0.0.0-20220827204233-334a2380cb91 // indirect
-	golang.org/x/image v0.5.0 // indirect
+	golang.org/x/image v0.6.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
+	golang.org/x/text v0.8.0 // indirect
 )

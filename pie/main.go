@@ -106,6 +106,11 @@ func piechart(canvas *giocanvas.Canvas, x, y, r float32, data []piedata) {
 	}
 }
 
+func animate(canvas *giocanvas.Canvas, duration time.Duration) {
+	t := canvas.Context.Now.Add(duration)
+	op.InvalidateOp{At: t}.Add(canvas.Context.Ops)
+}
+
 // pie is the app
 func pie(w *app.Window, width, height float32, duration time.Duration, files []string) error {
 	var err error
@@ -156,8 +161,8 @@ func pie(w *app.Window, width, height float32, duration time.Duration, files []s
 				if i == nfiles {
 					i = 0
 				}
-				op.InvalidateOp{}.Add(canvas.Context.Ops)
-				time.Sleep(duration)
+				animate(canvas, duration)
+				// time.Sleep(duration)
 			}
 			e.Frame(canvas.Context.Ops)
 		}

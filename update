@@ -1,5 +1,5 @@
 #!/bin/sh
 go get gioui.org@latest  &&
-go mod tidy -compat=1.17 &&
+go mod tidy &&
 ./bc.sh &&
 ./rc.sh

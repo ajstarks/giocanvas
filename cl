@@ -7,6 +7,7 @@ confetti
 elections
 eclipse
 flowers
+gcdeck
 grid
 hello
 images
