@@ -5,10 +5,10 @@
 
 ## Interactions
 
-n,k,Pointer left button: next slide
-p,j,Pointer right button: previous slide
-f,Pointer middle button: first slide
-ESC,q: Quit
+* n,k,Pointer left button: next slide
+* p,j,Pointer right button: previous slide
+* f,Pointer middle button: first slide
+* ESC,q: Quit
 
 ## Options
 
