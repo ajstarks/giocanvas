@@ -534,13 +534,14 @@ func kbpointer(q event.Queue) {
 			switch k.State {
 			case key.Press:
 				switch k.Name {
+				case "F":
+					slidenumber = 0
 				case "P", "J":
 					slidenumber--
 				case "N", "K":
 					slidenumber++
 				case "G":
 					gridstate = !gridstate
-					println(gridstate)
 				case key.NameRightArrow, key.NameUpArrow:
 					slidenumber++
 				case key.NameLeftArrow, key.NameDownArrow:
