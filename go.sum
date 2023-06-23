@@ -1,8 +1,8 @@
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20201218220906-28db891af037/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 eliasnaur.com/font v0.0.0-20230308162249-dd43949cb42d h1:ARo7NCVvN2NdhLlJE9xAbKweuI9L6UgfTbYb0YwPacY=
 eliasnaur.com/font v0.0.0-20230308162249-dd43949cb42d/go.mod h1:OYVuxibdk9OSLX8vAqydtRPP87PyTFcT9uH3MlEGBQA=
-gioui.org v0.0.0-20230611141527-3bb6cca15710 h1:xYPOWMOe1sFVD8jGc1A8g6di1B5zUicbWtdz5eeS8jo=
-gioui.org v0.0.0-20230611141527-3bb6cca15710/go.mod h1:a3hz8FyrPMkt899D9YrxMGtyRzpPrJpz1Lzbssn81vI=
+gioui.org v0.0.0-20230619141907-b183774063fc h1:M5FvmaxY42BE61Svy8Ia6IsJaUkXzWvRFIQMLTmrywI=
+gioui.org v0.0.0-20230619141907-b183774063fc/go.mod h1:a3hz8FyrPMkt899D9YrxMGtyRzpPrJpz1Lzbssn81vI=
 gioui.org/cpu v0.0.0-20210808092351-bfe733dd3334/go.mod h1:A8M0Cn5o+vY5LTMlnRoK3O5kG+rH0kWfJjeKd9QpBmQ=
 gioui.org/cpu v0.0.0-20210817075930-8d6a761490d2 h1:AGDDxsJE1RpcXTAxPG2B4jrwVUJGFDjINIPi1jtO6pc=
 gioui.org/cpu v0.0.0-20210817075930-8d6a761490d2/go.mod h1:A8M0Cn5o+vY5LTMlnRoK3O5kG+rH0kWfJjeKd9QpBmQ=
