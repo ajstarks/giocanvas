@@ -501,6 +501,20 @@ func reload(filename string, c *gc.Canvas, w, h, n int) (deck.Deck, int) {
 	return d, len(d.Slide) - 1
 }
 
+// ngrid makes a numbered grid
+func ngrid(c *gc.Canvas, interval, ts float32, color color.NRGBA) {
+	color.A = 50
+	c.Grid(0, 0, 100, 100, 0.1, interval, color)
+	var x, y float32
+	color.A = 220
+	for x = interval; x < 100; x += interval {
+		c.CText(x, ts, ts, fmt.Sprintf("%0.f", x), color)
+	}
+	for y = interval; y < 100; y += interval {
+		c.CText(ts, y-(ts/2), ts, fmt.Sprintf("%0.f", y), color)
+	}
+}
+
 func main() {
 	var (
 		title    = flag.String("title", "", "slide title")
@@ -630,7 +644,7 @@ func slidedeck(s string, initpage int, filename, pagesize string) {
 			}
 			showslide(canvas, &deck, slidenumber)
 			if gridstate {
-				canvas.Grid(0, 0, 100, 100, 0.1, 5, gc.ColorLookup(deck.Slide[slidenumber].Fg))
+				ngrid(canvas, 5, 1, gc.ColorLookup(deck.Slide[slidenumber].Fg))
 			}
 			kbpointer(e.Queue, nslides)
 			e.Frame(canvas.Context.Ops)
