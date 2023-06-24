@@ -16,17 +16,25 @@ gcdeck shows slide decks formatted in the [```deck``` markup language](https://g
 
 ![gcdeck](gcdeck0.png)
 
-## Interactions
+## Keyboard commands
 
-* n,k,Pointer left button: next slide
-* p,j,Pointer right button: previous slide
-* f,Pointer middle button: first slide
-* ESC,q: Quit
+* A, Ctrl-A, ^, 1, Home: first slide
+* E, Crtl-E, $, End: last slide
+* J, B, Ctrl-B, Ctrl-P, Shift-Space, Shift-Enter: previous slide
+* K, F, Ctrl-F, Ctrl-N, Space,       Enter:       previous slide
+* G: toggle a grid
+* Q, ESC: Quit
+
+## Mouse interactions
+
+* Left Button: next slide
+* Right Button: previous slide
+* Middle Button: first slide
 
 ## Options
 
 ```
-gcdeck [options] file
+gcdeck [options] file ("-" for standard input)
 
 Options:
 
