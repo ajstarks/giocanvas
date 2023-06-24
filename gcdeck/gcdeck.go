@@ -324,19 +324,19 @@ func showslide(doc *gc.Canvas, d *deck.Deck, n int) {
 	// for every image on the slide...
 	for _, im := range slide.Image {
 		iw, ih := im.Width, im.Height
+		if im.Scale == 0 {
+			im.Scale = 100
+		}
 		// scale the image to a percentage of the canvas width
 		if im.Height == 0 && im.Width > 0 {
 			nw, nh := imageInfo(im.Name)
 			if nh > 0 {
-				var fw, fh float64
-				imscale := (float64(iw) / 100) * cw
-				fw = imscale
-				fh = imscale / (float64(nw) / float64(nh))
-				iw = int(fw)
-				ih = int(fh)
+				iw = nw
+				ih = nh
+				im.Scale = float64(im.Width)
 			}
-			//println(im.Name, im.Xp, im.Yp, iw, ih, nw, nh)
 		}
+		//println("[", n, "]", im.Name, im.Xp, im.Yp, iw, ih, im.Scale)
 		doc.Image(im.Name, float32(im.Xp), float32(im.Yp), iw, ih, float32(im.Scale))
 		if len(im.Caption) > 0 {
 			capsize := 1.5
@@ -503,7 +503,7 @@ func reload(filename string, c *gc.Canvas, w, h, n int) (deck.Deck, int) {
 
 // ngrid makes a numbered grid
 func ngrid(c *gc.Canvas, interval, ts float32, color color.NRGBA) {
-	color.A = 50
+	color.A = 75
 	c.Grid(0, 0, 100, 100, 0.1, interval, color)
 	var x, y float32
 	color.A = 220
