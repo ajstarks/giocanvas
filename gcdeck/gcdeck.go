@@ -219,7 +219,7 @@ func dotext(doc *gc.Canvas, x, y, fs, wp, rotation, spacing float64, tdata, font
 	if ttype == "block" {
 		textwrap(doc, x, y, fs, wp, tdata, color, opacity)
 	} else {
-		ls := spacing * fs * 1.4
+		ls := spacing * fs
 		for _, t := range td {
 			showtext(doc, x, y, t, fs, c, font, align)
 			y -= ls
