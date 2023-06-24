@@ -1,0 +1,29 @@
+deck
+	canvas 2000 2000
+	slide 
+		image "earth.jpg" 50 50 1000 1000
+		ctext "full" 50 20 2
+	eslide
+
+	slide 
+		image "earth.jpg" 50 50 100 100 10
+		ctext "xy scale" 50 20 2
+	eslide
+
+	slide
+		image "earth.jpg" 50 50 1000 1000 30
+		ctext "full scale 30" 50 20 2
+	eslide
+	slide
+		image "earth.jpg" 50 50 30 0
+		ctext "autoscale 30" 50 20 2
+	eslide
+	slide
+		image "earth.jpg" 50 50 40 0
+		ctext "autoscale 40" 50 20 2
+	eslide
+	slide
+		image "earth.jpg" 50 50 50 0
+		ctext "autoscale 50" 50 20 2
+	eslide
+edeck

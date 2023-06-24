@@ -1,0 +1,27 @@
+<deck>
+<canvas width="2000" height="2000"/>
+<slide>
+<image name="earth.jpg" xp="50" yp="50" width="1000" height="1000"/>
+<text align="c" xp="50" yp="20" sp="2" >full</text>
+</slide>
+<slide>
+<image name="earth.jpg" xp="50" yp="50" width="100" height="100" scale="10"/>
+<text align="c" xp="50" yp="20" sp="2" >xy scale</text>
+</slide>
+<slide>
+<image name="earth.jpg" xp="50" yp="50" width="1000" height="1000" scale="30"/>
+<text align="c" xp="50" yp="20" sp="2" >full scale 30</text>
+</slide>
+<slide>
+<image name="earth.jpg" xp="50" yp="50" width="30" height="0"/>
+<text align="c" xp="50" yp="20" sp="2" >autoscale 30</text>
+</slide>
+<slide>
+<image name="earth.jpg" xp="50" yp="50" width="40" height="0"/>
+<text align="c" xp="50" yp="20" sp="2" >autoscale 40</text>
+</slide>
+<slide>
+<image name="earth.jpg" xp="50" yp="50" width="50" height="0"/>
+<text align="c" xp="50" yp="20" sp="2" >autoscale 50</text>
+</slide>
+</deck>
