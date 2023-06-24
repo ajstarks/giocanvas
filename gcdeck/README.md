@@ -1,6 +1,19 @@
 # gcdeck
 
+Interactive deck client.
+
+gcdeck shows slide decks formatted in the [```deck``` markup language](https://github.com/ajstarks/deck/blob/master/README.md)
+
+
+```gcdeck t.xml``` makes:
+
+
 ![gcdeck](gcdeck.png)
+
+
+```decksh test.dsh | gcdeck - ```
+
+
 ![gcdeck](gcdeck0.png)
 
 ## Interactions
