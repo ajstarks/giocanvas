@@ -219,7 +219,7 @@ func dotext(doc *gc.Canvas, x, y, fs, wp, rotation, spacing float64, tdata, font
 	if ttype == "block" {
 		textwrap(doc, x, y, fs, wp, tdata, color, opacity)
 	} else {
-		ls := spacing * fs
+		ls := spacing * fs * 1.4
 		for _, t := range td {
 			showtext(doc, x, y, t, fs, c, font, align)
 			y -= ls
@@ -272,7 +272,7 @@ func dolist(doc *gc.Canvas, cw, x, y, fs, lwidth, rotation, spacing float64, lis
 		tstack = doc.Rotate(float32(x), float32(y), float32(rotation*(math.Pi/180)))
 	}
 	c := gc.ColorLookup(color)
-	ls := listspacing * fs
+	ls := listspacing * fs * 1.4
 	for i, tl := range list {
 		loadfont(doc, font, fs)
 		if len(tl.Color) > 0 {
@@ -528,23 +528,52 @@ var pressed bool
 var gridstate bool
 var slidenumber int
 
-func kbpointer(q event.Queue) {
+func kbpointer(q event.Queue, ns int) {
 	for _, ev := range q.Events(pressed) {
 		if k, ok := ev.(key.Event); ok {
 			switch k.State {
 			case key.Press:
 				switch k.Name {
-				case "F":
+				// emacs bindings
+				case "A", "1": // first slide
+					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+						slidenumber = 0
+					}
+				case "E": // last slide
+					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+						slidenumber = ns
+					}
+				case "B": // back a slide
+					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+						slidenumber--
+					}
+				case "F": // forward a slide
+					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+						slidenumber++
+					}
+				case "P": // previous slide
+					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+						slidenumber--
+					}
+				case "N": // next slide
+					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+						slidenumber++
+					}
+				case "^", "⇱": // first slide
 					slidenumber = 0
-				case "P", "J":
-					slidenumber--
-				case "N", "K":
-					slidenumber++
+				case "$", "⇲": // last slide
+					slidenumber = ns
 				case "G":
 					gridstate = !gridstate
-				case key.NameRightArrow, key.NameUpArrow:
+				case key.NameSpace, "⏎":
+					if k.Modifiers == 0 {
+						slidenumber++
+					} else {
+						slidenumber--
+					}
+				case key.NameRightArrow, key.NamePageDown, key.NameDownArrow, "K":
 					slidenumber++
-				case key.NameLeftArrow, key.NameDownArrow:
+				case key.NameLeftArrow, key.NamePageUp, key.NameUpArrow, "J":
 					slidenumber--
 				case key.NameEscape, "Q":
 					os.Exit(0)
@@ -582,9 +611,8 @@ func slidedeck(s string, initpage int, filename, pagesize string) {
 		initpage = 1
 	}
 	slidenumber = initpage - 1
-	gridstate = true
+	gridstate = false
 	w := app.NewWindow(app.Title(s), app.Size(unit.Dp(width), unit.Dp(height)))
-
 	for {
 		ev := <-w.Events()
 		switch e := ev.(type) {
@@ -601,7 +629,10 @@ func slidedeck(s string, initpage int, filename, pagesize string) {
 				slidenumber = nslides
 			}
 			showslide(canvas, &deck, slidenumber)
-			kbpointer(e.Queue)
+			if gridstate {
+				canvas.Grid(0, 0, 100, 100, 0.1, 5, gc.ColorLookup(deck.Slide[slidenumber].Fg))
+			}
+			kbpointer(e.Queue, nslides)
 			e.Frame(canvas.Context.Ops)
 		}
 	}
