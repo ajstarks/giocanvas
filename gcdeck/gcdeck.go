@@ -633,7 +633,7 @@ func slidedeck(s string, initpage int, filename, pagesize string) {
 		case system.DestroyEvent:
 			os.Exit(0)
 		case system.FrameEvent:
-			canvas := gc.NewCanvas(width, height, system.FrameEvent{})
+			canvas := gc.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			key.InputOp{Tag: pressed}.Add(canvas.Context.Ops)
 			pointer.InputOp{Tag: pressed, Grab: false, Types: pointer.Press}.Add(canvas.Context.Ops)
 			if slidenumber > nslides {
