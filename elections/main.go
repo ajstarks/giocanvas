@@ -186,13 +186,13 @@ func elect(title string, opts options, elections []election) {
 	n := 0
 	ne := len(elections) - 1
 
-	canvas := gc.NewCanvas(cw, ch, system.FrameEvent{})
 	for {
 		e := <-win.Events()
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			os.Exit(0)
 		case system.FrameEvent:
+			canvas := gc.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			gtx := canvas.Context
 			pointer.InputOp{Tag: win, Grab: false, Types: pointer.Press}.Add(gtx.Ops)
 			if n > ne {
