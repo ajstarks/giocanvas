@@ -35,7 +35,7 @@ func mondrian(w *app.Window, width, height float32) error {
 		case system.DestroyEvent:
 			return e.Err
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			canvas.Background(white)
 			canvas.CenterRect(halft, halft, third, third, blue)      // lower left blue square
 			canvas.CenterRect(t2, t2, t2, t2, red)                   // big red

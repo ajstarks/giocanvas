@@ -39,7 +39,7 @@ func images(w *app.Window, width, height float32) error {
 		case system.DestroyEvent:
 			return e.Err
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			var x, y, scale float32
 			scale = 2.0
 			canvas.Background(bgcolor)

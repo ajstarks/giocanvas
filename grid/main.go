@@ -50,7 +50,7 @@ func grid(w *app.Window, width, height, x1, x2, y1, y2, xincr, yincr, lw float32
 		case system.DestroyEvent:
 			return e.Err
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			for y := y1; y <= y2; y += yincr {
 				canvas.HLine(x1, y, x2-x1, lw, color)
 			}

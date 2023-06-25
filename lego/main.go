@@ -88,7 +88,7 @@ func lego(w *app.Window, width, height float32) error {
 		case system.DestroyEvent:
 			return e.Err
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			canvas.Text(c1, 85, 3, "Incarceration Rate", giocanvas.ColorLookup("black"))
 			canvas.Text(c2, 85, 3, "US Population", giocanvas.ColorLookup("black"))
 			canvas.CText(50, 20, 1.5, "Source: Breaking Down Mass Incarceration in the 2010 Census: State-by-State Incarceration Rates by Race/Ethnicity", giocanvas.ColorLookup("gray"))

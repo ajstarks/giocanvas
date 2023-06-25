@@ -20,7 +20,7 @@ func linetest(w *app.Window, width, height float32) error {
 		case system.DestroyEvent:
 			os.Exit(0)
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			var x, y, lw, ls float32
 			lw = 0.1
 			ls = 1

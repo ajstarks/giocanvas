@@ -28,7 +28,7 @@ func transforms(w *app.Window, width, height float32) error {
 		case system.DestroyEvent:
 			return e.Err
 		case system.FrameEvent:
-			canvas := gc.NewCanvas(width, height, system.FrameEvent{})
+			canvas := gc.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			recty = 90
 			canvas.CenterRect(midx, recty, rectw, recth, color.NRGBA{128, 128, 128, 128})
 			canvas.TextMid(midx, recty-ts2, ts, "Reference", textcolor)

@@ -20,7 +20,7 @@ func concentric(w *app.Window, width, height float32) error {
 		case system.DestroyEvent:
 			return e.Err
 		case system.FrameEvent:
-			canvas := gc.NewCanvas(width, height, system.FrameEvent{})
+			canvas := gc.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			canvas.Background(gc.ColorLookup("white"))
 			var r float32 = 50
 			for g := uint8(0); g < 250; g += 50 {

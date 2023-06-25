@@ -152,7 +152,7 @@ func pie(w *app.Window, width, height float32, duration time.Duration, files []s
 		case system.DestroyEvent:
 			return err
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			canvas.CText(50, 92, 4, title[i], color.NRGBA{20, 20, 20, 255})
 			canvas.CText(50, 5, 2, "Source: StatCounter", color.NRGBA{150, 150, 150, 255})
 			piechart(canvas, 50, 50, 25, data[i])

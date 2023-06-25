@@ -28,7 +28,7 @@ func alpha(w *app.Window, width, height float32, color string) error {
 		case system.DestroyEvent:
 			return e.Err
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			canvas.CText(50, y+12, 1.5, "Alpha", blue)
 			canvas.CText(50, y-18, 1.5, "% Alpha", gray)
 			px, y = 2, 50

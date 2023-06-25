@@ -29,7 +29,7 @@ func confetti(w *app.Window, width, height float32, nshapes, maxsize int) error 
 		case system.DestroyEvent:
 			return e.Err
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			canvas.CenterRect(50, 50, 100, 100, color.NRGBA{0, 0, 0, 255})
 			for i := 0; i < nshapes; i++ {
 				color := color.NRGBA{rn8(255), rn8(255), rn8(255), rn8(255)}

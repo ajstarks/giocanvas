@@ -59,7 +59,7 @@ func rgb(w *app.Window, width, height float32) error {
 		case system.DestroyEvent:
 			return e.Err
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			x, y = 50, 95
 			for _, c := range colortab {
 				canvas.EText(x-10, y, 3, c, color.NRGBA{0, 0, 0, 255})

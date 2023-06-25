@@ -40,7 +40,7 @@ func hello(w *app.Window, width, height float32) error {
 		case system.DestroyEvent:
 			return e.Err
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			canvas.CenterRect(50, 50, 100, 100, color.NRGBA{0, 0, 0, 255})
 			canvas.Circle(50, 0, 50, color.NRGBA{0, 0, 255, 255})
 			canvas.TextMid(50, 20, 10, "hello, world", color.NRGBA{255, 255, 255, 255})

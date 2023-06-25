@@ -43,7 +43,7 @@ func arc(w *app.Window, width, height float32) error {
 		case system.DestroyEvent:
 			return e.Err
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			angle := 45.0 // Pi / 4
 			y = height * 0.2
 			canvas.CText(50, 50, 10, "Arcs", black)

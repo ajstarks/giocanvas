@@ -48,7 +48,7 @@ func play(w *app.Window, width, height float32, showgrid bool) error {
 		case system.DestroyEvent:
 			return e.Err
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 
 			// Title
 			canvas.Background(bgcolor)

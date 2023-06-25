@@ -47,7 +47,7 @@ deck
 	eslide
 
 	slide "black" "white"
-		image "earth.jpg" 50 50 1000 1000 30
+		image "earth.jpg" 50 50 25 0
 		ctext "earth" 50 20 4
 	eslide
 edeck

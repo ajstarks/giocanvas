@@ -297,7 +297,7 @@ func shapesketch(w *app.Window, cfg config) error {
 		// for each frame: register keyboard, pointer press and move events, draw coordinates and
 		// specified shapes. Track the pointer position for the current point.
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(cfg.width, cfg.height, system.FrameEvent{})
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			key.InputOp{Tag: pressed}.Add(canvas.Context.Ops)
 			pointer.InputOp{Tag: pressed, Grab: false, Types: pointer.Press | pointer.Move}.Add(canvas.Context.Ops)
 			canvas.Background(cfg.bgcolor)
@@ -333,7 +333,9 @@ func shapesketch(w *app.Window, cfg config) error {
 				textcoord(canvas, bx, by, begincolor, cfg)
 				textcoord(canvas, ex, ey, endcolor, cfg)
 				textcoord(canvas, cx, cy, shapecolor, cfg)
-				arc(canvas, cfg.linesize, cfg.shapecolor)
+				r, a1, a2 := arcElements()
+				canvas.Arc(bx, by, r, a1, a2, cfg.shapecolor)
+				//arc(canvas, cfg.linesize, cfg.shapecolor)
 			}
 
 			kbpointer(e.Queue, cfg)

@@ -2,7 +2,9 @@
 
 Interactive deck client.
 
-gcdeck shows slide decks formatted in the [```deck``` markup language](https://github.com/ajstarks/deck/blob/master/README.md)
+gcdeck shows slide decks formatted in the [```deck``` markup language](https://github.com/ajstarks/deck/blob/master/README.md). 
+
+Markup is usually generated with the [```decksh``` command](https://github.com/ajstarks/decksh/blob/master/README.md)
 
 
 ```gcdeck t.xml``` makes:
@@ -18,18 +20,22 @@ gcdeck shows slide decks formatted in the [```deck``` markup language](https://g
 
 ## Keyboard commands
 
-* A, Ctrl-A, ^, 1, Home: first slide
-* E, Crtl-E, $, End: last slide
-* J, B, Ctrl-B, Ctrl-P, Shift-Space, Shift-Enter: previous slide
-* K, F, Ctrl-F, Ctrl-N, Space,       Enter:       previous slide
-* G: toggle a grid
-* Q, ESC: Quit
+| Command                                       | Action          |
+| --------------------------------------------  | --------------- |
+| A, Ctrl-A, ^, 1, Home                         | first slide     |
+| E, Crtl-E, $, End                             | last slide      |
+| K, F, Ctrl-F, Ctrl-N, Space, Enter            | next slide      |
+| J, B, Ctrl-B, Ctrl-P, Shift-Space, Shift-Enter| previous slide  |
+| G                                             | toggle a grid   |
+| Q, ESC                                        | Quit            |
 
 ## Mouse interactions
 
-* Left Button: next slide
-* Right Button: previous slide
-* Middle Button: first slide
+| Button  | Action          |
+| ------- | --------------- |
+| Left    | next slide      |
+| Right   | previous slide  |
+| Middle  | first slide     |
 
 ## Options
 

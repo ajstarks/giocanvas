@@ -36,7 +36,7 @@ func flower(w *app.Window, width, height float32) error {
 		case system.DestroyEvent:
 			return e.Err
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			canvas.Background(bgcolor)
 			petals(canvas, 10, 90, 5, 1, red)
 			petals(canvas, 25, 75, 10, 1.5, green)

@@ -30,7 +30,7 @@ func work(title string, width, height float32, a, b, n, incr, dotsize float64, c
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, e)
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), e)
 			spiral(canvas, cx, cy, float32(dotsize), a, b, n, incr, spcolor)
 			e.Frame(canvas.Context.Ops)
 		}

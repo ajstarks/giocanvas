@@ -53,8 +53,6 @@ func main() {
 }
 
 func tile(w *app.Window, opts options) error {
-	width := float32(opts.width)
-	height := float32(opts.height)
 	leftColor := gc.ColorLookup(opts.leftcolor)
 	rightColor := gc.ColorLookup(opts.rightcolor)
 	bgcolor := gc.ColorLookup(opts.bgcolor)
@@ -65,7 +63,7 @@ func tile(w *app.Window, opts options) error {
 		case system.DestroyEvent:
 			return e.Err
 		case system.FrameEvent:
-			canvas := gc.NewCanvas(width, height, system.FrameEvent{})
+			canvas := gc.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			canvas.Background(bgcolor)
 			var x, y float32
 			for x = opts.left; x < opts.right; x += opts.step {

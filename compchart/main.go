@@ -68,7 +68,7 @@ func sincos(w *app.Window, width, height float32) error {
 		case system.DestroyEvent:
 			return e.Err
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, e)
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), e)
 			comp(canvas)
 			e.Frame(canvas.Context.Ops)
 		}

@@ -55,7 +55,7 @@ func ref(w *app.Window, width, height float32, showgrid bool) error {
 		case system.DestroyEvent:
 			return e.Err
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			canvas.Background(bgcolor)
 			canvas.Img(logoimg, col1, 94, 400, 400, 20)
 			canvas.Text(col1+3, top, titlesize, "Canvas API Reference", titlecolor)
