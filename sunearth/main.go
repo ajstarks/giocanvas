@@ -28,7 +28,7 @@ func sunearth(w *app.Window, width, height float32) error {
 		case system.DestroyEvent:
 			return e.Err
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(width, height, system.FrameEvent{})
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			canvas.CenterRect(50, 50, 100, 100, black)
 			canvas.Circle(100, 0, sunsize, yellow)
 			canvas.Circle(30, 90, earthsize, blue)
