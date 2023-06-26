@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"gioui.org/app"
+	"gioui.org/io/event"
 	"gioui.org/io/key"
 	"gioui.org/io/pointer"
 	"gioui.org/io/system"
@@ -180,10 +181,80 @@ func endPage(canvas *gc.Canvas) {
 	ctext(canvas, 50, 5, 1.5, "The area of a circle denotes state population: source U.S. Census", "gray")
 }
 
+var pressed bool
+var electionNumber int
+
+func kbpointer(q event.Queue, ns int) {
+	for _, ev := range q.Events(pressed) {
+		if k, ok := ev.(key.Event); ok {
+			switch k.State {
+			case key.Press:
+				switch k.Name {
+				// emacs bindings
+				case "A", "1": // first slide
+					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+						electionNumber = 0
+					}
+				case "E": // last slide
+					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+						electionNumber = ns
+					}
+				case "B": // back a slide
+					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+						electionNumber--
+					}
+				case "F": // forward a slide
+					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+						electionNumber++
+					}
+				case "P": // previous slide
+					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+						electionNumber--
+					}
+				case "N": // next slide
+					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+						electionNumber++
+					}
+				case "^", "⇱": // first slide
+					electionNumber = 0
+				case "$", "⇲": // last slide
+					electionNumber = ns
+				case key.NameSpace, "⏎":
+					if k.Modifiers == 0 {
+						electionNumber++
+					} else {
+						electionNumber--
+					}
+				case key.NameRightArrow, key.NamePageDown, key.NameDownArrow, "K":
+					electionNumber++
+				case key.NameLeftArrow, key.NamePageUp, key.NameUpArrow, "J":
+					electionNumber--
+				case key.NameEscape, "Q":
+					os.Exit(0)
+				}
+			}
+		}
+		if p, ok := ev.(pointer.Event); ok {
+			switch p.Type {
+			case pointer.Press:
+				switch p.Buttons {
+				case pointer.ButtonPrimary:
+					electionNumber++
+				case pointer.ButtonSecondary:
+					electionNumber--
+				case pointer.ButtonTertiary:
+					electionNumber = 0
+				}
+				pressed = true
+			}
+		}
+	}
+
+}
+
 func elect(title string, opts options, elections []election) {
 	cw, ch := float32(opts.width), float32(opts.height)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Dp(cw), unit.Dp(ch)))
-	n := 0
 	ne := len(elections) - 1
 
 	for {
@@ -193,19 +264,17 @@ func elect(title string, opts options, elections []election) {
 			os.Exit(0)
 		case system.FrameEvent:
 			canvas := gc.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
-			gtx := canvas.Context
-			pointer.InputOp{Tag: win, Grab: false, Types: pointer.Press}.Add(gtx.Ops)
-			if n > ne {
-				n = 0
+			key.InputOp{Tag: pressed}.Add(canvas.Context.Ops)
+			pointer.InputOp{Tag: pressed, Grab: false, Types: pointer.Press}.Add(canvas.Context.Ops)
+			if electionNumber > ne {
+				electionNumber = 0
 			}
-			process(canvas, opts, elections[n])
-			n++
+			if electionNumber < 0 {
+				electionNumber = ne
+			}
+			process(canvas, opts, elections[electionNumber])
+			kbpointer(e.Queue, ne)
 			e.Frame(canvas.Context.Ops)
-		case key.Event:
-			switch e.Name {
-			case "Q", key.NameEscape:
-				os.Exit(0)
-			}
 		}
 	}
 }
