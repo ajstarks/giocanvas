@@ -46,6 +46,7 @@ func showimage(win *app.Window, im image.Image, w, h int, sw, sh, scale float32)
 			return e.Err
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
+			scale = (float32(e.Size.X) / float32(w)) * 100
 			canvas.Img(im, 50, 50, w, h, scale)
 			e.Frame(canvas.Context.Ops)
 		}
