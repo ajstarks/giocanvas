@@ -8,7 +8,6 @@ import (
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
-	"io"
 	"os"
 
 	"gioui.org/app"
@@ -18,7 +17,7 @@ import (
 )
 
 // imageinfo opens an image file, returning an image.Image, with dimensions
-func imageinfo(imagefile string, w, h int) (image.Image, int, int, error) {
+func imageinfo(imagefile string) (image.Image, int, int, error) {
 	f, err := os.Open(imagefile)
 	if err != nil {
 		return nil, 0, 0, err
@@ -27,18 +26,12 @@ func imageinfo(imagefile string, w, h int) (image.Image, int, int, error) {
 	if err != nil {
 		return nil, 0, 0, err
 	}
-	if w == 0 {
-		w = im.Bounds().Dx()
-	}
-	if h == 0 {
-		h = im.Bounds().Dy()
-	}
 	f.Close()
-	return im, w, h, nil
+	return im, im.Bounds().Dx(), im.Bounds().Dy(), nil
 }
 
 // showimage shows an image, centered on the canvas at the specified scale and size
-func showimage(win *app.Window, im image.Image, w, h int, sw, sh, scale float32) error {
+func showimage(win *app.Window, im image.Image, w, h int, scale float32) error {
 	for {
 		e := <-win.Events()
 		switch e := e.(type) {
@@ -62,32 +55,30 @@ func main() {
 	)
 	flag.Float64Var(&scale, "scale", 100, "scale (0-100)")
 	flag.Parse()
-
 	args := flag.Args()
 	if len(args) == 0 {
 		fmt.Fprintln(os.Stderr, "specify an image file (JPEG, PNG, or GIF)")
 		os.Exit(1)
 	}
 	for _, imagefile := range args {
-		im, w, h, err = imageinfo(imagefile, w, h)
+		im, w, h, err = imageinfo(imagefile)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%v\n", err)
 			continue
 		}
 		go func() {
-			sw, sh, sc := float32(w), float32(h), float32(scale)
-			if sc != 100 {
+			sc, sw, sh := float32(scale), float32(w), float32(h)
+			if scale != 100 {
 				sw *= sc / 100
 				sh *= sc / 100
 			}
 			win := app.NewWindow(app.Title(imagefile), app.Size(unit.Dp(sw), unit.Dp(sh)))
-			if err := showimage(win, im, w, h, sw, sh, sc); err != nil {
-				io.WriteString(os.Stderr, "Cannot create the window\n")
+			if err := showimage(win, im, w, h, sc); err != nil {
+				fmt.Fprintf(os.Stderr, "%v\n", err)
 				os.Exit(1)
 			}
 			os.Exit(0)
 		}()
 	}
 	app.Main()
-
 }
