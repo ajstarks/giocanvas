@@ -3,6 +3,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io"
 	"os"
 
@@ -44,6 +45,7 @@ func main() {
 
 func grid(w *app.Window, width, height, x1, x2, y1, y2, xincr, yincr, lw float32, gridcolor string) error {
 	color := giocanvas.ColorLookup(gridcolor)
+	ts := xincr / 3
 	for {
 		ev := <-w.Events()
 		switch e := ev.(type) {
@@ -53,9 +55,11 @@ func grid(w *app.Window, width, height, x1, x2, y1, y2, xincr, yincr, lw float32
 			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			for y := y1; y <= y2; y += yincr {
 				canvas.HLine(x1, y, x2-x1, lw, color)
+				canvas.CText(x1+ts, y-(ts/2), ts, fmt.Sprintf("%0.f", y), color)
 			}
 			for x := x1; x <= x2; x += xincr {
 				canvas.VLine(x, y1, y2-y1, lw, color)
+				canvas.CText(x, y1+ts, ts, fmt.Sprintf("%0.f", x), color)
 			}
 			e.Frame(canvas.Context.Ops)
 		}
