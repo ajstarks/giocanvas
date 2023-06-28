@@ -328,8 +328,8 @@ func showslide(doc *gc.Canvas, d *deck.Deck, n int) {
 			fmt.Fprintf(os.Stderr, "%v\n")
 			continue
 		}
-		iw := img.Bounds().Max.X
-		ih := img.Bounds().Max.Y
+		iw := img.Bounds().Dx()
+		ih := img.Bounds().Dy()
 		if im.Scale == 0 {
 			im.Scale = 100
 		}
