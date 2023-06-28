@@ -32,8 +32,8 @@ func scimage(w *app.Window, filename string, width, height float32) error {
 	if err != nil {
 		return err
 	}
-	imw := im.Bounds().Max.X
-	imh := im.Bounds().Max.Y
+	imw := im.Bounds().Dx()
+	imh := im.Bounds().Dy()
 	bgcolor := color.NRGBA{0, 0, 0, 255}
 	fgcolor := color.NRGBA{255, 255, 255, 255}
 	gridcolor := fgcolor
