@@ -323,21 +323,22 @@ func showslide(doc *gc.Canvas, d *deck.Deck, n int) {
 	}
 	// for every image on the slide...
 	for _, im := range slide.Image {
-		iw, ih := im.Width, im.Height
+		img, err := imageInfo(im.Name)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%v\n")
+			continue
+		}
+		iw := img.Bounds().Max.X
+		ih := img.Bounds().Max.Y
 		if im.Scale == 0 {
 			im.Scale = 100
 		}
 		// scale the image to a percentage of the canvas width
-		if im.Height == 0 && im.Width > 0 {
-			nw, nh := imageInfo(im.Name)
-			if nh > 0 {
-				iw = nw
-				ih = nh
-				im.Scale = float64(im.Width)
-			}
+		if im.Width > 0 && im.Height == 0 {
+			im.Scale = float64(im.Width)
 		}
-		//println("[", n, "]", im.Name, im.Xp, im.Yp, iw, ih, im.Scale)
-		doc.Image(im.Name, float32(im.Xp), float32(im.Yp), iw, ih, float32(im.Scale))
+		//fmt.Fprintf(os.Stderr, "[%d] %q %v %v %v %v %v (%v,%v)\n", n, im.Name, im.Xp, im.Yp, iw, ih, im.Scale, cw, ch)
+		doc.Img(img, float32(im.Xp), float32(im.Yp), iw, ih, float32(im.Scale))
 		if len(im.Caption) > 0 {
 			capsize := 1.5
 			if im.Font == "" {
@@ -469,17 +470,18 @@ func showslide(doc *gc.Canvas, d *deck.Deck, n int) {
 }
 
 // imageinfo returns the dimensions of an image
-func imageInfo(s string) (int, int) {
+func imageInfo(s string) (image.Image, error) {
 	f, err := os.Open(s)
 	defer f.Close()
 	if err != nil {
-		return 0, 0
+		return nil, err
 	}
-	im, _, err := image.DecodeConfig(f)
+	im, _, err := image.Decode(f)
 	if err != nil {
-		return 0, 0
+		return nil, err
 	}
-	return im.Width, im.Height
+	f.Close()
+	return im, nil
 }
 
 // ReadDeck reads the deck file, rendering to the canvas
@@ -642,6 +644,8 @@ func slidedeck(s string, initpage int, filename, pagesize string) {
 			if slidenumber < 0 {
 				slidenumber = nslides
 			}
+			deck.Canvas.Width = int(e.Size.X)
+			deck.Canvas.Height = int(e.Size.Y)
 			showslide(canvas, &deck, slidenumber)
 			if gridstate {
 				ngrid(canvas, 5, 1, gc.ColorLookup(deck.Slide[slidenumber].Fg))
