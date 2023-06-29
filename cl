@@ -17,6 +17,7 @@ mondrian
 pie
 polar
 rgb
+scim
 shapesketch
 showimage
 spiral
