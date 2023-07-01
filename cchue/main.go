@@ -27,7 +27,7 @@ func planet(canvas *giocanvas.Canvas, x, y, size, radius, a1, a2, steps float32,
 }
 
 // cchue makes a concentric circle pattern with varying hue
-func cchue(canvas *giocanvas.Canvas, r, step float32, starthue int, bgcolor string) {
+func cchue(canvas *giocanvas.Canvas, r, step float32, starthue int, bgcolor color.NRGBA) {
 	var cstep, c, halfstep, csize float32
 	cstep = 0.5
 	c = 0.5
@@ -35,7 +35,7 @@ func cchue(canvas *giocanvas.Canvas, r, step float32, starthue int, bgcolor stri
 	csize = r * 0.75
 	hue := starthue
 
-	canvas.Background(giocanvas.ColorLookup(bgcolor))
+	canvas.Background(bgcolor)
 	canvas.Circle(50, 50, csize, hsv(hue, 100, 100))
 	planet(canvas, 50, 50, c, r, 0, 360, step, hsv(hue, 100, 100))
 	r += 2
@@ -77,7 +77,7 @@ func cc(w *app.Window, width, height float32) error {
 			return e.Err
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
-			cchue(canvas, 10, 20, 0, "black")
+			cchue(canvas, 10, 20, 0, color.NRGBA{0, 0, 0, 255})
 			e.Frame(canvas.Context.Ops)
 		}
 	}
