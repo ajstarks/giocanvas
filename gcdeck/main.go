@@ -492,17 +492,6 @@ func readDeck(filename string, w, h float32) (deck.Deck, error) {
 	return d, err
 }
 
-// reload reloads the content and shows the first slide
-func reload(filename string, c *gc.Canvas, w, h, n int) (deck.Deck, int) {
-	d, err := readDeck(filename, float32(w), float32(h))
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
-		return d, 0
-	}
-	showslide(c, &d, n)
-	return d, len(d.Slide) - 1
-}
-
 // ngrid makes a numbered grid
 func ngrid(c *gc.Canvas, interval, ts float32, color color.NRGBA) {
 	color.A = 75
@@ -543,6 +532,7 @@ func main() {
 var pressed bool
 var gridstate bool
 var slidenumber int
+var refresh bool
 
 func kbpointer(q event.Queue, ns int) {
 	for _, ev := range q.Events(pressed) {
@@ -550,6 +540,11 @@ func kbpointer(q event.Queue, ns int) {
 			switch k.State {
 			case key.Press:
 				switch k.Name {
+
+				case "R": // reload
+					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+						refresh = true
+					}
 				// emacs bindings
 				case "A", "1": // first slide
 					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
@@ -649,6 +644,15 @@ func slidedeck(s string, initpage int, filename, pagesize string) {
 			showslide(canvas, &deck, slidenumber)
 			if gridstate {
 				ngrid(canvas, 5, 1, gc.ColorLookup(deck.Slide[slidenumber].Fg))
+			}
+			if refresh {
+				deck, err = readDeck(filename, float32(e.Size.X), float32(e.Size.Y))
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "%v\n", err)
+					os.Exit(1)
+				}
+				nslides = len(deck.Slide) - 1
+				refresh = false
 			}
 			kbpointer(e.Queue, nslides)
 			e.Frame(canvas.Context.Ops)
