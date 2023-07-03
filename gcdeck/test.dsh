@@ -1,22 +1,25 @@
 deck
-	slide "blue" "white"
-		ctext "First Slide" 50 50 10
+	mx=50
+	my=50
+	ts=15
+	slide
+		ctext "First" mx my ts
  	eslide
 
 	slide "red" "white"
-		ctext "Slide 2" 50 50 10
+		ctext "Slide 2" mx my ts
 	eslide
 
 	slide "blue" "white"
-		ctext "Slide 3" 50 50 10
+		ctext "Slide 3" mx my ts
 	eslide
 
 	slide "green" "white"
-		ctext "Slide 4" 50 50 10
+		ctext "Slide 4" mx my ts
 	eslide
 
 	slide "orange"
-		ctext "Slide 5" 50 50 10
+		ctext "Slide 5" mx my ts
  	eslide
 	slide
 	 	for x=5 95 5
@@ -34,20 +37,28 @@ deck
 		etext "Slide 7" 95 5 2
 	eslide
 
-	slide
-		ctext "Slide 8" 50 50 10
+	slide "yellow" "black"
+		ctext "Slide 8" mx my ts
 	eslide
 
-	slide
-		ctext "Slide 9" 50 50 10
+	slide "gray" "white"
+		ctext "Slide 9" mx my ts
  	eslide
 
 	slide "purple" "white"
-		ctext "Slide 10" 50 50 10
+		ctext "Slide 10" mx my ts
 	eslide
 
 	slide "black" "white"
 		image "earth.jpg" 50 50 25 0
 		ctext "earth" 50 20 4
+	eslide
+
+//	slide "black"
+//		image "follow.jpg" 50 50 60 0
+//	eslide
+
+	slide "black" "white"
+		ctext "Last" mx my ts
 	eslide
 edeck
