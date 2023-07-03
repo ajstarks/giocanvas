@@ -10,6 +10,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 	"unicode"
 
 	_ "image/gif"
@@ -492,6 +493,11 @@ func readDeck(filename string, w, h float32) (deck.Deck, error) {
 	return d, err
 }
 
+func modtime(filename string) (time.Time, error) {
+	s, err := os.Stat(filename)
+	return s.ModTime(), err
+}
+
 // ngrid makes a numbered grid
 func ngrid(c *gc.Canvas, interval, ts float32, color color.NRGBA) {
 	color.A = 75
@@ -617,6 +623,11 @@ func slidedeck(s string, initpage int, filename, pagesize string) {
 		os.Exit(1)
 	}
 	// set initial values
+	btime, err := modtime(filename)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		os.Exit(1)
+	}
 	nslides := len(deck.Slide) - 1
 	if initpage > nslides+1 || initpage < 1 {
 		initpage = 1
@@ -645,7 +656,8 @@ func slidedeck(s string, initpage int, filename, pagesize string) {
 			if gridstate {
 				ngrid(canvas, 5, 1, gc.ColorLookup(deck.Slide[slidenumber].Fg))
 			}
-			if refresh {
+			ftime, err := modtime(filename)
+			if refresh || ftime.After(btime) {
 				deck, err = readDeck(filename, float32(e.Size.X), float32(e.Size.Y))
 				if err != nil {
 					fmt.Fprintf(os.Stderr, "%v\n", err)
