@@ -17,6 +17,7 @@ Markup is usually generated with the [```decksh``` command](https://github.com/a
 
 
 ![gcdeck](gcdeck0.png)
+![gcdeck](gcdeck1.png)
 
 ## Keyboard commands
 
