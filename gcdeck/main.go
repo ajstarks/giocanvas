@@ -494,6 +494,9 @@ func readDeck(filename string, w, h float32) (deck.Deck, error) {
 }
 
 func modtime(filename string) (time.Time, error) {
+	if filename == "-" {
+		return time.Time{}, nil
+	}
 	s, err := os.Stat(filename)
 	return s.ModTime(), err
 }
@@ -538,7 +541,6 @@ func main() {
 var pressed bool
 var gridstate bool
 var slidenumber int
-var refresh bool
 
 func kbpointer(q event.Queue, ns int) {
 	for _, ev := range q.Events(pressed) {
@@ -546,11 +548,6 @@ func kbpointer(q event.Queue, ns int) {
 			switch k.State {
 			case key.Press:
 				switch k.Name {
-
-				case "R": // reload
-					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
-						refresh = true
-					}
 				// emacs bindings
 				case "A", "1": // first slide
 					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
@@ -616,14 +613,17 @@ func kbpointer(q event.Queue, ns int) {
 }
 
 func slidedeck(s string, initpage int, filename, pagesize string) {
+	var btime, ftime time.Time
+	var err error
+	var deck deck.Deck
 	width, height := pagedim(pagesize)
-	deck, err := readDeck(filename, width, height)
+	deck, err = readDeck(filename, width, height)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(1)
 	}
 	// set initial values
-	btime, err := modtime(filename)
+	btime, err = modtime(filename)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(1)
@@ -656,15 +656,18 @@ func slidedeck(s string, initpage int, filename, pagesize string) {
 			if gridstate {
 				ngrid(canvas, 5, 1, gc.ColorLookup(deck.Slide[slidenumber].Fg))
 			}
-			ftime, err := modtime(filename)
-			if refresh || ftime.After(btime) {
+			ftime, err = modtime(filename)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%v\n", err)
+				os.Exit(1)
+			}
+			if ftime.After(btime) {
 				deck, err = readDeck(filename, float32(e.Size.X), float32(e.Size.Y))
 				if err != nil {
 					fmt.Fprintf(os.Stderr, "%v\n", err)
 					os.Exit(1)
 				}
 				nslides = len(deck.Slide) - 1
-				refresh = false
 			}
 			kbpointer(e.Queue, nslides)
 			e.Frame(canvas.Context.Ops)

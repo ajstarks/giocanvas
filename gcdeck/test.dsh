@@ -1,26 +1,47 @@
 deck
 	mx=50
 	my=50
-	ts=15
+	ts=10
 	slide
 		ctext "First" mx my ts
  	eslide
+ 	ts+=2
 
-	slide "red" "white"
+	slide "hsv(42,100,100)"
 		ctext "Slide 2" mx my ts
 	eslide
+	ts+=2
 
-	slide "blue" "white"
+	slide "hsv(35,100,100)"
 		ctext "Slide 3" mx my ts
 	eslide
+	ts+=2
 
-	slide "green" "white"
+	slide "hsv(28,100,100)"
 		ctext "Slide 4" mx my ts
 	eslide
+	ts+=2
 
-	slide "orange"
+	slide "hsv(21,100,100)"
 		ctext "Slide 5" mx my ts
+ 	eslide	
+
+	slide "hsv(14,100,100)"
+		ctext "Slide 6" mx my ts
+	eslide
+	ts+=2
+
+	slide "hsv(7,100,100)"
+		ctext "Slide 7" mx my ts
  	eslide
+ 	ts+=2
+
+	opts="-fulldeck=f -xlabel=5 -yaxis -yrange=0,100,20 -grid -val -bar -val=f -min=0 -max=100 -vcolor=maroon -datacond=20,50,orange"
+	slide
+		dchart opts rand.d
+		etext "Slide 9" 95 5 2
+	eslide
+
 	slide
 	 	for x=5 95 5
 		 	circle x 50 4 "maroon" x
@@ -28,37 +49,12 @@ deck
 		for y=5 95 5
 			circle 50 y 4 "darkblue" y
 		efor
-		etext "Slide 6" 95 5 2
-	eslide
-
-	opts="-fulldeck=f -xlabel=5 -yaxis -yrange=0,100,20 -grid -val -bar -val=f -min=0 -max=100 -vcolor=maroon -datacond=20,50,orange"
-	slide
-		dchart opts rand.d
-		etext "Slide 7" 95 5 2
-	eslide
-
-	slide "yellow" "black"
-		ctext "Slide 8" mx my ts
-	eslide
-
-	slide "gray" "white"
-		ctext "Slide 9" mx my ts
- 	eslide
-
-	slide "purple" "white"
-		ctext "Slide 10" mx my ts
+		etext "Slide 10" 95 5 2
 	eslide
 
 	slide "black" "white"
-		image "earth.jpg" 50 50 25 0
-		ctext "earth" 50 20 4
-	eslide
-
-//	slide "black"
-//		image "follow.jpg" 50 50 60 0
-//	eslide
-
-	slide "black" "white"
-		ctext "Last" mx my ts
+		image "earth.jpg" mx my 25 0
+		line 50 80 50 70  0.1 "white"
+		ctext "you are here" 50 82 4
 	eslide
 edeck

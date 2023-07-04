@@ -27,8 +27,9 @@ Markup is usually generated with the [```decksh``` command](https://github.com/a
 | K, F, Ctrl-F, Ctrl-N, Space, Enter            | next slide      |
 | J, B, Ctrl-B, Ctrl-P, Shift-Space, Shift-Enter| previous slide  |
 | G                                             | toggle a grid   |
-| R                                             | Re-read input   |
 | Q, ESC                                        | Quit            |
+
+```gcdeck``` notices when the input file changes, and refreshes on the next interaction.
 
 ## Mouse interactions
 
