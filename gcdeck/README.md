@@ -34,11 +34,13 @@ Markup is usually generated with the [```decksh``` command](https://github.com/a
 
 ## Mouse interactions
 
-| Button  | Action          |
-| ------- | --------------- |
-| Left    | next slide      |
-| Right   | previous slide  |
-| Middle  | first slide     |
+| Button        | Action          |
+| ------------- | --------------- |
+| Left          | next slide      |
+| Right         | previous slide  |
+| Middle        | first slide     |
+| Wheel-Forward | next slide      |
+| Wheel-Back    | previous slide  |
 
 ## Options
 

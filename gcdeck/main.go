@@ -543,6 +543,7 @@ var gridstate bool
 var slidenumber int
 
 func kbpointer(q event.Queue, ns int) {
+	nev := 0
 	for _, ev := range q.Events(pressed) {
 		if k, ok := ev.(key.Event); ok {
 			switch k.State {
@@ -594,8 +595,17 @@ func kbpointer(q event.Queue, ns int) {
 				}
 			}
 		}
+
 		if p, ok := ev.(pointer.Event); ok {
 			switch p.Type {
+			case pointer.Scroll:
+				nev++
+				if p.Scroll.Y > 0 && nev == 2 {
+					slidenumber--
+				}
+				if p.Scroll.Y == 0 && nev == 2 {
+					slidenumber++
+				}
 			case pointer.Press:
 				switch p.Buttons {
 				case pointer.ButtonPrimary:
@@ -643,7 +653,11 @@ func slidedeck(s string, initpage int, filename, pagesize string) {
 		case system.FrameEvent:
 			canvas := gc.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			key.InputOp{Tag: pressed}.Add(canvas.Context.Ops)
-			pointer.InputOp{Tag: pressed, Grab: false, Types: pointer.Press}.Add(canvas.Context.Ops)
+			pointer.InputOp{
+				Tag:          pressed,
+				Grab:         false,
+				Types:        pointer.Press | pointer.Scroll,
+				ScrollBounds: image.Rect(0, 0, e.Size.X, e.Size.Y)}.Add(canvas.Context.Ops)
 			if slidenumber > nslides {
 				slidenumber = 0
 			}
