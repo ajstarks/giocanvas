@@ -18,12 +18,35 @@ Other	5.99	gray
 If no files a specified, embedded data is shown.  The command line options:
 
 ```
-  -duration duration
-    	animation interval (default 1s)
   -height int
     	canvas height (default 1000)
   -width int
     	canvas width (default 1000)
 ```
+
+## Keyboard commands
+
+| Command                                       | Action          |
+| --------------------------------------------  | --------------- |
+| A, Ctrl-A, ^, 1, Home                         | first slide     |
+| E, Crtl-E, $, End                             | last slide      |
+| K, F, Ctrl-F, Ctrl-N, Space, Enter            | next slide      |
+| J, B, Ctrl-B, Ctrl-P, Shift-Space, Shift-Enter| previous slide  |
+| G                                             | toggle a grid   |
+| Q, ESC                                        | Quit            |
+
+## Mouse interactions
+
+| Button        | Action          |
+| ------------- | --------------- |
+| Left          | next slide      |
+| Right         | previous slide  |
+| Middle        | first slide     |
+| Wheel-Forward | next slide      |
+| Wheel-Back    | previous slide  |
+
+
+
+
 
 ![pie](pie.png)

@@ -17,16 +17,19 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"image"
 	"image/color"
 	"io"
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"gioui.org/app"
+	"gioui.org/io/event"
+	"gioui.org/io/key"
+	"gioui.org/io/pointer"
+
 	"gioui.org/io/system"
-	"gioui.org/op"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -106,13 +109,88 @@ func piechart(canvas *giocanvas.Canvas, x, y, r float32, data []piedata) {
 	}
 }
 
-func animate(canvas *giocanvas.Canvas, duration time.Duration) {
-	t := canvas.Context.Now.Add(duration)
-	op.InvalidateOp{At: t}.Add(canvas.Context.Ops)
+var pressed bool
+var pieNumber int
+
+func kbpointer(q event.Queue, ns int) {
+	nev := 0
+	for _, ev := range q.Events(pressed) {
+		if k, ok := ev.(key.Event); ok {
+			switch k.State {
+			case key.Press:
+				switch k.Name {
+				// emacs bindings
+				case "A", "1": // first slide
+					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+						pieNumber = 0
+					}
+				case "E": // last slide
+					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+						pieNumber = ns
+					}
+				case "B": // back a slide
+					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+						pieNumber--
+					}
+				case "F": // forward a slide
+					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+						pieNumber++
+					}
+				case "P": // previous slide
+					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+						pieNumber--
+					}
+				case "N": // next slide
+					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+						pieNumber++
+					}
+				case "^", "⇱": // first slide
+					pieNumber = 0
+				case "$", "⇲": // last slide
+					pieNumber = ns
+				case key.NameSpace, "⏎":
+					if k.Modifiers == 0 {
+						pieNumber++
+					} else {
+						pieNumber--
+					}
+				case key.NameRightArrow, key.NamePageDown, key.NameDownArrow, "K":
+					pieNumber++
+				case key.NameLeftArrow, key.NamePageUp, key.NameUpArrow, "J":
+					pieNumber--
+				case key.NameEscape, "Q":
+					os.Exit(0)
+				}
+			}
+		}
+		if p, ok := ev.(pointer.Event); ok {
+			switch p.Type {
+			case pointer.Scroll:
+				nev++
+				if p.Scroll.Y > 0 && nev == 2 {
+					pieNumber--
+				}
+				if p.Scroll.Y == 0 && nev == 2 {
+					pieNumber++
+				}
+			case pointer.Press:
+				switch p.Buttons {
+				case pointer.ButtonPrimary:
+					pieNumber++
+				case pointer.ButtonSecondary:
+					pieNumber--
+				case pointer.ButtonTertiary:
+					pieNumber = 0
+				}
+				pressed = true
+			}
+		}
+	}
+
 }
 
 // pie is the app
-func pie(w *app.Window, width, height float32, duration time.Duration, files []string) error {
+func pie(w *app.Window, width, height float32, files []string) error {
 	var err error
 	var data [][]piedata
 	var title []string
@@ -120,12 +198,12 @@ func pie(w *app.Window, width, height float32, duration time.Duration, files []s
 	if len(files) == 0 { // if no files are specified, load default data
 		data = make([][]piedata, 1)
 		title = make([]string, 1)
-		title[0] = "Desktop Browser Market Share, 2021-09"
+		title[0] = "Browser Market Share, 2021-09"
 		data[0] = []piedata{
 			{name: "Chrome", value: 67.17, color: "red"},
 			{name: "Edge", value: 9.33, color: "green"},
 			{name: "Firefox", value: 7.87, color: "orange"},
-			{name: "Safari", value: 9.63, color: "blue"},
+			{name: "Safari", value: 9.63, color: "steelblue"},
 			{name: "Other", value: 5.99, color: "gray"},
 		}
 	} else { // if you have files, read and load data, skipping bad files
@@ -144,8 +222,8 @@ func pie(w *app.Window, width, height float32, duration time.Duration, files []s
 			nfiles++
 		}
 	}
-
-	i := 0
+	nf := nfiles - 1
+	pieNumber = 0
 	for {
 		e := <-w.Events()
 		switch e := e.(type) {
@@ -153,17 +231,24 @@ func pie(w *app.Window, width, height float32, duration time.Duration, files []s
 			return err
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
-			canvas.CText(50, 92, 4, title[i], color.NRGBA{20, 20, 20, 255})
-			canvas.CText(50, 5, 2, "Source: StatCounter", color.NRGBA{150, 150, 150, 255})
-			piechart(canvas, 50, 50, 25, data[i])
-			if len(files) > 0 { // if you have multiple files, cycle through them
-				i++
-				if i == nfiles {
-					i = 0
-				}
-				animate(canvas, duration)
-				// time.Sleep(duration)
+			key.InputOp{Tag: pressed}.Add(canvas.Context.Ops)
+			pointer.InputOp{
+				Tag:          pressed,
+				Grab:         false,
+				Types:        pointer.Press | pointer.Scroll,
+				ScrollBounds: image.Rect(0, 0, e.Size.X, e.Size.Y)}.Add(canvas.Context.Ops)
+
+			if pieNumber >= nf {
+				pieNumber = 0
 			}
+			if pieNumber < 0 {
+				pieNumber = nf
+			}
+			canvas.Background(color.NRGBA{0, 0, 0, 255})
+			canvas.CText(50, 92, 4, title[pieNumber], color.NRGBA{240, 240, 240, 255})
+			canvas.CText(50, 5, 2, "Source: StatCounter", color.NRGBA{150, 150, 150, 255})
+			piechart(canvas, 50, 50, 25, data[pieNumber])
+			kbpointer(e.Queue, nfiles)
 			e.Frame(canvas.Context.Ops)
 		}
 	}
@@ -172,11 +257,9 @@ func pie(w *app.Window, width, height float32, duration time.Duration, files []s
 
 func main() {
 	var cw, ch int
-	var interval time.Duration
-	ddur, _ := time.ParseDuration("1s")
+
 	flag.IntVar(&cw, "width", 1000, "canvas width")
 	flag.IntVar(&ch, "height", 1000, "canvas height")
-	flag.DurationVar(&interval, "duration", ddur, "animation interval")
 	flag.Parse()
 
 	width := float32(cw)
@@ -184,7 +267,7 @@ func main() {
 
 	go func() {
 		w := app.NewWindow(app.Title("pie"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := pie(w, width, height, interval, flag.Args()); err != nil {
+		if err := pie(w, width, height, flag.Args()); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
 		}

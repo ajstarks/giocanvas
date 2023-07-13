@@ -2,5 +2,5 @@
 Chrome	62.09	red
 IE/Edge	14.07	green
 Firefox	14.85	orange
-Safari	5.28	blue
+Safari	5.28	steelblue
 Other	3.71	gray
