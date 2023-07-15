@@ -200,11 +200,11 @@ func pie(w *app.Window, width, height float32, files []string) error {
 		title = make([]string, 1)
 		title[0] = "Browser Market Share, 2021-09"
 		data[0] = []piedata{
-			{name: "Chrome", value: 67.17, color: "red"},
-			{name: "Edge", value: 9.33, color: "green"},
-			{name: "Firefox", value: 7.87, color: "orange"},
-			{name: "Safari", value: 9.63, color: "steelblue"},
-			{name: "Other", value: 5.99, color: "gray"},
+			{name: "Chrome", value: 67.17, color: "#2171b5"},
+			{name: "Edge", value: 9.33, color: "#4292c6"},
+			{name: "Firefox", value: 7.87, color: "#6baed6"},
+			{name: "Safari", value: 9.63, color: "#9ecae1"},
+			{name: "Other", value: 5.99, color: "#c6dbef"},
 		}
 	} else { // if you have files, read and load data, skipping bad files
 		data = make([][]piedata, len(files))
