@@ -5,6 +5,7 @@ cchue
 concentric
 compchart
 confetti
+dots
 elections
 eclipse
 flowers
