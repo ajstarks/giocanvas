@@ -5,6 +5,7 @@ import (
 	"flag"
 	"io"
 	"os"
+	"strings"
 
 	"gioui.org/app"
 	"gioui.org/io/event"
@@ -22,17 +23,18 @@ type coord struct {
 
 func main() {
 	var cw, ch, nc int
-	var bgcolor string
+	var bgcolor, palette string
 	flag.IntVar(&cw, "width", 1000, "canvas width")
 	flag.IntVar(&ch, "height", 1000, "canvas height")
 	flag.IntVar(&nc, "nc", 100, "number of dots")
 	flag.StringVar(&bgcolor, "bgcolor", "black", "background color")
+	flag.StringVar(&palette, "palette", "red green blue orange", "color palette (space separated list of colors)")
 	flag.Parse()
 
 	// kick off the application
 	go func() {
 		w := app.NewWindow(app.Title("dots"), app.Size(unit.Dp(cw), unit.Dp(ch)))
-		if err := dots(w, nc, bgcolor); err != nil {
+		if err := dots(w, nc, bgcolor, palette); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
 		}
@@ -89,17 +91,20 @@ func kbpointer(q event.Queue, width, height float32, coords []coord) {
 	}
 }
 
-func dots(w *app.Window, nc int, bgcolor string) error {
-	palette := []string{
-		"#aaaaaaaa",
-		"#aa0000aa",
-		"#00aa00aa",
-		"#0000aaaa",
-		"#ffd821aa",
-		"#234ad5aa",
-		"#ffad5e00",
-		"#000000aa",
+func parseColors(s string) []string {
+	c := strings.Fields(s)
+	l := len(c)
+	if l < 2 {
+		return []string{"red", "blue"}
 	}
+	for i := 0; i < l; i++ {
+		c[i] = strings.TrimSpace(c[i])
+	}
+	return c
+}
+
+func dots(w *app.Window, nc int, bgcolor, colorlist string) error {
+	palette := parseColors(colorlist)
 	np := len(palette)
 	coordinates := make([]coord, nc)
 	coordinates[0].X, coordinates[0].Y = 50, 50

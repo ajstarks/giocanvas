@@ -9,6 +9,9 @@ Drag the mouse and make dots
 ```
   -bgcolor string
     	background color (default "black")
+  -palette string
+      color palette (space separated list of colors) (default "red green blue orange")
+      colors may be spefied as named colors, rgb(r,g,b,[alpha]), #rrggbb[aa], or hsv(hue,sat,value,[alpha])
   -height int
     	canvas height (default 1000)
   -width int
