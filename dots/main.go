@@ -26,9 +26,9 @@ func main() {
 	var bgcolor, palette string
 	flag.IntVar(&cw, "width", 1000, "canvas width")
 	flag.IntVar(&ch, "height", 1000, "canvas height")
-	flag.IntVar(&nc, "nc", 100, "number of dots")
+	flag.IntVar(&nc, "nc", 1000, "number of dots")
 	flag.StringVar(&bgcolor, "bgcolor", "black", "background color")
-	flag.StringVar(&palette, "palette", "red green blue orange", "color palette (space separated list of colors)")
+	flag.StringVar(&palette, "palette", "#aaaaaaaa #aa0000aa #00aa00aa #0000aaaa #ffd821aa #234ad5aa #ffad5e00 #000000aa", "color palette (space separated list of colors)")
 	flag.Parse()
 
 	// kick off the application
