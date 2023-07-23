@@ -31,7 +31,9 @@ func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string,
 		offset = x - c.Width/2
 	}
 	stack := op.Offset(image.Point{X: int(offset), Y: int(y - size)}).Push(c.Context.Ops) // shift to use baseline
-	l := material.Label(material.NewTheme(gofont.Collection()), unit.Sp(size), s)
+	theme := material.NewTheme()
+	theme.Shaper = text.NewShaper(text.NoSystemFonts(), text.WithCollection(gofont.Regular()))
+	l := material.Label(theme, unit.Sp(size), s)
 	l.Color = fillcolor
 	l.Alignment = alignment
 	l.Layout(c.Context)
@@ -41,7 +43,9 @@ func (c *Canvas) textops(x, y, size float32, alignment text.Alignment, s string,
 // AbsTextWrap places and wraps text at (x, y), wrapped at width
 func (c *Canvas) AbsTextWrap(x, y, size, width float32, s string, fillcolor color.NRGBA) {
 	stack := op.Offset(image.Point{X: int(x), Y: int(y - size)}).Push(c.Context.Ops) // shift to use baseline
-	l := material.Label(material.NewTheme(gofont.Collection()), unit.Sp(size), s)
+	theme := material.NewTheme()
+	theme.Shaper = text.NewShaper(text.NoSystemFonts(), text.WithCollection(gofont.Regular()))
+	l := material.Label(theme, unit.Sp(size), s)
 	l.Color = fillcolor
 	c.Context.Constraints.Max.X = int(width)
 	l.Layout(c.Context)
