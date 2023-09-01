@@ -14,14 +14,6 @@ import (
 	"github.com/ajstarks/giocanvas"
 )
 
-func polar(x, y, r, t float32) (float32, float32) {
-	fr := float64(r)
-	px := fr * math.Cos(float64(t))
-	py := fr * math.Sin(float64(t))
-
-	return x + float32(px), y + float32(py)
-}
-
 func circles(w *app.Window, width, height float32) error {
 	for {
 		e := <-w.Events()
