@@ -9,7 +9,7 @@
 ![rect](rect.png)
 ![curve](curve.png)
 ![ellipse](ellipse.png)
-![arc](arc1.png)
+![arc](arc.png)
 
 ## Pointer controls
 
