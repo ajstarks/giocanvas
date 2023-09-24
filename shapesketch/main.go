@@ -10,13 +10,10 @@ import (
 	"strconv"
 
 	"gioui.org/app"
-	"gioui.org/f32"
 	"gioui.org/io/event"
 	"gioui.org/io/key"
 	"gioui.org/io/pointer"
 	"gioui.org/io/system"
-	"gioui.org/op/clip"
-	"gioui.org/op/paint"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -145,17 +142,21 @@ func dist(x1, y1, x2, y2 float32) float32 {
 }
 
 func rad2deg(r float32) float32 {
-	return float32((180 / math.Pi) * r)
+	d := float32((180 / math.Pi) * r)
+	if d < 0 {
+		return 360 + d
+	}
+	return d
 }
 
 func arcElements() (float32, float64, float64) {
 	r := dist(bx, by, cx, cy)
-	dy1 := float64(by - cy)
-	dx1 := float64(bx - cx)
-	dy2 := float64(by - ey)
-	dx2 := float64(bx - ex)
-	a1 := math.Atan2(dy2, dx2)
-	a2 := math.Atan2(dy1, dx1)
+	dx1 := float64(ex - bx)
+	dy1 := float64(ey - by)
+	dx2 := float64(cx - bx)
+	dy2 := float64(cy - by)
+	a1 := math.Atan2(dy1, dx1)
+	a2 := math.Atan2(dy2, dx2)
 	return r, a1, a2
 }
 
@@ -171,18 +172,6 @@ func dimen(xp, yp, w, h float32) (float32, float32) {
 }
 
 func arc(canvas *giocanvas.Canvas, size float32, fillcolor color.NRGBA) {
-	_, a1, a2 := arcElements()
-	f1x, f1y := dimen(bx, by, canvas.Width, canvas.Height)
-	curx, cury := dimen(cx, cy, canvas.Width, canvas.Height)
-	size = canvas.Width * (size / 100)
-	path := new(clip.Path)
-	ops := canvas.Context.Ops
-	path.Begin(ops)
-	path.Move(f32.Pt(curx, cury))
-	path.ArcTo(f32.Pt(f1x, f1y), f32.Pt(f1x, f1y), float32(a1+a2))
-	stack := clip.Stroke{Path: path.End(), Width: size}.Op().Push(ops)
-	paint.Fill(ops, fillcolor)
-	stack.Pop()
 }
 
 // kbpointer processes the keyboard events and pointer events in percent coordinates
@@ -333,11 +322,12 @@ func shapesketch(w *app.Window, cfg config) error {
 				textcoord(canvas, bx, by, begincolor, cfg)
 				textcoord(canvas, ex, ey, endcolor, cfg)
 				textcoord(canvas, cx, cy, shapecolor, cfg)
-				r, a1, a2 := arcElements()
-				canvas.Arc(bx, by, r, a1, a2, cfg.shapecolor)
-				//arc(canvas, cfg.linesize, cfg.shapecolor)
+				r, a2, a1 := arcElements()
+				for t := a1; t < a2; t += math.Pi / 256 {
+					px, py := canvas.Polar(bx, by, r, float32(t))
+					canvas.Line(bx, by, px, py, cfg.linesize, cfg.shapecolor)
+				}
 			}
-
 			kbpointer(e.Queue, cfg)
 			cx, cy = mouseX, mouseY
 			e.Frame(canvas.Context.Ops)
