@@ -597,7 +597,7 @@ func kbpointer(q event.Queue, ns int) {
 		}
 
 		if p, ok := ev.(pointer.Event); ok {
-			switch p.Type {
+			switch p.Kind {
 			case pointer.Scroll:
 				nev++
 				if p.Scroll.Y > 0 && nev == 2 {
@@ -656,7 +656,7 @@ func slidedeck(s string, initpage int, filename, pagesize string) {
 			pointer.InputOp{
 				Tag:          pressed,
 				Grab:         false,
-				Types:        pointer.Press | pointer.Scroll,
+				Kinds:        pointer.Press | pointer.Scroll,
 				ScrollBounds: image.Rect(0, 0, e.Size.X, e.Size.Y)}.Add(canvas.Context.Ops)
 			if slidenumber > nslides {
 				slidenumber = 0

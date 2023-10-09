@@ -71,7 +71,7 @@ func kbpointer(q event.Queue, width, height float32, coords []coord) {
 		}
 		// pointer events
 		if p, ok := ev.(pointer.Event); ok {
-			switch p.Type {
+			switch p.Kind {
 			case pointer.Drag:
 				coords[coordindex].X, coords[coordindex].Y = pctcoord(p.Position.X, p.Position.Y, width, height)
 				coordindex++
@@ -121,7 +121,7 @@ func dots(w *app.Window, nc int, bgcolor, colorlist string) error {
 			pointer.InputOp{
 				Tag:   pressed,
 				Grab:  false,
-				Types: pointer.Press | pointer.Move | pointer.Drag}.Add(canvas.Context.Ops)
+				Kinds: pointer.Press | pointer.Move | pointer.Drag}.Add(canvas.Context.Ops)
 			if dotsize < 0.1 {
 				dotsize = 0.1
 			}

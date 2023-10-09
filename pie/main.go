@@ -164,7 +164,7 @@ func kbpointer(q event.Queue, ns int) {
 			}
 		}
 		if p, ok := ev.(pointer.Event); ok {
-			switch p.Type {
+			switch p.Kind {
 			case pointer.Scroll:
 				nev++
 				if p.Scroll.Y > 0 && nev == 2 {
@@ -224,18 +224,24 @@ func pie(w *app.Window, width, height float32, files []string) error {
 	}
 	nf := nfiles - 1
 	pieNumber = 0
+	var (
+		piesize float32 = 25
+		top     float32 = 95
+		bottom  float32 = 100 - top
+	)
 	for {
 		e := <-w.Events()
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			return err
 		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
+			w, h := float32(e.Size.X), float32(e.Size.Y)
+			canvas := giocanvas.NewCanvas(w, h, system.FrameEvent{})
 			key.InputOp{Tag: pressed}.Add(canvas.Context.Ops)
 			pointer.InputOp{
 				Tag:          pressed,
 				Grab:         false,
-				Types:        pointer.Press | pointer.Scroll,
+				Kinds:        pointer.Press | pointer.Scroll,
 				ScrollBounds: image.Rect(0, 0, e.Size.X, e.Size.Y)}.Add(canvas.Context.Ops)
 
 			if pieNumber >= nf {
@@ -245,9 +251,9 @@ func pie(w *app.Window, width, height float32, files []string) error {
 				pieNumber = nf
 			}
 			canvas.Background(color.NRGBA{0, 0, 0, 255})
-			canvas.CText(50, 92, 4, title[pieNumber], color.NRGBA{240, 240, 240, 255})
-			canvas.CText(50, 5, 2, "Source: StatCounter", color.NRGBA{150, 150, 150, 255})
-			piechart(canvas, 50, 50, 25, data[pieNumber])
+			canvas.CText(50, top, 4, title[pieNumber], color.NRGBA{240, 240, 240, 255})
+			canvas.CText(50, bottom, 2, "Source: StatCounter", color.NRGBA{150, 150, 150, 255})
+			piechart(canvas, 50, 50, piesize, data[pieNumber])
 			kbpointer(e.Queue, nfiles)
 			e.Frame(canvas.Context.Ops)
 		}
