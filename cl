@@ -6,6 +6,7 @@ concentric
 compchart
 confetti
 dots
+dotspiral
 elections
 eclipse
 flowers
