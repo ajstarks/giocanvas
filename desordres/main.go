@@ -11,6 +11,8 @@ import (
 	"strings"
 
 	"gioui.org/app"
+	"gioui.org/io/event"
+	"gioui.org/io/key"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
@@ -18,8 +20,8 @@ import (
 
 // config holds configuration parameters
 type config struct {
-	tiles, maxlw, size, top, left, h1, h2 float64
-	bgcolor, color                        string
+	tiles, maxlw, h1, h2 float64
+	bgcolor, color       string
 }
 
 // random returns a random number between a range
@@ -93,15 +95,65 @@ func tiles(canvas *giocanvas.Canvas, x, y, minsize, maxsize, maxlw, h1, h2 float
 	}
 }
 
+var pressed bool
+var tilesize float64
+
+const stepsize = 1.0
+
+// kbpointer processes the keyboard events and pointer events in percent coordinates
+func kbpointer(q event.Queue, cfg config) {
+
+	for _, ev := range q.Events(pressed) {
+		// keyboard events
+		if k, ok := ev.(key.Event); ok {
+			switch k.State {
+			case key.Press:
+				switch k.Name {
+				case key.NameLeftArrow:
+					switch k.Modifiers {
+					case 0:
+						tilesize -= stepsize
+					case key.ModCtrl:
+						tilesize -= stepsize
+					}
+				case key.NameRightArrow:
+					switch k.Modifiers {
+					case 0:
+						tilesize += stepsize
+					case key.ModCtrl:
+						tilesize += stepsize
+					}
+				case key.NameUpArrow:
+					switch k.Modifiers {
+					case 0:
+						tilesize += stepsize
+					case key.ModCtrl:
+						tilesize += stepsize
+					}
+				case key.NameDownArrow:
+					switch k.Modifiers {
+					case 0:
+						tilesize -= stepsize
+					case key.ModCtrl:
+						tilesize -= stepsize
+					}
+				case key.NameEscape, "Q":
+					os.Exit(0)
+				}
+			}
+		}
+		pressed = true
+	}
+}
+
 // desordres makes tiles of random conentric squares
 func desordres(w *app.Window, width, height float32, cfg config) error {
 	bg := giocanvas.ColorLookup(cfg.bgcolor)
-	top := cfg.top
-	size := cfg.size
-	left := cfg.left
 	maxlw := cfg.maxlw
-	h1, h2 := cfg.h1, cfg.h2
+	h1, h2 := parseHues(cfg.color) // set hue range, or named color
 	color := cfg.color
+	tilesize = cfg.tiles
+	var top, left, size float64
 	for {
 		e := <-w.Events()
 		switch e := e.(type) {
@@ -109,12 +161,23 @@ func desordres(w *app.Window, width, height float32, cfg config) error {
 			return e.Err
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
+			key.InputOp{Tag: pressed}.Add(canvas.Context.Ops)
 			canvas.Background(bg)
+			if tilesize < 1 {
+				tilesize = 20
+			}
+			if tilesize > 20 {
+				tilesize = 1
+			}
+			size = 100 / tilesize  // size of each tile
+			top = 100 - (size / 2) // top of the beginning row
+			left = 100 - top       // left of the beginning row
 			for y := top; y > 0; y -= size {
 				for x := left; x < 100; x += size {
 					tiles(canvas, x, y, 2, size, maxlw, h1, h2, color)
 				}
 			}
+			kbpointer(e.Queue, cfg)
 			e.Frame(canvas.Context.Ops)
 		}
 	}
@@ -136,11 +199,6 @@ func main() {
 		fmt.Fprintln(os.Stderr, "width and height must be the same")
 		os.Exit(1)
 	}
-
-	cfg.size = 100 / cfg.tiles            // size of each tile
-	cfg.top = 100 - (cfg.size / 2)        // top of the beginning row
-	cfg.left = 100 - cfg.top              // left of the beginning row
-	cfg.h1, cfg.h2 = parseHues(cfg.color) // set hue range, or named color
 
 	go func() {
 		w := app.NewWindow(app.Title("desordres"), app.Size(unit.Dp(width), unit.Dp(height)))
