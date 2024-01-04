@@ -13,6 +13,7 @@ import (
 	"gioui.org/app"
 	"gioui.org/io/event"
 	"gioui.org/io/key"
+	"gioui.org/io/pointer"
 	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
@@ -101,7 +102,7 @@ var tilesize float64
 const stepsize = 1.0
 
 // kbpointer processes the keyboard events and pointer events in percent coordinates
-func kbpointer(q event.Queue, cfg config) {
+func kbpointer(q event.Queue) {
 
 	for _, ev := range q.Events(pressed) {
 		// keyboard events
@@ -110,39 +111,33 @@ func kbpointer(q event.Queue, cfg config) {
 			case key.Press:
 				switch k.Name {
 				case key.NameLeftArrow:
-					switch k.Modifiers {
-					case 0:
-						tilesize -= stepsize
-					case key.ModCtrl:
-						tilesize -= stepsize
-					}
+					tilesize -= stepsize
 				case key.NameRightArrow:
-					switch k.Modifiers {
-					case 0:
-						tilesize += stepsize
-					case key.ModCtrl:
-						tilesize += stepsize
-					}
+					tilesize += stepsize
 				case key.NameUpArrow:
-					switch k.Modifiers {
-					case 0:
-						tilesize += stepsize
-					case key.ModCtrl:
-						tilesize += stepsize
-					}
+					tilesize += stepsize
 				case key.NameDownArrow:
-					switch k.Modifiers {
-					case 0:
-						tilesize -= stepsize
-					case key.ModCtrl:
-						tilesize -= stepsize
-					}
+					tilesize -= stepsize
 				case key.NameEscape, "Q":
 					os.Exit(0)
 				}
 			}
 		}
 		pressed = true
+		if p, ok := ev.(pointer.Event); ok {
+			switch p.Type {
+			case pointer.Press:
+				switch p.Buttons {
+				case pointer.ButtonPrimary:
+					tilesize += stepsize
+				case pointer.ButtonSecondary:
+					tilesize -= stepsize
+				case pointer.ButtonTertiary:
+					tilesize = 10
+				}
+				pressed = true
+			}
+		}
 	}
 }
 
@@ -162,12 +157,14 @@ func desordres(w *app.Window, width, height float32, cfg config) error {
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			key.InputOp{Tag: pressed}.Add(canvas.Context.Ops)
+			pointer.InputOp{Tag: pressed, Grab: false, Types: pointer.Press}.Add(canvas.Context.Ops)
+
 			canvas.Background(bg)
 			if tilesize < 1 {
-				tilesize = 20
+				tilesize = 1
 			}
 			if tilesize > 20 {
-				tilesize = 1
+				tilesize = 20
 			}
 			size = 100 / tilesize  // size of each tile
 			top = 100 - (size / 2) // top of the beginning row
@@ -177,7 +174,7 @@ func desordres(w *app.Window, width, height float32, cfg config) error {
 					tiles(canvas, x, y, 2, size, maxlw, h1, h2, color)
 				}
 			}
-			kbpointer(e.Queue, cfg)
+			kbpointer(e.Queue)
 			e.Frame(canvas.Context.Ops)
 		}
 	}
@@ -191,7 +188,7 @@ func main() {
 	flag.Float64Var(&cfg.tiles, "tiles", 10, "tiles/row")
 	flag.Float64Var(&cfg.maxlw, "maxlw", 1, "maximum line thickness")
 	flag.StringVar(&cfg.bgcolor, "bgcolor", "white", "background color")
-	flag.StringVar(&cfg.color, "color", "gray", "pen color")
+	flag.StringVar(&cfg.color, "color", "gray", "pen color; named color, or h1:h2 for a random hue range hsv(h1:h2, 100, 100)")
 	flag.Parse()
 
 	width, height := float32(cw), float32(ch)
