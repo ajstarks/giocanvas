@@ -100,6 +100,8 @@ var pressed bool
 var tilesize float64
 
 const stepsize = 1.0
+const mintile = 1.0
+const maxtile = 20.0
 
 // kbpointer processes the keyboard events and pointer events in percent coordinates
 func kbpointer(q event.Queue) {
@@ -110,20 +112,19 @@ func kbpointer(q event.Queue) {
 			switch k.State {
 			case key.Press:
 				switch k.Name {
-				case key.NameLeftArrow:
+				case key.NameHome:
+					tilesize = mintile
+				case key.NameEnd:
+					tilesize = maxtile
+				case key.NameLeftArrow, key.NameDownArrow, "-":
 					tilesize -= stepsize
-				case key.NameRightArrow:
+				case key.NameRightArrow, key.NameUpArrow, "+":
 					tilesize += stepsize
-				case key.NameUpArrow:
-					tilesize += stepsize
-				case key.NameDownArrow:
-					tilesize -= stepsize
 				case key.NameEscape, "Q":
 					os.Exit(0)
 				}
 			}
 		}
-		pressed = true
 		if p, ok := ev.(pointer.Event); ok {
 			switch p.Type {
 			case pointer.Press:
@@ -135,7 +136,6 @@ func kbpointer(q event.Queue) {
 				case pointer.ButtonTertiary:
 					tilesize = 10
 				}
-				pressed = true
 			}
 		}
 	}
@@ -160,11 +160,11 @@ func desordres(w *app.Window, width, height float32, cfg config) error {
 			pointer.InputOp{Tag: pressed, Grab: false, Types: pointer.Press}.Add(canvas.Context.Ops)
 
 			canvas.Background(bg)
-			if tilesize < 1 {
-				tilesize = 1
+			if tilesize < mintile {
+				tilesize = mintile
 			}
-			if tilesize > 20 {
-				tilesize = 20
+			if tilesize > maxtile {
+				tilesize = maxtile
 			}
 			size = 100 / tilesize  // size of each tile
 			top = 100 - (size / 2) // top of the beginning row

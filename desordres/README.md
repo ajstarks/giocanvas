@@ -18,6 +18,10 @@ desordres -width=500 -height=500 -maxlw=0.5 -bgcolor=black -color='20:60'
 
 * Primary Mouse, Right or Up Arrow: increase tiles/row
 * Secondary Mouse, Left or Down Arrow: decrease tiles/row
+* Home: minimum tile/row: 1
+* End: maximum tile/row: 20
+
+Pressing any other key will create a new set of tiles
 
 ## options
 
