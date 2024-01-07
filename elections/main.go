@@ -237,7 +237,7 @@ func kbpointer(q event.Queue, ns int) {
 			}
 		}
 		if p, ok := ev.(pointer.Event); ok {
-			switch p.Type {
+			switch p.Kind {
 			case pointer.Scroll:
 				nev++
 				if p.Scroll.Y > 0 && nev == 2 {
@@ -268,7 +268,7 @@ func elect(title string, opts options, elections []election) {
 	ne := len(elections) - 1
 
 	for {
-		e := <-win.Events()
+		e := win.NextEvent()
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			os.Exit(0)
@@ -278,7 +278,7 @@ func elect(title string, opts options, elections []election) {
 			pointer.InputOp{
 				Tag:          pressed,
 				Grab:         false,
-				Types:        pointer.Press | pointer.Scroll,
+				Kinds:        pointer.Press | pointer.Scroll,
 				ScrollBounds: image.Rect(0, 0, e.Size.X, e.Size.Y)}.Add(canvas.Context.Ops)
 			if electionNumber > ne {
 				electionNumber = 0

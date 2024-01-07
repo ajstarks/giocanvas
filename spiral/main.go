@@ -27,8 +27,8 @@ func work(title string, width, height float32, a, b, n, incr, dotsize float64, c
 	win := app.NewWindow(app.Title(title), app.Size(unit.Dp(width), unit.Dp(height)))
 	var cx, cy float32 = 50, 50
 	spcolor := giocanvas.ColorLookup(color)
-	for e := range win.Events() {
-		switch e := e.(type) {
+	for {
+		switch e := win.NextEvent().(type) {
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), e)
 			spiral(canvas, cx, cy, float32(dotsize), a, b, n, incr, spcolor)

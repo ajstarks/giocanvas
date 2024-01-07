@@ -23,7 +23,7 @@ func transforms(w *app.Window, width, height float32) error {
 	ts2 = ts / 3
 	textcolor := color.NRGBA{0, 0, 0, 255}
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			return e.Err

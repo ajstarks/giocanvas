@@ -28,7 +28,7 @@ func twrap(w *app.Window, width, height float32) error {
 	s := "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
 
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			return e.Err

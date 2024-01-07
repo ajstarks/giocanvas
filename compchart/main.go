@@ -63,7 +63,7 @@ func comp(canvas *giocanvas.Canvas) error {
 
 func sincos(w *app.Window, width, height float32) error {
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			return e.Err

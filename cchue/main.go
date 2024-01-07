@@ -71,7 +71,7 @@ func cchue(canvas *giocanvas.Canvas, r, step float32, starthue int, bgcolor colo
 
 func cc(w *app.Window, width, height float32) error {
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			return e.Err

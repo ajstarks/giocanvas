@@ -54,7 +54,7 @@ func rgb(w *app.Window, width, height float32) error {
 	}
 	var x, y float32
 	for {
-		ev := <-w.Events()
+		ev := w.NextEvent()
 		switch e := ev.(type) {
 		case system.DestroyEvent:
 			return e.Err

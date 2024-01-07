@@ -39,7 +39,7 @@ func scimage(w *app.Window, filename string, width, height float32) error {
 	gridcolor := fgcolor
 	gridcolor.A = 75
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			return e.Err

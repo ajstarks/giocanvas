@@ -51,7 +51,7 @@ func grid(w *app.Window, width, height, x1, x2, y1, y2, xincr, yincr, lw float32
 	textcolor.A = 150
 	ts := xincr / 2.5
 	for {
-		ev := <-w.Events()
+		ev := w.NextEvent()
 		switch e := ev.(type) {
 		case system.DestroyEvent:
 			return e.Err

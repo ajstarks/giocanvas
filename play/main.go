@@ -43,7 +43,7 @@ func play(w *app.Window, width, height float32, showgrid bool) error {
 	logoimg := getImage("logo.png")
 	const pi = 3.14159265
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			return e.Err

@@ -164,7 +164,7 @@ func kbpointer(q event.Queue, ns int) {
 			}
 		}
 		if p, ok := ev.(pointer.Event); ok {
-			switch p.Type {
+			switch p.Kind {
 			case pointer.Scroll:
 				nev++
 				if p.Scroll.Y > 0 && nev == 2 {
@@ -230,7 +230,7 @@ func pie(w *app.Window, width, height float32, files []string) error {
 		bottom  float32 = 100 - top
 	)
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			return err
@@ -241,7 +241,7 @@ func pie(w *app.Window, width, height float32, files []string) error {
 			pointer.InputOp{
 				Tag:          pressed,
 				Grab:         false,
-				Types:        pointer.Press | pointer.Scroll,
+				Kinds:        pointer.Press | pointer.Scroll,
 				ScrollBounds: image.Rect(0, 0, e.Size.X, e.Size.Y)}.Add(canvas.Context.Ops)
 
 			if pieNumber >= nf {

@@ -83,7 +83,7 @@ func lego(w *app.Window, width, height float32) error {
 	var c1, c2 float32 = 15, 60
 
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			return e.Err

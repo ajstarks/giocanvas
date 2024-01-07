@@ -238,7 +238,7 @@ func kbpointer(q event.Queue, cfg config) {
 		}
 		// pointer events
 		if p, ok := ev.(pointer.Event); ok {
-			switch p.Type {
+			switch p.Kind {
 			case pointer.Move:
 				mouseX, mouseY = pctcoord(p.Position.X, p.Position.Y, width, height)
 			case pointer.Press:
@@ -278,7 +278,7 @@ func shapesketch(w *app.Window, cfg config) error {
 
 	// app loop
 	for {
-		ev := <-w.Events()
+		ev := w.NextEvent()
 		switch e := ev.(type) {
 		// return an error on close
 		case system.DestroyEvent:
@@ -288,7 +288,7 @@ func shapesketch(w *app.Window, cfg config) error {
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			key.InputOp{Tag: pressed}.Add(canvas.Context.Ops)
-			pointer.InputOp{Tag: pressed, Grab: false, Types: pointer.Press | pointer.Move}.Add(canvas.Context.Ops)
+			pointer.InputOp{Tag: pressed, Grab: false, Kinds: pointer.Press | pointer.Move}.Add(canvas.Context.Ops)
 			canvas.Background(cfg.bgcolor)
 			grid(canvas, 5, cfg.textcolor)
 			// draw specified shape

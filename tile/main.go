@@ -58,7 +58,7 @@ func tile(w *app.Window, opts options) error {
 	bgcolor := gc.ColorLookup(opts.bgcolor)
 
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			return e.Err

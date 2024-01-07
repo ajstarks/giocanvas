@@ -31,7 +31,7 @@ func flower(w *app.Window, width, height float32) error {
 	bgcolor := giocanvas.ColorLookup("linen")
 
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			return e.Err

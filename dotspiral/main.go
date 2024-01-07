@@ -37,8 +37,8 @@ func work(title string, width, height float32, c config) {
 	defer os.Exit(0)
 	win := app.NewWindow(app.Title(title), app.Size(unit.Dp(width), unit.Dp(height)))
 	var cx, cy float32 = 50, 50
-	for e := range win.Events() {
-		switch e := e.(type) {
+	for {
+		switch e := win.NextEvent().(type) {
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), e)
 			dotspiral(canvas, cx, cy, c)

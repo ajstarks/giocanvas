@@ -35,7 +35,7 @@ func main() {
 
 func hello(w *app.Window, width, height float32) error {
 	for {
-		ev := <-w.Events()
+		ev := w.NextEvent()
 		switch e := ev.(type) {
 		case system.DestroyEvent:
 			return e.Err

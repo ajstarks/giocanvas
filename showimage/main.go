@@ -33,7 +33,7 @@ func imageinfo(imagefile string) (image.Image, int, int, error) {
 // showimage shows an image, centered on the canvas at the specified scale and size
 func showimage(win *app.Window, im image.Image, w, h int, scale float32) error {
 	for {
-		e := <-win.Events()
+		e := win.NextEvent()
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			return e.Err

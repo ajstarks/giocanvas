@@ -103,7 +103,7 @@ const stepsize = 1.0
 const mintile = 1.0
 const maxtile = 20.0
 
-// kbpointer processes the keyboard events and pointer events in percent coordinates
+// kbpointer processes the keyboard events and pointer events
 func kbpointer(q event.Queue) {
 
 	for _, ev := range q.Events(pressed) {
@@ -125,8 +125,9 @@ func kbpointer(q event.Queue) {
 				}
 			}
 		}
+		// pointer events
 		if p, ok := ev.(pointer.Event); ok {
-			switch p.Type {
+			switch p.Kind {
 			case pointer.Press:
 				switch p.Buttons {
 				case pointer.ButtonPrimary:
@@ -150,14 +151,14 @@ func desordres(w *app.Window, width, height float32, cfg config) error {
 	tilesize = cfg.tiles
 	var top, left, size float64
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			return e.Err
 		case system.FrameEvent:
 			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
 			key.InputOp{Tag: pressed}.Add(canvas.Context.Ops)
-			pointer.InputOp{Tag: pressed, Grab: false, Types: pointer.Press}.Add(canvas.Context.Ops)
+			pointer.InputOp{Tag: pressed, Grab: false, Kinds: pointer.Press}.Add(canvas.Context.Ops)
 
 			canvas.Background(bg)
 			if tilesize < mintile {

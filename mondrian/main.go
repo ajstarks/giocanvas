@@ -30,7 +30,7 @@ func mondrian(w *app.Window, width, height float32) error {
 	t2h := t2 + halft
 
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			return e.Err
