@@ -19,6 +19,35 @@ import (
 	"github.com/ajstarks/giocanvas"
 )
 
+var palette = map[string][]string{
+	"kirokaze-gameboy":       {"#332c50", "#46878f", "#94e344", "#e2f3e4"},
+	"ice-cream-gb":           {"#7c3f58", "#eb6b6f", "#f9a875", "#fff6d3"},
+	"2-bit-demichrome":       {"#211e20", "#555568", "#a0a08b", "#e9efec"},
+	"mist-gb":                {"#2d1b00", "#1e606e", "#5ab9a8", "#c4f0c2"},
+	"rustic-gb":              {"#2c2137", "#764462", "#edb4a1", "#a96868"},
+	"2-bit-grayscale":        {"#000000", "#676767", "#b6b6b6", "#ffffff"},
+	"hollow":                 {"#0f0f1b", "#565a75", "#c6b7be", "#fafbf6"},
+	"ayy4":                   {"#00303b", "#ff7777", "#ffce96", "#f1f2da"},
+	"nintendo-gameboy-bgb":   {"#081820", "#346856", "#88c070", "#e0f8d0"},
+	"red-brick":              {"#eff9d6", "#ba5044", "#7a1c4b", "#1b0326"},
+	"nostalgia":              {"#d0d058", "#a0a840", "#708028", "#405010"},
+	"spacehaze":              {"#f8e3c4", "#cc3495", "#6b1fb1", "#0b0630"},
+	"moonlight-gb":           {"#0f052d", "#203671", "#36868f", "#5fc75d"},
+	"links-awakening-sgb":    {"#5a3921", "#6b8c42", "#7bc67b", "#ffffb5"},
+	"arq4":                   {"#ffffff", "#6772a9", "#3a3277", "#000000"},
+	"blk-aqu4":               {"#002b59", "#005f8c", "#00b9be", "#9ff4e5"},
+	"pokemon-sgb":            {"#181010", "#84739c", "#f7b58c", "#ffefff"},
+	"nintendo-super-gameboy": {"#331e50", "#a63725", "#d68e49", "#f7e7c6"},
+	"blu-scribbles":          {"#051833", "#0a4f66", "#0f998e", "#12cc7f"},
+	"kankei4":                {"#ffffff", "#f42e1f", "#2f256b", "#060608"},
+	"dark-mode":              {"#212121", "#454545", "#787878", "#a8a5a5"},
+	"ajstarks":               {"#aa0000", "#aaaaaa", "#000000", "#ffffff"},
+	"pen-n-paper":            {"#e4dbba", "#a4929a", "#4f3a54", "#260d1c"},
+	"autumn-decay":           {"#313638", "#574729", "#975330", "#c57938", "#ffad3b", "#ffe596"},
+	"polished-gold":          {"#000000", "#361c1b", "#754232", "#cd894a", "#e6b983", "#fff8bc", "#ffffff", "#2d2433", "#4f4254", "#b092a7"},
+	"funk-it-up":             {"#e4ffff", "#e63410", "#a23737", "#ffec40", "#81913b", "#26f675", "#4c714e", "#40ebda", "#394e4e", "#0a0a0a"},
+}
+
 // config holds configuration parameters
 type config struct {
 	tiles, maxlw, h1, h2 float64
@@ -42,13 +71,16 @@ func hsv(hue, sat, value int) color.NRGBA {
 
 // csquare makes squares, with possibly random colors, centered at (x,y)
 func csquare(canvas *giocanvas.Canvas, x, y, size, maxlw, h1, h2 float64, linecolor string) {
-	lw := float32(random(0.1, maxlw))
-	ll := float32(size)
+
 	var color color.NRGBA
+
+	color = giocanvas.ColorLookup(linecolor)
+
+	if c, ok := palette[linecolor]; ok { // use a palette
+		color = giocanvas.ColorLookup(c[rand.Intn(len(c)-1)])
+	}
 	if h1 > -1 && h2 > -1 { // hue range set
 		color = hsv(int(random(h1, h2)), 100, 100)
-	} else {
-		color = giocanvas.ColorLookup(linecolor)
 	}
 	// define the corners
 	hs := size / 2
@@ -57,6 +89,9 @@ func csquare(canvas *giocanvas.Canvas, x, y, size, maxlw, h1, h2 float64, lineco
 	blx, bly := float32(x-hs), float32(y-hs)
 	brx, bry := float32(x+hs), float32(y-hs)
 	// make the boundaries
+
+	lw := float32(random(0.1, maxlw))
+	ll := float32(size)
 	canvas.HLine(tlx, tly, ll, lw, color)
 	canvas.HLine(blx, bly, ll, lw, color)
 	canvas.VLine(blx, bly, ll, lw, color)
@@ -96,8 +131,21 @@ func tiles(canvas *giocanvas.Canvas, x, y, minsize, maxsize, maxlw, h1, h2 float
 	}
 }
 
+func randpalette() string {
+	n := rand.Intn(len(palette) - 1)
+	i := 0
+	for p := range palette {
+		if i == n {
+			return p
+		}
+		i++
+	}
+	return "ajstarks"
+}
+
 var pressed bool
 var tilesize float64
+var pencolor string
 
 const stepsize = 1.0
 const mintile = 1.0
@@ -117,9 +165,10 @@ func kbpointer(q event.Queue) {
 				case key.NameEnd:
 					tilesize = maxtile
 				case key.NameLeftArrow, key.NameDownArrow, "-":
-					tilesize -= stepsize
 				case key.NameRightArrow, key.NameUpArrow, "+":
 					tilesize += stepsize
+				case "P":
+					pencolor = randpalette()
 				case key.NameEscape, "Q":
 					os.Exit(0)
 				}
@@ -147,7 +196,7 @@ func desordres(w *app.Window, width, height float32, cfg config) error {
 	bg := giocanvas.ColorLookup(cfg.bgcolor)
 	maxlw := cfg.maxlw
 	h1, h2 := parseHues(cfg.color) // set hue range, or named color
-	color := cfg.color
+	pencolor = cfg.color
 	tilesize = cfg.tiles
 	var top, left, size float64
 	for {
@@ -172,7 +221,7 @@ func desordres(w *app.Window, width, height float32, cfg config) error {
 			left = 100 - top       // left of the beginning row
 			for y := top; y > 0; y -= size {
 				for x := left; x < 100; x += size {
-					tiles(canvas, x, y, 2, size, maxlw, h1, h2, color)
+					tiles(canvas, x, y, 2, size, maxlw, h1, h2, pencolor)
 				}
 			}
 			kbpointer(e.Queue)
@@ -181,21 +230,46 @@ func desordres(w *app.Window, width, height float32, cfg config) error {
 	}
 }
 
+func usage() {
+	fmt.Fprintln(os.Stderr)
+	fmt.Fprintf(os.Stderr, "Option      Default    Description\n")
+	fmt.Fprintf(os.Stderr, ".....................................................\n")
+	fmt.Fprintf(os.Stderr, "-help       false      show usage\n")
+	fmt.Fprintf(os.Stderr, "-width      1000       canvas width\n")
+	fmt.Fprintf(os.Stderr, "-height     1000       canvas height\n")
+	fmt.Fprintf(os.Stderr, "-tiles      10         number of tiles/row\n")
+	fmt.Fprintf(os.Stderr, "-maxlw      1          maximim line thickness\n")
+	fmt.Fprintf(os.Stderr, "-bgcolor    white      background color\n")
+	fmt.Fprintf(os.Stderr, "-color      gray       color name, h1:h2, or palette:\n")
+	for p, k := range palette {
+		fmt.Fprintf(os.Stderr, "                       %-30s\t%v\n", p, k)
+	}
+	os.Exit(1)
+
+}
+
 func main() {
 	var cw, ch int
 	var cfg config
+	var showhelp bool
+
 	flag.IntVar(&cw, "width", 1000, "canvas width")
 	flag.IntVar(&ch, "height", 1000, "canvas height")
+	flag.BoolVar(&showhelp, "help", false, "show usage")
 	flag.Float64Var(&cfg.tiles, "tiles", 10, "tiles/row")
 	flag.Float64Var(&cfg.maxlw, "maxlw", 1, "maximum line thickness")
 	flag.StringVar(&cfg.bgcolor, "bgcolor", "white", "background color")
-	flag.StringVar(&cfg.color, "color", "gray", "pen color; named color, or h1:h2 for a random hue range hsv(h1:h2, 100, 100)")
+	flag.StringVar(&cfg.color, "color", "gray", "pen color; named color, palette, or h1:h2 for a random hue range hsv(h1:h2, 100, 100)")
 	flag.Parse()
 
 	width, height := float32(cw), float32(ch)
 	if width != height {
 		fmt.Fprintln(os.Stderr, "width and height must be the same")
 		os.Exit(1)
+	}
+
+	if showhelp {
+		usage()
 	}
 
 	go func() {
