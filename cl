@@ -11,6 +11,7 @@ dotspiral
 elections
 eclipse
 flowers
+fox
 gcdeck
 grid
 hello
