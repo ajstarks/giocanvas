@@ -326,7 +326,7 @@ func main() {
 	cfg.hue1, cfg.hue2 = parseHues(cfg.color)
 	width, height := float32(cw), float32(ch)
 	go func() {
-		w := app.NewWindow(app.Title("desordres"), app.Size(unit.Dp(width), unit.Dp(height)))
+		w := app.NewWindow(app.Title("fox"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := fox(w, width, height, cfg); err != nil {
 			fmt.Fprintf(os.Stderr, "Cannot create the window: %v\n", err)
 			os.Exit(1)
