@@ -264,17 +264,17 @@ func fox(w *app.Window, width, height float32, cfg config) error {
 func usage() {
 	defrange := fmt.Sprintf(rangefmt, minbound, maxbound, defaultstep)
 	fmt.Fprintln(os.Stderr)
-	fmt.Fprintf(os.Stderr, "Option      Default    Description\n")
+	fmt.Fprintf(os.Stderr, "Option      Default     Description\n")
 	fmt.Fprintf(os.Stderr, ".....................................................\n")
-	fmt.Fprintf(os.Stderr, "-help       false      show usage\n")
-	fmt.Fprintf(os.Stderr, "-width      1000       canvas width\n")
-	fmt.Fprintf(os.Stderr, "-height     1000       canvas height\n")
-	fmt.Fprintf(os.Stderr, "-w          "+defrange+"    percent begin,end,step for the width\n")
-	fmt.Fprintf(os.Stderr, "-h          "+defrange+"    percent begin,end,step for the height\n")
-	fmt.Fprintf(os.Stderr, "-bgcolor    white      background color\n")
-	fmt.Fprintf(os.Stderr, "-color      gray       color name, h1:h2, or palette:\n")
+	fmt.Fprintf(os.Stderr, "-help       false       show usage\n")
+	fmt.Fprintf(os.Stderr, "-width      1000        canvas width\n")
+	fmt.Fprintf(os.Stderr, "-height     1000        canvas height\n")
+	fmt.Fprintf(os.Stderr, "-w          "+defrange+"     percent begin,end,step for the width\n")
+	fmt.Fprintf(os.Stderr, "-h          "+defrange+"     percent begin,end,step for the height\n")
+	fmt.Fprintf(os.Stderr, "-bgcolor    white       background color\n")
+	fmt.Fprintf(os.Stderr, "-color      gray        color name, h1:h2, or palette:\n\n")
 	for p, k := range palette {
-		fmt.Fprintf(os.Stderr, "                       %-30s\t", p)
+		fmt.Fprintf(os.Stderr, "%-20s\t", p)
 		end := len(k) - 1
 		for i := 0; i < end; i++ {
 			fmt.Fprintf(os.Stderr, "#%02x%02x%02x, ", k[i].R, k[i].G, k[i].B)
