@@ -19,34 +19,7 @@ import (
 	"github.com/ajstarks/giocanvas"
 )
 
-var palette = map[string][]color.NRGBA{
-	"nostalgia":              {{R: 0xd0, G: 0xd0, B: 0x58, A: 0xff}, {R: 0xa0, G: 0xa8, B: 0x40, A: 0xff}, {R: 0x70, G: 0x80, B: 0x28, A: 0xff}, {R: 0x40, G: 0x50, B: 0x10, A: 0xff}},
-	"spacehaze":              {{R: 0xf8, G: 0xe3, B: 0xc4, A: 0xff}, {R: 0xcc, G: 0x34, B: 0x95, A: 0xff}, {R: 0x6b, G: 0x1f, B: 0xb1, A: 0xff}, {R: 0x0b, G: 0x06, B: 0x30, A: 0xff}},
-	"dark-mode":              {{R: 0x21, G: 0x21, B: 0x21, A: 0xff}, {R: 0x45, G: 0x45, B: 0x45, A: 0xff}, {R: 0x78, G: 0x78, B: 0x78, A: 0xff}, {R: 0xa8, G: 0xa5, B: 0xa5, A: 0xff}},
-	"autumn-decay":           {{R: 0x31, G: 0x36, B: 0x38, A: 0xff}, {R: 0x57, G: 0x47, B: 0x29, A: 0xff}, {R: 0x97, G: 0x53, B: 0x30, A: 0xff}, {R: 0xc5, G: 0x79, B: 0x38, A: 0xff}, {R: 0xff, G: 0xad, B: 0x3b, A: 0xff}, {R: 0xff, G: 0xe5, B: 0x96, A: 0xff}},
-	"kirokaze-gameboy":       {{R: 0x33, G: 0x2c, B: 0x50, A: 0xff}, {R: 0x46, G: 0x87, B: 0x8f, A: 0xff}, {R: 0x94, G: 0xe3, B: 0x44, A: 0xff}, {R: 0xe2, G: 0xf3, B: 0xe4, A: 0xff}},
-	"moonlight-gb":           {{R: 0x0f, G: 0x05, B: 0x2d, A: 0xff}, {R: 0x20, G: 0x36, B: 0x71, A: 0xff}, {R: 0x36, G: 0x86, B: 0x8f, A: 0xff}, {R: 0x5f, G: 0xc7, B: 0x5d, A: 0xff}},
-	"mist-gb":                {{R: 0x2d, G: 0x1b, B: 0x00, A: 0xff}, {R: 0x1e, G: 0x60, B: 0x6e, A: 0xff}, {R: 0x5a, G: 0xb9, B: 0xa8, A: 0xff}, {R: 0xc4, G: 0xf0, B: 0xc2, A: 0xff}},
-	"arq4":                   {{R: 0xff, G: 0xff, B: 0xff, A: 0xff}, {R: 0x67, G: 0x72, B: 0xa9, A: 0xff}, {R: 0x3a, G: 0x32, B: 0x77, A: 0xff}, {R: 0x00, G: 0x00, B: 0x00, A: 0xff}},
-	"pen-n-paper":            {{R: 0xe4, G: 0xdb, B: 0xba, A: 0xff}, {R: 0xa4, G: 0x92, B: 0x9a, A: 0xff}, {R: 0x4f, G: 0x3a, B: 0x54, A: 0xff}, {R: 0x26, G: 0x0d, B: 0x1c, A: 0xff}},
-	"hollow":                 {{R: 0x0f, G: 0x0f, B: 0x1b, A: 0xff}, {R: 0x56, G: 0x5a, B: 0x75, A: 0xff}, {R: 0xc6, G: 0xb7, B: 0xbe, A: 0xff}, {R: 0xfa, G: 0xfb, B: 0xf6, A: 0xff}},
-	"pokemon-sgb":            {{R: 0x18, G: 0x10, B: 0x10, A: 0xff}, {R: 0x84, G: 0x73, B: 0x9c, A: 0xff}, {R: 0xf7, G: 0xb5, B: 0x8c, A: 0xff}, {R: 0xff, G: 0xef, B: 0xff, A: 0xff}},
-	"kankei4":                {{R: 0xff, G: 0xff, B: 0xff, A: 0xff}, {R: 0xf4, G: 0x2e, B: 0x1f, A: 0xff}, {R: 0x2f, G: 0x25, B: 0x6b, A: 0xff}, {R: 0x06, G: 0x06, B: 0x08, A: 0xff}},
-	"polished-gold":          {{R: 0x00, G: 0x00, B: 0x00, A: 0xff}, {R: 0x36, G: 0x1c, B: 0x1b, A: 0xff}, {R: 0x75, G: 0x42, B: 0x32, A: 0xff}, {R: 0xcd, G: 0x89, B: 0x4a, A: 0xff}, {R: 0xe6, G: 0xb9, B: 0x83, A: 0xff}, {R: 0xff, G: 0xf8, B: 0xbc, A: 0xff}, {R: 0xff, G: 0xff, B: 0xff, A: 0xff}, {R: 0x2d, G: 0x24, B: 0x33, A: 0xff}, {R: 0x4f, G: 0x42, B: 0x54, A: 0xff}, {R: 0xb0, G: 0x92, B: 0xa7, A: 0xff}},
-	"2-bit-grayscale":        {{R: 0x00, G: 0x00, B: 0x00, A: 0xff}, {R: 0x67, G: 0x67, B: 0x67, A: 0xff}, {R: 0xb6, G: 0xb6, B: 0xb6, A: 0xff}, {R: 0xff, G: 0xff, B: 0xff, A: 0xff}},
-	"nintendo-super-gameboy": {{R: 0x33, G: 0x1e, B: 0x50, A: 0xff}, {R: 0xa6, G: 0x37, B: 0x25, A: 0xff}, {R: 0xd6, G: 0x8e, B: 0x49, A: 0xff}, {R: 0xf7, G: 0xe7, B: 0xc6, A: 0xff}},
-	"rustic-gb":              {{R: 0x2c, G: 0x21, B: 0x37, A: 0xff}, {R: 0x76, G: 0x44, B: 0x62, A: 0xff}, {R: 0xed, G: 0xb4, B: 0xa1, A: 0xff}, {R: 0xa9, G: 0x68, B: 0x68, A: 0xff}},
-	"links-awakening-sgb":    {{R: 0x5a, G: 0x39, B: 0x21, A: 0xff}, {R: 0x6b, G: 0x8c, B: 0x42, A: 0xff}, {R: 0x7b, G: 0xc6, B: 0x7b, A: 0xff}, {R: 0xff, G: 0xff, B: 0xb5, A: 0xff}},
-	"blk-aqu4":               {{R: 0x00, G: 0x2b, B: 0x59, A: 0xff}, {R: 0x00, G: 0x5f, B: 0x8c, A: 0xff}, {R: 0x00, G: 0xb9, B: 0xbe, A: 0xff}, {R: 0x9f, G: 0xf4, B: 0xe5, A: 0xff}},
-	"ice-cream-gb":           {{R: 0x7c, G: 0x3f, B: 0x58, A: 0xff}, {R: 0xeb, G: 0x6b, B: 0x6f, A: 0xff}, {R: 0xf9, G: 0xa8, B: 0x75, A: 0xff}, {R: 0xff, G: 0xf6, B: 0xd3, A: 0xff}},
-	"ayy4":                   {{R: 0x00, G: 0x30, B: 0x3b, A: 0xff}, {R: 0xff, G: 0x77, B: 0x77, A: 0xff}, {R: 0xff, G: 0xce, B: 0x96, A: 0xff}, {R: 0xf1, G: 0xf2, B: 0xda, A: 0xff}},
-	"nintendo-gameboy-bgb":   {{R: 0x08, G: 0x18, B: 0x20, A: 0xff}, {R: 0x34, G: 0x68, B: 0x56, A: 0xff}, {R: 0x88, G: 0xc0, B: 0x70, A: 0xff}, {R: 0xe0, G: 0xf8, B: 0xd0, A: 0xff}},
-	"blu-scribbles":          {{R: 0x05, G: 0x18, B: 0x33, A: 0xff}, {R: 0x0a, G: 0x4f, B: 0x66, A: 0xff}, {R: 0x0f, G: 0x99, B: 0x8e, A: 0xff}, {R: 0x12, G: 0xcc, B: 0x7f, A: 0xff}},
-	"ajstarks":               {{R: 0xaa, G: 0x00, B: 0x00, A: 0xff}, {R: 0xaa, G: 0xaa, B: 0xaa, A: 0xff}, {R: 0x00, G: 0x00, B: 0x00, A: 0xff}, {R: 0xff, G: 0xff, B: 0xff, A: 0xff}},
-	"funk-it-up":             {{R: 0xe4, G: 0xff, B: 0xff, A: 0xff}, {R: 0xe6, G: 0x34, B: 0x10, A: 0xff}, {R: 0xa2, G: 0x37, B: 0x37, A: 0xff}, {R: 0xff, G: 0xec, B: 0x40, A: 0xff}, {R: 0x81, G: 0x91, B: 0x3b, A: 0xff}, {R: 0x26, G: 0xf6, B: 0x75, A: 0xff}, {R: 0x4c, G: 0x71, B: 0x4e, A: 0xff}, {R: 0x40, G: 0xeb, B: 0xda, A: 0xff}, {R: 0x39, G: 0x4e, B: 0x4e, A: 0xff}, {R: 0x0a, G: 0x0a, B: 0x0a, A: 0xff}},
-	"2-bit-demichrome":       {{R: 0x21, G: 0x1e, B: 0x20, A: 0xff}, {R: 0x55, G: 0x55, B: 0x68, A: 0xff}, {R: 0xa0, G: 0xa0, B: 0x8b, A: 0xff}, {R: 0xe9, G: 0xef, B: 0xec, A: 0xff}},
-	"red-brick":              {{R: 0xef, G: 0xf9, B: 0xd6, A: 0xff}, {R: 0xba, G: 0x50, B: 0x44, A: 0xff}, {R: 0x7a, G: 0x1c, B: 0x4b, A: 0xff}, {R: 0x1b, G: 0x03, B: 0x26, A: 0xff}},
-}
+var colorpalette rgbpalette
 
 // config holds configuration parameters
 type config struct {
@@ -71,10 +44,8 @@ func hsv(hue, sat, value int) color.NRGBA {
 
 // csquare makes squares, with possibly random colors, centered at (x,y)
 func csquare(canvas *giocanvas.Canvas, x, y, size, maxlw, h1, h2 float64, linecolor string) {
-
 	var color color.NRGBA
-
-	if c, ok := palette[linecolor]; ok { // use a palette
+	if c, ok := colorpalette[linecolor]; ok { // use a palette
 		color = c[rand.Intn(len(c)-1)]
 	} else if h1 > -1 && h2 > -1 { // hue range set
 		color = hsv(int(random(h1, h2)), 100, 100)
@@ -131,15 +102,15 @@ func tiles(canvas *giocanvas.Canvas, x, y, minsize, maxsize, maxlw, h1, h2 float
 }
 
 func randpalette() string {
-	n := rand.Intn(len(palette) - 1)
+	n := rand.Intn(len(colorpalette) - 1)
 	i := 0
-	for p := range palette {
+	for p := range colorpalette {
 		if i == n {
 			return p
 		}
 		i++
 	}
-	return "ajstarks"
+	return "2-bit-grayscale"
 }
 
 var pressed bool
@@ -233,24 +204,54 @@ func usage() {
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintf(os.Stderr, "Option      Default    Description\n")
 	fmt.Fprintf(os.Stderr, ".....................................................\n")
-	fmt.Fprintf(os.Stderr, "-help       false      show usage\n")
-	fmt.Fprintf(os.Stderr, "-width      1000       canvas width\n")
-	fmt.Fprintf(os.Stderr, "-height     1000       canvas height\n")
-	fmt.Fprintf(os.Stderr, "-tiles      10         number of tiles/row\n")
-	fmt.Fprintf(os.Stderr, "-maxlw      1          maximim line thickness\n")
-	fmt.Fprintf(os.Stderr, "-bgcolor    white      background color\n")
-	fmt.Fprintf(os.Stderr, "-color      gray       color name, h1:h2, or palette:\n")
-	for p, k := range palette {
-		fmt.Fprintf(os.Stderr, "                       %-30s\t%v\n", p, k)
+	fmt.Fprintf(os.Stderr, "-help       false       show usage\n")
+	fmt.Fprintf(os.Stderr, "-width      1000        canvas width\n")
+	fmt.Fprintf(os.Stderr, "-height     1000        canvas height\n")
+	fmt.Fprintf(os.Stderr, "-tiles      10          number of tiles/row\n")
+	fmt.Fprintf(os.Stderr, "-maxlw      1           maximim line thickness\n")
+	fmt.Fprintf(os.Stderr, "-bgcolor    white       background color\n")
+	fmt.Fprintf(os.Stderr, "-p          \"\"          palette file\n")
+	fmt.Fprintf(os.Stderr, "-color      gray        color name, h1:h2, or palette:\n\n")
+	for p, k := range colorpalette {
+		fmt.Fprintf(os.Stderr, "%-20s\t", p)
+		end := len(k) - 1
+		for i := 0; i < end; i++ {
+			fmt.Fprintf(os.Stderr, "#%02x%02x%02x ", k[i].R, k[i].G, k[i].B)
+		}
+		fmt.Fprintf(os.Stderr, "#%02x%02x%02x\n", k[end].R, k[end].G, k[end].B)
 	}
 	os.Exit(1)
+}
 
+// convertpalette converts the built-in palette from string to RGB
+func convertpalette() {
+	colorpalette = make(rgbpalette)
+	for name, value := range palette {
+		colors := make([]color.NRGBA, len(value))
+		for i, c := range value {
+			x, _ := strconv.ParseUint(c[1:], 16, 32)
+			r, g, b := rgb(uint32(x))
+			colors[i] = color.NRGBA{R: r, G: g, B: b, A: 0xff}
+		}
+		colorpalette[name] = colors
+	}
+}
+
+// loadpalette loads a palette from a file
+func loadpalette(pfile string) {
+	var err error
+	colorpalette, err = LoadRGBPalette(pfile)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		os.Exit(1)
+	}
 }
 
 func main() {
 	var cw, ch int
 	var cfg config
 	var showhelp bool
+	var pfile string
 
 	flag.IntVar(&cw, "width", 1000, "canvas width")
 	flag.IntVar(&ch, "height", 1000, "canvas height")
@@ -259,6 +260,7 @@ func main() {
 	flag.Float64Var(&cfg.maxlw, "maxlw", 1, "maximum line thickness")
 	flag.StringVar(&cfg.bgcolor, "bgcolor", "white", "background color")
 	flag.StringVar(&cfg.color, "color", "gray", "pen color; named color, palette, or h1:h2 for a random hue range hsv(h1:h2, 100, 100)")
+	flag.StringVar(&pfile, "p", "", "palette file")
 	flag.Parse()
 
 	width, height := float32(cw), float32(ch)
@@ -266,7 +268,11 @@ func main() {
 		fmt.Fprintln(os.Stderr, "width and height must be the same")
 		os.Exit(1)
 	}
-
+	if len(pfile) > 0 {
+		loadpalette(pfile)
+	} else {
+		convertpalette()
+	}
 	if showhelp {
 		usage()
 	}
