@@ -160,8 +160,19 @@ func triangle(canvas *giocanvas.Canvas, x, y, width, height float32, tcolor stri
 	case "r": // right
 		xp[0], xp[1], xp[2] = x+w2, x-w2, x-w2
 		yp[0], yp[1], yp[2] = y, y+h2, y-h2
+	case "ne": // northeast
+		xp[0], xp[1], xp[2] = x-w2, x-w2, x+w2
+		yp[0], yp[1], yp[2] = y-h2, y+h2, y+h2
+	case "nw": // northwest
+		xp[0], xp[1], xp[2] = x-w2, x+w2, x-w2
+		yp[0], yp[1], yp[2] = y-h2, y+h2, y+h2
+	case "sw": // southwest
+		xp[0], xp[1], xp[2] = x+w2, x-w2, x-w2
+		yp[0], yp[1], yp[2] = y-h2, y-h2, y+h2
+	case "se": // southeast
+		xp[0], xp[1], xp[2] = x-w2, x+w2, x+w2
+		yp[0], yp[1], yp[2] = y-h2, y-h2, y+h2
 	}
-
 	var fillcolor color.NRGBA
 	fillcolor = giocanvas.ColorLookup(tcolor) // default to named color
 	if hue1 > -1 && hue2 > -1 {               // use hue
@@ -184,7 +195,7 @@ func fox(w *app.Window, width, height float32, cfg config) error {
 	gystep = cfg.ystep
 	opacity := uint8((cfg.shadowop / 100) * 255.0)
 	gbx, gex, gby, gey = cfg.beginx, cfg.endx, cfg.beginy, cfg.endy
-	var directions = []string{"u", "d", "l", "r"}
+	var directions = []string{"u", "d", "l", "r", "ne", "nw", "se", "sw"}
 
 	for {
 		e := w.NextEvent()
@@ -226,7 +237,7 @@ func fox(w *app.Window, width, height float32, cfg config) error {
 				for x := gbx; x < gex; x += gxstep {
 					w := float32(random(minstep, float64(gxstep)))
 					h := float32(random(minstep, float64(gystep)))
-					triangle(canvas, x, y, w, h, pencolor, 0, cfg.hue1, cfg.hue2, directions[rand.Intn(4)])
+					triangle(canvas, x, y, w, h, pencolor, 0, cfg.hue1, cfg.hue2, directions[rand.Intn(len(directions))])
 					if cfg.shadowop > 0 {
 						triangle(canvas, x+float32(cfg.xshift), y+float32(cfg.yshift), w, h, pencolor, opacity, cfg.hue1, cfg.hue2, directions[rand.Intn(4)])
 					}
