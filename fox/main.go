@@ -32,9 +32,10 @@ var colorpalette rgbpalette
 
 // config holds configuration parameters
 type config struct {
-	hue1, hue2                               float64
+	hue1, hue2, xshift, yshift, shadowop     float64
 	beginx, beginy, endx, endy, xstep, ystep float32
-	bgcolor, color                           string
+
+	bgcolor, color string
 }
 
 // random returns a random number between a range
@@ -141,7 +142,7 @@ func kbpointer(q event.Queue) {
 	}
 }
 
-func triangle(canvas *giocanvas.Canvas, x, y, width, height float32, tcolor string, hue1, hue2 float64, direction string) {
+func triangle(canvas *giocanvas.Canvas, x, y, width, height float32, tcolor string, opacity uint8, hue1, hue2 float64, direction string) {
 	xp := make([]float32, 3)
 	yp := make([]float32, 3)
 	w2 := width / 2
@@ -169,6 +170,9 @@ func triangle(canvas *giocanvas.Canvas, x, y, width, height float32, tcolor stri
 	if c, ok := colorpalette[tcolor]; ok { // use a palette
 		fillcolor = c[rand.Intn(len(c))]
 	}
+	if opacity > 0 {
+		fillcolor.A = opacity
+	}
 	canvas.Polygon(xp, yp, fillcolor)
 }
 
@@ -178,6 +182,7 @@ func fox(w *app.Window, width, height float32, cfg config) error {
 	pencolor = cfg.color
 	gxstep = cfg.xstep
 	gystep = cfg.ystep
+	opacity := uint8((cfg.shadowop / 100) * 255.0)
 	gbx, gex, gby, gey = cfg.beginx, cfg.endx, cfg.beginy, cfg.endy
 	var directions = []string{"u", "d", "l", "r"}
 
@@ -216,15 +221,15 @@ func fox(w *app.Window, width, height float32, cfg config) error {
 				gby = minbound
 				gey = maxbound
 			}
-			//fmt.Fprintf(os.Stderr, "x=(%v,%v,%v) y=(%v,%v,%v)\n", gbx, gex, gxstep, gby, gey, gystep)
 			canvas.Background(bg)
 			for y := gby; y < gey; y += gystep {
 				for x := gbx; x < gex; x += gxstep {
 					w := float32(random(minstep, float64(gxstep)))
 					h := float32(random(minstep, float64(gystep)))
-					triangle(canvas, x, y, w, h, pencolor, cfg.hue1, cfg.hue2, directions[rand.Intn(4)])
-					triangle(canvas, x+shadowshift, y-shadowshift, w, h, pencolor, cfg.hue1, cfg.hue2, directions[rand.Intn(4)])
-
+					triangle(canvas, x, y, w, h, pencolor, 0, cfg.hue1, cfg.hue2, directions[rand.Intn(4)])
+					if cfg.shadowop > 0 {
+						triangle(canvas, x+float32(cfg.xshift), y+float32(cfg.yshift), w, h, pencolor, opacity, cfg.hue1, cfg.hue2, directions[rand.Intn(4)])
+					}
 				}
 			}
 			kbpointer(e.Queue)
@@ -241,6 +246,9 @@ func usage() {
 	fmt.Fprintf(os.Stderr, "-help       false       show usage\n")
 	fmt.Fprintf(os.Stderr, "-width      1000        canvas width\n")
 	fmt.Fprintf(os.Stderr, "-height     1000        canvas height\n")
+	fmt.Fprintf(os.Stderr, "-shadow     40          shadow shape opacity\n")
+	fmt.Fprintf(os.Stderr, "-xshift     0.5         shadow x shift\n")
+	fmt.Fprintf(os.Stderr, "-yshift     -0.5        shadow y shift\n")
 	fmt.Fprintf(os.Stderr, "-w          "+defrange+"     percent begin,end,step for the width\n")
 	fmt.Fprintf(os.Stderr, "-h          "+defrange+"     percent begin,end,step for the height\n")
 	fmt.Fprintf(os.Stderr, "-p          \"\"          palette file\n")
@@ -310,6 +318,9 @@ func main() {
 	flag.IntVar(&cw, "width", 1000, "canvas width")
 	flag.IntVar(&ch, "height", 1000, "canvas height")
 	flag.BoolVar(&showhelp, "help", false, "show usage")
+	flag.Float64Var(&cfg.shadowop, "shadow", 40, "shadow shape opacity")
+	flag.Float64Var(&cfg.xshift, "xshift", 0.5, "shadow shape x shift")
+	flag.Float64Var(&cfg.yshift, "yshift", -0.5, "shadow shape x shift")
 	flag.StringVar(&xconfig, "w", defrange, "horizontal config (min,max,step)")
 	flag.StringVar(&yconfig, "h", defrange, "vertical config (min,max,step)")
 	flag.StringVar(&pfile, "p", "", "palette file")
