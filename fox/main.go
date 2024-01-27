@@ -34,8 +34,7 @@ var colorpalette rgbpalette
 type config struct {
 	hue1, hue2, xshift, yshift, shadowop     float64
 	beginx, beginy, endx, endy, xstep, ystep float32
-
-	bgcolor, color string
+	bgcolor, color, dirs                     string
 }
 
 // random returns a random number between a range
@@ -148,28 +147,28 @@ func triangle(canvas *giocanvas.Canvas, x, y, width, height float32, tcolor stri
 	w2 := width / 2
 	h2 := height / 2
 	switch direction {
-	case "u": // up
+	case "u", "n": // up
 		xp[0], xp[1], xp[2] = x, x-w2, x+w2
 		yp[0], yp[1], yp[2] = y+h2, y-h2, y-h2
-	case "d": // down
+	case "d", "s": // down
 		xp[0], xp[1], xp[2] = x, x-w2, x+w2
 		yp[0], yp[1], yp[2] = y-h2, y+h2, y+h2
-	case "l": // left
+	case "l", "w": // left
 		xp[0], xp[1], xp[2] = x-w2, x+w2, x+w2
 		yp[0], yp[1], yp[2] = y, y+h2, y-h2
-	case "r": // right
+	case "r", "e": // right
 		xp[0], xp[1], xp[2] = x+w2, x-w2, x-w2
 		yp[0], yp[1], yp[2] = y, y+h2, y-h2
-	case "ne": // northeast
+	case "ul", "ne": // northeast
 		xp[0], xp[1], xp[2] = x-w2, x-w2, x+w2
 		yp[0], yp[1], yp[2] = y-h2, y+h2, y+h2
-	case "nw": // northwest
+	case "ur", "nw": // northwest
 		xp[0], xp[1], xp[2] = x-w2, x+w2, x-w2
 		yp[0], yp[1], yp[2] = y-h2, y+h2, y+h2
-	case "sw": // southwest
+	case "lr", "sw": // southwest
 		xp[0], xp[1], xp[2] = x+w2, x-w2, x-w2
 		yp[0], yp[1], yp[2] = y-h2, y-h2, y+h2
-	case "se": // southeast
+	case "ll", "se": // southeast
 		xp[0], xp[1], xp[2] = x-w2, x+w2, x+w2
 		yp[0], yp[1], yp[2] = y-h2, y-h2, y+h2
 	}
@@ -193,9 +192,10 @@ func fox(w *app.Window, width, height float32, cfg config) error {
 	pencolor = cfg.color
 	gxstep = cfg.xstep
 	gystep = cfg.ystep
+	directions := setdir(cfg.dirs)
 	opacity := uint8((cfg.shadowop / 100) * 255.0)
 	gbx, gex, gby, gey = cfg.beginx, cfg.endx, cfg.beginy, cfg.endy
-	var directions = []string{"u", "d", "l", "r", "ne", "nw", "se", "sw"}
+	nd := len(directions)
 
 	for {
 		e := w.NextEvent()
@@ -237,9 +237,9 @@ func fox(w *app.Window, width, height float32, cfg config) error {
 				for x := gbx; x < gex; x += gxstep {
 					w := float32(random(minstep, float64(gxstep)))
 					h := float32(random(minstep, float64(gystep)))
-					triangle(canvas, x, y, w, h, pencolor, 0, cfg.hue1, cfg.hue2, directions[rand.Intn(len(directions))])
+					triangle(canvas, x, y, w, h, pencolor, 0, cfg.hue1, cfg.hue2, directions[rand.Intn(nd)])
 					if cfg.shadowop > 0 {
-						triangle(canvas, x+float32(cfg.xshift), y+float32(cfg.yshift), w, h, pencolor, opacity, cfg.hue1, cfg.hue2, directions[rand.Intn(4)])
+						triangle(canvas, x+float32(cfg.xshift), y+float32(cfg.yshift), w, h, pencolor, opacity, cfg.hue1, cfg.hue2, directions[rand.Intn(nd)])
 					}
 				}
 			}
@@ -252,21 +252,22 @@ func fox(w *app.Window, width, height float32, cfg config) error {
 func usage() {
 	defrange := fmt.Sprintf(rangefmt, minbound, maxbound, defaultstep)
 	fmt.Fprintln(os.Stderr)
-	fmt.Fprintf(os.Stderr, "Option      Default     Description\n")
-	fmt.Fprintf(os.Stderr, ".....................................................\n")
-	fmt.Fprintf(os.Stderr, "-help       false       show usage\n")
-	fmt.Fprintf(os.Stderr, "-width      1000        canvas width\n")
-	fmt.Fprintf(os.Stderr, "-height     1000        canvas height\n")
-	fmt.Fprintf(os.Stderr, "-shadow     40          shadow shape opacity\n")
-	fmt.Fprintf(os.Stderr, "-xshift     0.5         shadow x shift\n")
-	fmt.Fprintf(os.Stderr, "-yshift     -0.5        shadow y shift\n")
-	fmt.Fprintf(os.Stderr, "-w          "+defrange+"     percent begin,end,step for the width\n")
-	fmt.Fprintf(os.Stderr, "-h          "+defrange+"     percent begin,end,step for the height\n")
-	fmt.Fprintf(os.Stderr, "-p          \"\"          palette file\n")
-	fmt.Fprintf(os.Stderr, "-bgcolor    white       background color\n")
-	fmt.Fprintf(os.Stderr, "-color      gray        color name, h1:h2, or palette:\n\n")
+	fmt.Fprintf(os.Stderr, "Option      Default                      Description\n")
+	fmt.Fprintf(os.Stderr, "........................................................\n")
+	fmt.Fprintf(os.Stderr, "-help       false                    show usage\n")
+	fmt.Fprintf(os.Stderr, "-width      1000                     canvas width\n")
+	fmt.Fprintf(os.Stderr, "-height     1000                     canvas height\n")
+	fmt.Fprintf(os.Stderr, "-shadow     40                       shadow shape opacity\n")
+	fmt.Fprintf(os.Stderr, "-xshift     0.5                      shadow x shift\n")
+	fmt.Fprintf(os.Stderr, "-yshift     -0.5                     shadow y shift\n")
+	fmt.Fprintf(os.Stderr, "-d          \"n s e w sw se nw ne\"  object directions\n")
+	fmt.Fprintf(os.Stderr, "-w          "+defrange+"             percent begin,end,step for the width\n")
+	fmt.Fprintf(os.Stderr, "-h          "+defrange+"             percent begin,end,step for the height\n")
+	fmt.Fprintf(os.Stderr, "-p          \"\"                     palette file\n")
+	fmt.Fprintf(os.Stderr, "-bgcolor    white                    background color\n")
+	fmt.Fprintf(os.Stderr, "-color      gray                     color name, h1:h2, or palette:\n\n")
 	for p, k := range colorpalette {
-		fmt.Fprintf(os.Stderr, "%-20s\t", p)
+		fmt.Fprintf(os.Stderr, "%-25s\t", p)
 		end := len(k) - 1
 		for i := 0; i < end; i++ {
 			fmt.Fprintf(os.Stderr, "#%02x%02x%02x ", k[i].R, k[i].G, k[i].B)
@@ -320,6 +321,11 @@ func parserange(s string) (float32, float32, float32) {
 	return minbound, maxbound, defaultstep
 }
 
+func setdir(s string) []string {
+	d := strings.Fields(s)
+	return d
+}
+
 func main() {
 	var cw, ch int
 	var cfg config
@@ -334,6 +340,7 @@ func main() {
 	flag.Float64Var(&cfg.yshift, "yshift", -0.5, "shadow shape x shift")
 	flag.StringVar(&xconfig, "w", defrange, "horizontal config (min,max,step)")
 	flag.StringVar(&yconfig, "h", defrange, "vertical config (min,max,step)")
+	flag.StringVar(&cfg.dirs, "d", "n s e w nw ne se sw", "shape directions")
 	flag.StringVar(&pfile, "p", "", "palette file")
 	flag.StringVar(&cfg.bgcolor, "bgcolor", "white", "background color")
 	flag.StringVar(&cfg.color, "color", "gray", "pen color; named color, palette, or h1:h2 for a random hue range hsv(h1:h2, 100, 100)")
