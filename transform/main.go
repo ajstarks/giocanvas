@@ -9,7 +9,6 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	gc "github.com/ajstarks/giocanvas"
 )
@@ -23,12 +22,12 @@ func transforms(w *app.Window, width, height float32) error {
 	ts2 = ts / 3
 	textcolor := color.NRGBA{0, 0, 0, 255}
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
-		case system.FrameEvent:
-			canvas := gc.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
+		case app.FrameEvent:
+			canvas := gc.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			recty = 90
 			canvas.CenterRect(midx, recty, rectw, recth, color.NRGBA{128, 128, 128, 128})
 			canvas.TextMid(midx, recty-ts2, ts, "Reference", textcolor)

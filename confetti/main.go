@@ -9,7 +9,6 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -24,12 +23,12 @@ func rn8(n int) uint8 {
 
 func confetti(w *app.Window, width, height float32, nshapes, maxsize int) error {
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
-		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
+		case app.FrameEvent:
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			canvas.CenterRect(50, 50, 100, 100, color.NRGBA{0, 0, 0, 255})
 			for i := 0; i < nshapes; i++ {
 				color := color.NRGBA{rn8(255), rn8(255), rn8(255), rn8(255)}
@@ -57,6 +56,7 @@ func main() {
 
 	width := float32(cw)
 	height := float32(ch)
+
 	go func() {
 		w := app.NewWindow(app.Title("confetti"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := confetti(w, width, height, nshapes, maxsize); err != nil {

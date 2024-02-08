@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -30,12 +29,12 @@ func mondrian(w *app.Window, width, height float32) error {
 	t2h := t2 + halft
 
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
-		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
+		case app.FrameEvent:
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			canvas.Background(white)
 			canvas.CenterRect(halft, halft, third, third, blue)      // lower left blue square
 			canvas.CenterRect(t2, t2, t2, t2, red)                   // big red
@@ -61,6 +60,7 @@ func main() {
 	flag.Parse()
 	width := float32(cw)
 	height := float32(ch)
+
 	go func() {
 		w := app.NewWindow(app.Title("mondrian"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := mondrian(w, width, height); err != nil {
@@ -70,5 +70,4 @@ func main() {
 		os.Exit(0)
 	}()
 	app.Main()
-
 }

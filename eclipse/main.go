@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -17,12 +16,12 @@ func eclipse(w *app.Window, width, height float32) error {
 	black := color.NRGBA{0, 0, 0, 255}
 	white := color.NRGBA{255, 255, 255, 255}
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
-		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
+		case app.FrameEvent:
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			canvas.CenterRect(50, 50, 100, 100, black)
 			var r float32 = 5.0
 			var y float32 = 50.0
@@ -44,6 +43,7 @@ func main() {
 	flag.Parse()
 	width := float32(cw)
 	height := float32(ch)
+
 	go func() {
 		w := app.NewWindow(app.Title("eclipse"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := eclipse(w, width, height); err != nil {

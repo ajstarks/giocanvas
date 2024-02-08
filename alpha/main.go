@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -23,12 +22,12 @@ func alpha(w *app.Window, width, height float32, color string) error {
 	dotsize = 0.8
 	interval = dotsize * 2.4
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
-		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
+		case app.FrameEvent:
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			canvas.CText(50, y+12, 1.5, "Alpha", blue)
 			canvas.CText(50, y-18, 1.5, "% Alpha", gray)
 			px, y = 2, 50
@@ -65,5 +64,4 @@ func main() {
 		os.Exit(0)
 	}()
 	app.Main()
-
 }

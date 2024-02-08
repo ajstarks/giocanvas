@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 
 	"gioui.org/unit"
 	gc "github.com/ajstarks/giocanvas"
@@ -58,12 +57,12 @@ func tile(w *app.Window, opts options) error {
 	bgcolor := gc.ColorLookup(opts.bgcolor)
 
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
-		case system.FrameEvent:
-			canvas := gc.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
+		case app.FrameEvent:
+			canvas := gc.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			canvas.Background(bgcolor)
 			var x, y float32
 			for x = opts.left; x < opts.right; x += opts.step {

@@ -4,8 +4,8 @@ package giocanvas
 import (
 	"image/color"
 
+	"gioui.org/app"
 	"gioui.org/font/gofont"
-	"gioui.org/io/system"
 	"gioui.org/layout"
 	"gioui.org/op"
 	"gioui.org/text"
@@ -21,7 +21,7 @@ type Canvas struct {
 }
 
 // NewCanvas initializes a Canvas
-func NewCanvas(width, height float32, e system.FrameEvent) *Canvas {
+func NewCanvas(width, height float32, e app.FrameEvent) *Canvas {
 	canvas := new(Canvas)
 	canvas.Width = width
 	canvas.Height = height
@@ -29,7 +29,7 @@ func NewCanvas(width, height float32, e system.FrameEvent) *Canvas {
 	theme := material.NewTheme()
 	theme.Shaper = text.NewShaper(text.NoSystemFonts(), text.WithCollection(gofont.Regular()))
 	canvas.Theme = theme
-	canvas.Context = layout.NewContext(new(op.Ops), e)
+	canvas.Context = app.NewContext(new(op.Ops), e)
 	iw, ih := int(width), int(height)
 	canvas.Context.Constraints.Min.X = iw
 	canvas.Context.Constraints.Min.Y = ih

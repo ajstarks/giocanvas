@@ -9,9 +9,10 @@ import (
 
 	"gioui.org/app"
 	"gioui.org/io/event"
+	"gioui.org/io/input"
 	"gioui.org/io/key"
 	"gioui.org/io/pointer"
-	"gioui.org/io/system"
+	"gioui.org/op"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -32,6 +33,7 @@ func main() {
 	flag.Parse()
 
 	// kick off the application
+
 	go func() {
 		w := app.NewWindow(app.Title("dots"), app.Size(unit.Dp(cw), unit.Dp(ch)))
 		if err := dots(w, nc, bgcolor, palette); err != nil {
@@ -41,6 +43,7 @@ func main() {
 		os.Exit(0)
 	}()
 	app.Main()
+
 }
 
 // pctcoord converts device coordinates to canvas percents
@@ -53,13 +56,22 @@ var colorindex int
 var coordindex int
 var dotsize float32 = 0.5
 
-func kbpointer(q event.Queue, width, height float32, coords []coord) {
-	for _, ev := range q.Events(pressed) {
+func kbpointer(q input.Source, context *op.Ops, width, height float32, coords []coord) {
+	for {
+		e, ok := q.Event(
+			key.Filter{},
+			pointer.Filter{Target: &pressed, Kinds: pointer.Press | pointer.Move | pointer.Release | pointer.Drag},
+		)
+		if !ok {
+			break
+		}
+		switch e := e.(type) {
+
 		// keyboard events
-		if k, ok := ev.(key.Event); ok {
-			switch k.State {
+		case key.Event:
+			switch e.State {
 			case key.Press:
-				switch k.Name {
+				switch e.Name {
 				case key.NameUpArrow, key.NameRightArrow:
 					dotsize += 0.1
 				case key.NameDownArrow, key.NameLeftArrow:
@@ -68,27 +80,26 @@ func kbpointer(q event.Queue, width, height float32, coords []coord) {
 					os.Exit(0)
 				}
 			}
-		}
 		// pointer events
-		if p, ok := ev.(pointer.Event); ok {
-			switch p.Type {
+		case pointer.Event:
+			switch e.Kind {
 			case pointer.Drag:
-				coords[coordindex].X, coords[coordindex].Y = pctcoord(p.Position.X, p.Position.Y, width, height)
+				coords[coordindex].X, coords[coordindex].Y = pctcoord(e.Position.X, e.Position.Y, width, height)
 				coordindex++
 				if coordindex == len(coords) {
 					coordindex = 0
 				}
 			case pointer.Press:
-				switch p.Buttons {
+				switch e.Buttons {
 				case pointer.ButtonSecondary:
 					dotsize += 0.1
 				case pointer.ButtonTertiary:
 					dotsize -= 0.1
 				}
-				pressed = true
 			}
 		}
 	}
+	event.Op(context, &pressed)
 }
 
 func parseColors(s string) []string {
@@ -110,18 +121,13 @@ func dots(w *app.Window, nc int, bgcolor, colorlist string) error {
 	coordinates[0].X, coordinates[0].Y = 50, 50
 	bg := giocanvas.ColorLookup(bgcolor)
 	for {
-		ev := <-w.Events()
+		ev := w.NextEvent()
 		switch e := ev.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
-		case system.FrameEvent:
+		case app.FrameEvent:
 			w, h := float32(e.Size.X), float32(e.Size.Y)
-			canvas := giocanvas.NewCanvas(w, h, system.FrameEvent{})
-			key.InputOp{Tag: pressed}.Add(canvas.Context.Ops)
-			pointer.InputOp{
-				Tag:   pressed,
-				Grab:  false,
-				Types: pointer.Press | pointer.Move | pointer.Drag}.Add(canvas.Context.Ops)
+			canvas := giocanvas.NewCanvas(w, h, app.FrameEvent{})
 			if dotsize < 0.1 {
 				dotsize = 0.1
 			}
@@ -138,7 +144,7 @@ func dots(w *app.Window, nc int, bgcolor, colorlist string) error {
 				cs += 0.01
 				ci++
 			}
-			kbpointer(e.Queue, w, h, coordinates)
+			kbpointer(e.Source, canvas.Context.Ops, w, h, coordinates)
 			e.Frame(canvas.Context.Ops)
 		}
 	}

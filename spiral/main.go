@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -23,13 +22,15 @@ func spiral(canvas *giocanvas.Canvas, cx, cy, dotsize float32, a, b, n, incr flo
 }
 
 func work(title string, width, height float32, a, b, n, incr, dotsize float64, color string) {
-	defer os.Exit(0)
-	win := app.NewWindow(app.Title(title), app.Size(unit.Dp(width), unit.Dp(height)))
+	w := app.NewWindow(app.Title(title), app.Size(unit.Dp(width), unit.Dp(height)))
 	var cx, cy float32 = 50, 50
 	spcolor := giocanvas.ColorLookup(color)
-	for e := range win.Events() {
+	for {
+		e := w.NextEvent()
 		switch e := e.(type) {
-		case system.FrameEvent:
+		case app.DestroyEvent:
+			os.Exit(0)
+		case app.FrameEvent:
 			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), e)
 			spiral(canvas, cx, cy, float32(dotsize), a, b, n, incr, spcolor)
 			e.Frame(canvas.Context.Ops)
@@ -50,6 +51,5 @@ func main() {
 	flag.Float64Var(&dotsize, "dot", 0.75, "dotsize")
 	flag.StringVar(&dotcolor, "color", "gray", "dot color")
 	flag.Parse()
-	go work("spiral", float32(w), float32(h), a, b, n, incr, dotsize, dotcolor)
-	app.Main()
+	work("spiral", float32(w), float32(h), a, b, n, incr, dotsize, dotcolor)
 }

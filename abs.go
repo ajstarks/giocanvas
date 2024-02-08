@@ -337,7 +337,8 @@ func (c *Canvas) AbsArc(x, y, radius float32, start, end float64, fillcolor colo
 // AbsTranslate moves current location by (x,y)
 func (c *Canvas) AbsTranslate(x, y float32) op.TransformStack {
 	ops := c.Context.Ops
-	op.InvalidateOp{}.Add(ops)
+	//op.InvalidateOp{}.Add(ops)
+	c.Context.Execute(op.InvalidateCmd{})
 	stack := op.Offset(image.Pt(0, 0)).Push(ops)
 	tr := f32.Affine2D{}
 	tr = tr.Offset(f32.Pt(x, y))
@@ -348,7 +349,8 @@ func (c *Canvas) AbsTranslate(x, y float32) op.TransformStack {
 // AbsRotate rotates around (x,y) using angle (radians)
 func (c *Canvas) AbsRotate(x, y, angle float32) op.TransformStack {
 	ops := c.Context.Ops
-	op.InvalidateOp{}.Add(ops)
+	//op.InvalidateOp{}.Add(ops)
+	c.Context.Execute(op.InvalidateCmd{})
 	stack := op.Offset(image.Pt(0, 0)).Push(ops)
 	tr := f32.Affine2D{}.Rotate(f32.Pt(x, y), angle)
 	op.Affine(tr).Add(ops)
@@ -358,7 +360,8 @@ func (c *Canvas) AbsRotate(x, y, angle float32) op.TransformStack {
 // AbsScale scales by factor at (x,y)
 func (c *Canvas) AbsScale(x, y, factor float32) op.TransformStack {
 	ops := c.Context.Ops
-	op.InvalidateOp{}.Add(ops)
+	//op.InvalidateOp{}.Add(ops)
+	c.Context.Execute(op.InvalidateCmd{})
 	stack := op.Offset(image.Pt(0, 0)).Push(ops)
 	tr := f32.Affine2D{}.Scale(f32.Pt(x, y), f32.Pt(factor, factor))
 	op.Affine(tr).Add(ops)
@@ -368,7 +371,8 @@ func (c *Canvas) AbsScale(x, y, factor float32) op.TransformStack {
 // AbsShear shears at (x,y) using angle ax and ay
 func (c *Canvas) AbsShear(x, y, ax, ay float32) op.TransformStack {
 	ops := c.Context.Ops
-	op.InvalidateOp{}.Add(ops)
+	//op.InvalidateOp{}.Add(ops)
+	c.Context.Execute(op.InvalidateCmd{})
 	stack := op.Offset(image.Pt(0, 0)).Push(ops)
 	tr := f32.Affine2D{}.Shear(f32.Pt(x, y), ax, ay)
 	op.Affine(tr).Add(ops)

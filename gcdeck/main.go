@@ -19,9 +19,9 @@ import (
 
 	"gioui.org/app"
 	"gioui.org/io/event"
+	"gioui.org/io/input"
 	"gioui.org/io/key"
 	"gioui.org/io/pointer"
-	"gioui.org/io/system"
 	"gioui.org/op"
 	"gioui.org/unit"
 	"github.com/ajstarks/deck"
@@ -535,43 +535,50 @@ func main() {
 		*title = filename
 	}
 	go slidedeck(*title, *initpage, filename, *pagesize)
-	app.Main()
 }
 
 var pressed bool
 var gridstate bool
 var slidenumber int
 
-func kbpointer(q event.Queue, ns int) {
+func kbpointer(q input.Source, context *op.Ops, ns int) {
 	nev := 0
-	for _, ev := range q.Events(pressed) {
-		if k, ok := ev.(key.Event); ok {
-			switch k.State {
+	for {
+		e, ok := q.Event(
+			key.Filter{Optional: key.ModCtrl},
+			pointer.Filter{Target: &pressed, Kinds: pointer.Press | pointer.Move | pointer.Release, ScrollBounds: image.Rect(0, 0, 1000, 1000)},
+		)
+		if !ok {
+			break
+		}
+		switch e := e.(type) {
+		case key.Event:
+			switch e.State {
 			case key.Press:
-				switch k.Name {
+				switch e.Name {
 				// emacs bindings
 				case "A", "1": // first slide
-					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+					if e.Modifiers == 0 || e.Modifiers == key.ModCtrl {
 						slidenumber = 0
 					}
 				case "E": // last slide
-					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+					if e.Modifiers == 0 || e.Modifiers == key.ModCtrl {
 						slidenumber = ns
 					}
 				case "B": // back a slide
-					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+					if e.Modifiers == 0 || e.Modifiers == key.ModCtrl {
 						slidenumber--
 					}
 				case "F": // forward a slide
-					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+					if e.Modifiers == 0 || e.Modifiers == key.ModCtrl {
 						slidenumber++
 					}
 				case "P": // previous slide
-					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+					if e.Modifiers == 0 || e.Modifiers == key.ModCtrl {
 						slidenumber--
 					}
 				case "N": // next slide
-					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+					if e.Modifiers == 0 || e.Modifiers == key.ModCtrl {
 						slidenumber++
 					}
 				case "^", "⇱": // first slide
@@ -581,7 +588,7 @@ func kbpointer(q event.Queue, ns int) {
 				case "G":
 					gridstate = !gridstate
 				case key.NameSpace, "⏎":
-					if k.Modifiers == 0 {
+					if e.Modifiers == 0 {
 						slidenumber++
 					} else {
 						slidenumber--
@@ -594,20 +601,19 @@ func kbpointer(q event.Queue, ns int) {
 					os.Exit(0)
 				}
 			}
-		}
 
-		if p, ok := ev.(pointer.Event); ok {
-			switch p.Type {
+		case pointer.Event:
+			switch e.Kind {
 			case pointer.Scroll:
 				nev++
-				if p.Scroll.Y > 0 && nev == 2 {
+				if e.Scroll.Y > 0 && nev == 2 {
 					slidenumber--
 				}
-				if p.Scroll.Y == 0 && nev == 2 {
+				if e.Scroll.Y == 0 && nev == 2 {
 					slidenumber++
 				}
 			case pointer.Press:
-				switch p.Buttons {
+				switch e.Buttons {
 				case pointer.ButtonPrimary:
 					slidenumber++
 				case pointer.ButtonSecondary:
@@ -615,11 +621,10 @@ func kbpointer(q event.Queue, ns int) {
 				case pointer.ButtonTertiary:
 					slidenumber = 0
 				}
-				pressed = true
 			}
 		}
 	}
-
+	event.Op(context, &pressed)
 }
 
 func slidedeck(s string, initpage int, filename, pagesize string) {
@@ -646,18 +651,12 @@ func slidedeck(s string, initpage int, filename, pagesize string) {
 	gridstate = false
 	w := app.NewWindow(app.Title(s), app.Size(unit.Dp(width), unit.Dp(height)))
 	for {
-		ev := <-w.Events()
+		ev := w.NextEvent()
 		switch e := ev.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			os.Exit(0)
-		case system.FrameEvent:
-			canvas := gc.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
-			key.InputOp{Tag: pressed}.Add(canvas.Context.Ops)
-			pointer.InputOp{
-				Tag:          pressed,
-				Grab:         false,
-				Types:        pointer.Press | pointer.Scroll,
-				ScrollBounds: image.Rect(0, 0, e.Size.X, e.Size.Y)}.Add(canvas.Context.Ops)
+		case app.FrameEvent:
+			canvas := gc.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			if slidenumber > nslides {
 				slidenumber = 0
 			}
@@ -683,7 +682,7 @@ func slidedeck(s string, initpage int, filename, pagesize string) {
 				}
 				nslides = len(deck.Slide) - 1
 			}
-			kbpointer(e.Queue, nslides)
+			kbpointer(e.Source, canvas.Context.Ops, nslides)
 			e.Frame(canvas.Context.Ops)
 		}
 	}

@@ -9,7 +9,6 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -38,12 +37,12 @@ func arc(w *app.Window, width, height float32) error {
 	black := color.NRGBA{0, 0, 0, 255}
 
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
-		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
+		case app.FrameEvent:
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			angle := 45.0 // Pi / 4
 			y = height * 0.2
 			canvas.CText(50, 50, 10, "Arcs", black)
@@ -80,6 +79,7 @@ func main() {
 	flag.Parse()
 	width := float32(cw)
 	height := float32(ch)
+
 	go func() {
 		w := app.NewWindow(app.Title("Arc"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := arc(w, width, height); err != nil {
@@ -89,4 +89,5 @@ func main() {
 		os.Exit(0)
 	}()
 	app.Main()
+
 }

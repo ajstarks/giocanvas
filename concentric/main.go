@@ -8,19 +8,18 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	gc "github.com/ajstarks/giocanvas"
 )
 
 func concentric(w *app.Window, width, height float32) error {
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
-		case system.FrameEvent:
-			canvas := gc.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
+		case app.FrameEvent:
+			canvas := gc.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			canvas.Background(gc.ColorLookup("white"))
 			var r float32 = 50
 			for g := uint8(0); g < 250; g += 50 {
@@ -39,6 +38,7 @@ func main() {
 	flag.Parse()
 	width := float32(cw)
 	height := float32(ch)
+
 	go func() {
 		w := app.NewWindow(app.Title("concentric"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := concentric(w, width, height); err != nil {
@@ -48,5 +48,4 @@ func main() {
 		os.Exit(0)
 	}()
 	app.Main()
-
 }

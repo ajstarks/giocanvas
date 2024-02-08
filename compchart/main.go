@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 	"github.com/ajstarks/giocanvas/chart"
@@ -63,11 +62,11 @@ func comp(canvas *giocanvas.Canvas) error {
 
 func sincos(w *app.Window, width, height float32) error {
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
-		case system.FrameEvent:
+		case app.FrameEvent:
 			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), e)
 			comp(canvas)
 			e.Frame(canvas.Context.Ops)
@@ -92,5 +91,4 @@ func main() {
 		os.Exit(0)
 	}()
 	app.Main()
-
 }

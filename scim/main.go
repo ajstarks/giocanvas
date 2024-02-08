@@ -9,7 +9,6 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -39,12 +38,12 @@ func scimage(w *app.Window, filename string, width, height float32) error {
 	gridcolor := fgcolor
 	gridcolor.A = 75
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
-		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
+		case app.FrameEvent:
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			scale := (float32(e.Size.X) / float32(imw)) * 100
 			canvas.Background(bgcolor)
 			canvas.Img(im, 50, 50, imw, imh, scale)
@@ -68,6 +67,7 @@ func main() {
 		imfile = filenames[0]
 	}
 	width, height := float32(cw), float32(ch)
+
 	go func() {
 		w := app.NewWindow(app.Title("Scaled Image"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := scimage(w, imfile, width, height); err != nil {

@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -34,12 +33,14 @@ func dotspiral(canvas *giocanvas.Canvas, cx, cy float32, c config) {
 }
 
 func work(title string, width, height float32, c config) {
-	defer os.Exit(0)
-	win := app.NewWindow(app.Title(title), app.Size(unit.Dp(width), unit.Dp(height)))
+	w := app.NewWindow(app.Title(title), app.Size(unit.Dp(width), unit.Dp(height)))
 	var cx, cy float32 = 50, 50
-	for e := range win.Events() {
+	for {
+		e := w.NextEvent()
 		switch e := e.(type) {
-		case system.FrameEvent:
+		case app.DestroyEvent:
+			os.Exit(0)
+		case app.FrameEvent:
 			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), e)
 			dotspiral(canvas, cx, cy, c)
 			e.Frame(canvas.Context.Ops)

@@ -9,7 +9,6 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -31,12 +30,12 @@ func flower(w *app.Window, width, height float32) error {
 	bgcolor := giocanvas.ColorLookup("linen")
 
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
-		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
+		case app.FrameEvent:
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			canvas.Background(bgcolor)
 			petals(canvas, 10, 90, 5, 1, red)
 			petals(canvas, 25, 75, 10, 1.5, green)
@@ -54,6 +53,7 @@ func main() {
 	flag.Parse()
 	width := float32(cw)
 	height := float32(ch)
+
 	go func() {
 		w := app.NewWindow(app.Title("flowers"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := flower(w, width, height); err != nil {

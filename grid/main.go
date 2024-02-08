@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -51,12 +50,12 @@ func grid(w *app.Window, width, height, x1, x2, y1, y2, xincr, yincr, lw float32
 	textcolor.A = 150
 	ts := xincr / 2.5
 	for {
-		ev := <-w.Events()
+		ev := w.NextEvent()
 		switch e := ev.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
-		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
+		case app.FrameEvent:
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			canvas.Background(bcolor)
 			for y := y1; y <= y2; y += yincr {
 				canvas.HLine(x1, y, x2-x1, lw, color)

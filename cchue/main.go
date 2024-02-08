@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -71,12 +70,12 @@ func cchue(canvas *giocanvas.Canvas, r, step float32, starthue int, bgcolor colo
 
 func cc(w *app.Window, width, height float32) error {
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
-		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
+		case app.FrameEvent:
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			cchue(canvas, 10, 20, 0, color.NRGBA{0, 0, 0, 255})
 			e.Frame(canvas.Context.Ops)
 		}
@@ -90,6 +89,7 @@ func main() {
 	flag.Parse()
 
 	width, height := float32(cw), float32(ch)
+
 	go func() {
 		w := app.NewWindow(app.Title("cchue"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := cc(w, width, height); err != nil {

@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -31,6 +30,7 @@ func main() {
 		os.Exit(0)
 	}()
 	app.Main()
+
 }
 
 func rgb(w *app.Window, width, height float32) error {
@@ -54,12 +54,12 @@ func rgb(w *app.Window, width, height float32) error {
 	}
 	var x, y float32
 	for {
-		ev := <-w.Events()
+		ev := w.NextEvent()
 		switch e := ev.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
-		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
+		case app.FrameEvent:
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			x, y = 50, 95
 			for _, c := range colortab {
 				canvas.EText(x-10, y, 3, c, color.NRGBA{0, 0, 0, 255})

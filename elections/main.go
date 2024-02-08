@@ -5,7 +5,6 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"image"
 	"io"
 	"math"
 	"os"
@@ -14,9 +13,10 @@ import (
 
 	"gioui.org/app"
 	"gioui.org/io/event"
+	"gioui.org/io/input"
 	"gioui.org/io/key"
 	"gioui.org/io/pointer"
-	"gioui.org/io/system"
+	"gioui.org/op"
 	"gioui.org/unit"
 	gc "github.com/ajstarks/giocanvas"
 )
@@ -185,36 +185,45 @@ func endPage(canvas *gc.Canvas) {
 var pressed bool
 var electionNumber int
 
-func kbpointer(q event.Queue, ns int) {
+func kbpointer(q input.Source, context *op.Ops, ns int) {
 	nev := 0
-	for _, ev := range q.Events(pressed) {
-		if k, ok := ev.(key.Event); ok {
-			switch k.State {
+	for {
+		e, ok := q.Event(
+			key.Filter{Optional: key.ModCtrl},
+			pointer.Filter{Target: &pressed, Kinds: pointer.Press | pointer.Move | pointer.Release | pointer.Scroll},
+		)
+		if !ok {
+			break
+		}
+		switch e := e.(type) {
+
+		case key.Event:
+			switch e.State {
 			case key.Press:
-				switch k.Name {
+				switch e.Name {
 				// emacs bindings
 				case "A", "1": // first slide
-					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+					if e.Modifiers == 0 || e.Modifiers == key.ModCtrl {
 						electionNumber = 0
 					}
 				case "E": // last slide
-					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+					if e.Modifiers == 0 || e.Modifiers == key.ModCtrl {
 						electionNumber = ns
 					}
 				case "B": // back a slide
-					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+					if e.Modifiers == 0 || e.Modifiers == key.ModCtrl {
 						electionNumber--
 					}
 				case "F": // forward a slide
-					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+					if e.Modifiers == 0 || e.Modifiers == key.ModCtrl {
 						electionNumber++
 					}
 				case "P": // previous slide
-					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+					if e.Modifiers == 0 || e.Modifiers == key.ModCtrl {
 						electionNumber--
 					}
 				case "N": // next slide
-					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+					if e.Modifiers == 0 || e.Modifiers == key.ModCtrl {
 						electionNumber++
 					}
 				case "^", "⇱": // first slide
@@ -222,7 +231,7 @@ func kbpointer(q event.Queue, ns int) {
 				case "$", "⇲": // last slide
 					electionNumber = ns
 				case key.NameSpace, "⏎":
-					if k.Modifiers == 0 {
+					if e.Modifiers == 0 {
 						electionNumber++
 					} else {
 						electionNumber--
@@ -235,19 +244,19 @@ func kbpointer(q event.Queue, ns int) {
 					os.Exit(0)
 				}
 			}
-		}
-		if p, ok := ev.(pointer.Event); ok {
-			switch p.Type {
+
+		case pointer.Event:
+			switch e.Kind {
 			case pointer.Scroll:
 				nev++
-				if p.Scroll.Y > 0 && nev == 2 {
+				if e.Scroll.Y > 0 && nev == 2 {
 					electionNumber--
 				}
-				if p.Scroll.Y == 0 && nev == 2 {
+				if e.Scroll.Y == 0 && nev == 2 {
 					electionNumber++
 				}
 			case pointer.Press:
-				switch p.Buttons {
+				switch e.Buttons {
 				case pointer.ButtonPrimary:
 					electionNumber++
 				case pointer.ButtonSecondary:
@@ -255,31 +264,24 @@ func kbpointer(q event.Queue, ns int) {
 				case pointer.ButtonTertiary:
 					electionNumber = 0
 				}
-				pressed = true
 			}
 		}
 	}
-
+	event.Op(context, &pressed)
 }
 
 func elect(title string, opts options, elections []election) {
 	cw, ch := float32(opts.width), float32(opts.height)
-	win := app.NewWindow(app.Title(title), app.Size(unit.Dp(cw), unit.Dp(ch)))
+	w := app.NewWindow(app.Title(title), app.Size(unit.Dp(cw), unit.Dp(ch)))
 	ne := len(elections) - 1
 
 	for {
-		e := <-win.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			os.Exit(0)
-		case system.FrameEvent:
-			canvas := gc.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
-			key.InputOp{Tag: pressed}.Add(canvas.Context.Ops)
-			pointer.InputOp{
-				Tag:          pressed,
-				Grab:         false,
-				Types:        pointer.Press | pointer.Scroll,
-				ScrollBounds: image.Rect(0, 0, e.Size.X, e.Size.Y)}.Add(canvas.Context.Ops)
+		case app.FrameEvent:
+			canvas := gc.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			if electionNumber > ne {
 				electionNumber = 0
 			}
@@ -287,7 +289,7 @@ func elect(title string, opts options, elections []election) {
 				electionNumber = ne
 			}
 			process(canvas, opts, elections[electionNumber])
-			kbpointer(e.Queue, ne)
+			kbpointer(e.Source, canvas.Context.Ops, ne)
 			e.Frame(canvas.Context.Ops)
 		}
 	}

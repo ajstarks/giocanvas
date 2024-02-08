@@ -11,7 +11,6 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -31,16 +30,16 @@ func imageinfo(imagefile string) (image.Image, int, int, error) {
 }
 
 // showimage shows an image, centered on the canvas at the specified scale and size
-func showimage(win *app.Window, im image.Image, w, h int, scale float32) error {
+func showimage(w *app.Window, im image.Image, width, height int, scale float32) error {
 	for {
-		e := <-win.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
-		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
-			scale = (float32(e.Size.X) / float32(w)) * 100
-			canvas.Img(im, 50, 50, w, h, scale)
+		case app.FrameEvent:
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
+			scale = (float32(e.Size.X) / float32(width)) * 100
+			canvas.Img(im, 50, 50, width, height, scale)
 			e.Frame(canvas.Context.Ops)
 		}
 	}
@@ -48,10 +47,10 @@ func showimage(win *app.Window, im image.Image, w, h int, scale float32) error {
 
 func main() {
 	var (
-		w, h  int
-		scale float64
-		err   error
-		im    image.Image
+		width, height int
+		scale         float64
+		err           error
+		im            image.Image
 	)
 	flag.Float64Var(&scale, "scale", 100, "scale (0-100)")
 	flag.Parse()
@@ -61,24 +60,22 @@ func main() {
 		os.Exit(1)
 	}
 	for _, imagefile := range args {
-		im, w, h, err = imageinfo(imagefile)
+		im, width, height, err = imageinfo(imagefile)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%v\n", err)
 			continue
 		}
-		go func() {
-			sc, sw, sh := float32(scale), float32(w), float32(h)
-			if scale != 100 {
-				sw *= sc / 100
-				sh *= sc / 100
-			}
-			win := app.NewWindow(app.Title(imagefile), app.Size(unit.Dp(sw), unit.Dp(sh)))
-			if err := showimage(win, im, w, h, sc); err != nil {
-				fmt.Fprintf(os.Stderr, "%v\n", err)
-				os.Exit(1)
-			}
-			os.Exit(0)
-		}()
+
+		sc, sw, sh := float32(scale), float32(width), float32(height)
+		if scale != 100 {
+			sw *= sc / 100
+			sh *= sc / 100
+		}
+		w := app.NewWindow(app.Title(imagefile), app.Size(unit.Dp(sw), unit.Dp(sh)))
+		if err := showimage(w, im, width, height, sc); err != nil {
+			fmt.Fprintf(os.Stderr, "%v\n", err)
+			os.Exit(1)
+		}
 	}
-	app.Main()
+	os.Exit(0)
 }

@@ -9,19 +9,18 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
 
 func circles(w *app.Window, width, height float32) error {
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
-		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
+		case app.FrameEvent:
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			canvas.Background(color.NRGBA{0, 0, 0, 255})
 			var theta, radius float32
 			for radius = 5; radius < 50; radius += 5 {
@@ -56,5 +55,4 @@ func main() {
 		os.Exit(0)
 	}()
 	app.Main()
-
 }

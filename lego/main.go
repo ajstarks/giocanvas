@@ -9,7 +9,6 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -83,12 +82,12 @@ func lego(w *app.Window, width, height float32) error {
 	var c1, c2 float32 = 15, 60
 
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
-		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
+		case app.FrameEvent:
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			canvas.Text(c1, 85, 3, "Incarceration Rate", giocanvas.ColorLookup("black"))
 			canvas.Text(c2, 85, 3, "US Population", giocanvas.ColorLookup("black"))
 			canvas.CText(50, 20, 1.5, "Source: Breaking Down Mass Incarceration in the 2010 Census: State-by-State Incarceration Rates by Race/Ethnicity", giocanvas.ColorLookup("gray"))

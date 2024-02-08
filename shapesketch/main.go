@@ -1,4 +1,4 @@
-// shapesketch: sketch quadradic Bezier curves
+// shapesketch: sketch shapes
 package main
 
 import (
@@ -11,9 +11,10 @@ import (
 
 	"gioui.org/app"
 	"gioui.org/io/event"
+	"gioui.org/io/input"
 	"gioui.org/io/key"
 	"gioui.org/io/pointer"
-	"gioui.org/io/system"
+	"gioui.org/op"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -61,6 +62,7 @@ func main() {
 	cfg.shapecolor = giocanvas.ColorLookup(shapecolor)
 
 	// kick off the application
+
 	go func() {
 		w := app.NewWindow(app.Title("shapesketch"), app.Size(unit.Dp(cfg.width), unit.Dp(cfg.height)))
 		if err := shapesketch(w, cfg); err != nil {
@@ -70,6 +72,7 @@ func main() {
 		os.Exit(0)
 	}()
 	app.Main()
+
 }
 
 var pressed, dogrid bool
@@ -175,16 +178,24 @@ func arc(canvas *giocanvas.Canvas, size float32, fillcolor color.NRGBA) {
 }
 
 // kbpointer processes the keyboard events and pointer events in percent coordinates
-func kbpointer(q event.Queue, cfg config) {
+func kbpointer(q input.Source, context *op.Ops, cfg config) {
 	width, height := cfg.width, cfg.height
 	prec := cfg.precision
 	stepsize := cfg.stepsize
-	for _, ev := range q.Events(pressed) {
-		// keyboard events
-		if k, ok := ev.(key.Event); ok {
-			switch k.State {
+	for {
+		ev, ok := q.Event(
+			key.Filter{Optional: key.ModCtrl},
+			pointer.Filter{Target: &pressed, Kinds: pointer.Press | pointer.Drag | pointer.Cancel | pointer.Move | pointer.Release})
+		if !ok {
+			break
+		}
+		switch e := ev.(type) {
+
+		case key.Event: // keyboard events
+
+			switch e.State {
 			case key.Press:
-				switch k.Name {
+				switch e.Name {
 				case "G":
 					dogrid = !dogrid
 				case "A":
@@ -204,28 +215,28 @@ func kbpointer(q event.Queue, cfg config) {
 				case "D":
 					deckspec(prec)
 				case key.NameRightArrow:
-					switch k.Modifiers {
+					switch e.Modifiers {
 					case 0:
 						bx += stepsize
 					case key.ModCtrl:
 						ex += stepsize
 					}
 				case key.NameLeftArrow:
-					switch k.Modifiers {
+					switch e.Modifiers {
 					case 0:
 						bx -= stepsize
 					case key.ModCtrl:
 						ex -= stepsize
 					}
 				case key.NameUpArrow:
-					switch k.Modifiers {
+					switch e.Modifiers {
 					case 0:
 						by += stepsize
 					case key.ModCtrl:
 						ey += stepsize
 					}
 				case key.NameDownArrow:
-					switch k.Modifiers {
+					switch e.Modifiers {
 					case 0:
 						by -= stepsize
 					case key.ModCtrl:
@@ -235,25 +246,24 @@ func kbpointer(q event.Queue, cfg config) {
 					os.Exit(0)
 				}
 			}
-		}
-		// pointer events
-		if p, ok := ev.(pointer.Event); ok {
-			switch p.Type {
+
+		case pointer.Event: // pointer events
+			switch e.Kind {
 			case pointer.Move:
-				mouseX, mouseY = pctcoord(p.Position.X, p.Position.Y, width, height)
+				mouseX, mouseY = pctcoord(e.Position.X, e.Position.Y, width, height)
 			case pointer.Press:
-				switch p.Buttons {
+				switch e.Buttons {
 				case pointer.ButtonPrimary:
-					bx, by = pctcoord(p.Position.X, p.Position.Y, width, height)
+					bx, by = pctcoord(e.Position.X, e.Position.Y, width, height)
 				case pointer.ButtonSecondary:
-					ex, ey = pctcoord(p.Position.X, p.Position.Y, width, height)
+					ex, ey = pctcoord(e.Position.X, e.Position.Y, width, height)
 				case pointer.ButtonTertiary:
 					deckspec(prec)
 				}
-				pressed = true
 			}
 		}
 	}
+	event.Op(context, &pressed)
 }
 
 // shapesketch sketches shapes
@@ -275,20 +285,16 @@ func shapesketch(w *app.Window, cfg config) error {
 	cx, cy = 10, 10
 	shape = "bezier"
 	begincolor, endcolor, shapecolor := cfg.begincolor, cfg.endcolor, cfg.shapecolor
-
 	// app loop
 	for {
-		ev := <-w.Events()
-		switch e := ev.(type) {
+		switch e := w.NextEvent().(type) {
 		// return an error on close
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
 		// for each frame: register keyboard, pointer press and move events, draw coordinates and
 		// specified shapes. Track the pointer position for the current point.
-		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
-			key.InputOp{Tag: pressed}.Add(canvas.Context.Ops)
-			pointer.InputOp{Tag: pressed, Grab: false, Types: pointer.Press | pointer.Move}.Add(canvas.Context.Ops)
+		case app.FrameEvent:
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			canvas.Background(cfg.bgcolor)
 			grid(canvas, 5, cfg.textcolor)
 			// draw specified shape
@@ -328,7 +334,7 @@ func shapesketch(w *app.Window, cfg config) error {
 					canvas.Line(bx, by, px, py, cfg.linesize, cfg.shapecolor)
 				}
 			}
-			kbpointer(e.Queue, cfg)
+			kbpointer(e.Source, canvas.Context.Ops, cfg)
 			cx, cy = mouseX, mouseY
 			e.Frame(canvas.Context.Ops)
 		}

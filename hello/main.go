@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -35,12 +34,12 @@ func main() {
 
 func hello(w *app.Window, width, height float32) error {
 	for {
-		ev := <-w.Events()
+		ev := w.NextEvent()
 		switch e := ev.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
-		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
+		case app.FrameEvent:
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			canvas.CenterRect(50, 50, 100, 100, color.NRGBA{0, 0, 0, 255})
 			canvas.Circle(50, 0, 50, color.NRGBA{0, 0, 255, 255})
 			canvas.TextMid(50, 20, 10, "hello, world", color.NRGBA{255, 255, 255, 255})

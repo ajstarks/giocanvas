@@ -17,7 +17,6 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"image"
 	"image/color"
 	"io"
 	"os"
@@ -26,10 +25,11 @@ import (
 
 	"gioui.org/app"
 	"gioui.org/io/event"
+	"gioui.org/io/input"
 	"gioui.org/io/key"
 	"gioui.org/io/pointer"
+	"gioui.org/op"
 
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -112,36 +112,45 @@ func piechart(canvas *giocanvas.Canvas, x, y, r float32, data []piedata) {
 var pressed bool
 var pieNumber int
 
-func kbpointer(q event.Queue, ns int) {
+func kbpointer(q input.Source, context *op.Ops, ns int) {
 	nev := 0
-	for _, ev := range q.Events(pressed) {
-		if k, ok := ev.(key.Event); ok {
-			switch k.State {
+	for {
+		e, ok := q.Event(
+			key.Filter{Optional: key.ModCtrl},
+			pointer.Filter{Target: &pressed, Kinds: pointer.Press | pointer.Move | pointer.Release | pointer.Scroll},
+		)
+		if !ok {
+			break
+		}
+		switch e := e.(type) {
+
+		case key.Event:
+			switch e.State {
 			case key.Press:
-				switch k.Name {
+				switch e.Name {
 				// emacs bindings
 				case "A", "1": // first slide
-					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+					if e.Modifiers == 0 || e.Modifiers == key.ModCtrl {
 						pieNumber = 0
 					}
 				case "E": // last slide
-					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+					if e.Modifiers == 0 || e.Modifiers == key.ModCtrl {
 						pieNumber = ns
 					}
 				case "B": // back a slide
-					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+					if e.Modifiers == 0 || e.Modifiers == key.ModCtrl {
 						pieNumber--
 					}
 				case "F": // forward a slide
-					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+					if e.Modifiers == 0 || e.Modifiers == key.ModCtrl {
 						pieNumber++
 					}
 				case "P": // previous slide
-					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+					if e.Modifiers == 0 || e.Modifiers == key.ModCtrl {
 						pieNumber--
 					}
 				case "N": // next slide
-					if k.Modifiers == 0 || k.Modifiers == key.ModCtrl {
+					if e.Modifiers == 0 || e.Modifiers == key.ModCtrl {
 						pieNumber++
 					}
 				case "^", "⇱": // first slide
@@ -149,7 +158,7 @@ func kbpointer(q event.Queue, ns int) {
 				case "$", "⇲": // last slide
 					pieNumber = ns
 				case key.NameSpace, "⏎":
-					if k.Modifiers == 0 {
+					if e.Modifiers == 0 {
 						pieNumber++
 					} else {
 						pieNumber--
@@ -162,19 +171,19 @@ func kbpointer(q event.Queue, ns int) {
 					os.Exit(0)
 				}
 			}
-		}
-		if p, ok := ev.(pointer.Event); ok {
-			switch p.Type {
+
+		case pointer.Event:
+			switch e.Kind {
 			case pointer.Scroll:
 				nev++
-				if p.Scroll.Y > 0 && nev == 2 {
+				if e.Scroll.Y > 0 && nev == 2 {
 					pieNumber--
 				}
-				if p.Scroll.Y == 0 && nev == 2 {
+				if e.Scroll.Y == 0 && nev == 2 {
 					pieNumber++
 				}
 			case pointer.Press:
-				switch p.Buttons {
+				switch e.Buttons {
 				case pointer.ButtonPrimary:
 					pieNumber++
 				case pointer.ButtonSecondary:
@@ -182,11 +191,10 @@ func kbpointer(q event.Queue, ns int) {
 				case pointer.ButtonTertiary:
 					pieNumber = 0
 				}
-				pressed = true
 			}
 		}
 	}
-
+	event.Op(context, &pressed)
 }
 
 // pie is the app
@@ -230,20 +238,13 @@ func pie(w *app.Window, width, height float32, files []string) error {
 		bottom  float32 = 100 - top
 	)
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return err
-		case system.FrameEvent:
+		case app.FrameEvent:
 			w, h := float32(e.Size.X), float32(e.Size.Y)
-			canvas := giocanvas.NewCanvas(w, h, system.FrameEvent{})
-			key.InputOp{Tag: pressed}.Add(canvas.Context.Ops)
-			pointer.InputOp{
-				Tag:          pressed,
-				Grab:         false,
-				Types:        pointer.Press | pointer.Scroll,
-				ScrollBounds: image.Rect(0, 0, e.Size.X, e.Size.Y)}.Add(canvas.Context.Ops)
-
+			canvas := giocanvas.NewCanvas(w, h, app.FrameEvent{})
 			if pieNumber >= nf {
 				pieNumber = 0
 			}
@@ -254,7 +255,7 @@ func pie(w *app.Window, width, height float32, files []string) error {
 			canvas.CText(50, top, 4, title[pieNumber], color.NRGBA{240, 240, 240, 255})
 			canvas.CText(50, bottom, 2, "Source: StatCounter", color.NRGBA{150, 150, 150, 255})
 			piechart(canvas, 50, 50, piesize, data[pieNumber])
-			kbpointer(e.Queue, nfiles)
+			kbpointer(e.Source, canvas.Context.Ops, nfiles)
 			e.Frame(canvas.Context.Ops)
 		}
 	}

@@ -11,7 +11,6 @@ import (
 	"strconv"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 )
@@ -50,12 +49,12 @@ func ref(w *app.Window, width, height float32, showgrid bool) error {
 	}
 
 	for {
-		e := <-w.Events()
+		e := w.NextEvent()
 		switch e := e.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			return e.Err
-		case system.FrameEvent:
-			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), system.FrameEvent{})
+		case app.FrameEvent:
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			canvas.Background(bgcolor)
 			canvas.Img(logoimg, col1, 94, 400, 400, 20)
 			canvas.Text(col1+3, top, titlesize, "Canvas API Reference", titlecolor)
