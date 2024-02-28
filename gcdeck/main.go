@@ -326,7 +326,7 @@ func showslide(doc *gc.Canvas, d *deck.Deck, n int) {
 	for _, im := range slide.Image {
 		img, err := imageInfo(im.Name)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "%v\n")
+			fmt.Fprintf(os.Stderr, "%v\n", err)
 			continue
 		}
 		iw := img.Bounds().Dx()
