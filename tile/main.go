@@ -6,7 +6,6 @@ import (
 	"io"
 	"math/rand"
 	"os"
-	"time"
 
 	"gioui.org/app"
 
@@ -37,8 +36,6 @@ func main() {
 	flag.Parse()
 	opts.lw, opts.step = float32(lw), float32(step)
 	opts.top, opts.bottom, opts.right, opts.left = float32(top), float32(bottom), float32(right), float32(left)
-
-	rand.Seed(time.Now().Unix() % 1e6)
 
 	go func() {
 		w := app.NewWindow(app.Title("tile"), app.Size(unit.Dp(float32(opts.width)), unit.Dp(float32(opts.height))))
