@@ -12,7 +12,7 @@ import (
 	"github.com/ajstarks/giocanvas"
 )
 
-func linetest(w *app.Window, width, height float32) error {
+func linetest(w *app.Window) error {
 	for {
 		e := w.NextEvent()
 		switch e := e.(type) {
@@ -54,7 +54,7 @@ func main() {
 
 	go func() {
 		w := app.NewWindow(app.Title("lines"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := linetest(w, width, height); err != nil {
+		if err := linetest(w); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
 		}

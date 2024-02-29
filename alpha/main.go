@@ -12,7 +12,7 @@ import (
 	"github.com/ajstarks/giocanvas"
 )
 
-func alpha(w *app.Window, width, height float32, color string) error {
+func alpha(w *app.Window,  color string) error {
 	blue := giocanvas.ColorLookup("steelblue")
 	gray := giocanvas.ColorLookup("gray")
 	dotcolor := giocanvas.ColorLookup(color)
@@ -57,7 +57,7 @@ func main() {
 
 	go func() {
 		w := app.NewWindow(app.Title("alpha"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := alpha(w, width, height, color); err != nil {
+		if err := alpha(w, color); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
 		}

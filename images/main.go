@@ -26,7 +26,7 @@ func getimage(s string) (image.Image, error) {
 	return im, nil
 }
 
-func images(w *app.Window, width, height float32) error {
+func images(w *app.Window) error {
 	im, err := getimage("earth.jpg")
 	if err != nil {
 		return err
@@ -62,7 +62,7 @@ func main() {
 
 	go func() {
 		w := app.NewWindow(app.Title("images"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := images(w, width, height); err != nil {
+		if err := images(w); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
 		}

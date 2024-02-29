@@ -27,7 +27,7 @@ func getImage(name string) image.Image {
 	return im
 }
 
-func play(w *app.Window, width, height float32, showgrid bool) error {
+func play(w *app.Window, showgrid bool) error {
 	tcolor := color.NRGBA{128, 0, 0, 150}
 	fcolor := color.NRGBA{0, 0, 128, 150}
 	bgcolor := color.NRGBA{255, 255, 255, 255}
@@ -161,7 +161,7 @@ func main() {
 
 	go func() {
 		w := app.NewWindow(app.Title("Canvas API"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := play(w, width, height, showgrid); err != nil {
+		if err := play(w, showgrid); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
 		}

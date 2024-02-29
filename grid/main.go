@@ -34,7 +34,7 @@ func main() {
 
 	go func() {
 		w := app.NewWindow(app.Title("grid"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := grid(w, width, height, float32(x1), float32(x2), float32(y1), float32(y2), float32(xincr), float32(yincr), float32(lw), bgcolor, color); err != nil {
+		if err := grid(w, float32(x1), float32(x2), float32(y1), float32(y2), float32(xincr), float32(yincr), float32(lw), bgcolor, color); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
 		}
@@ -43,7 +43,7 @@ func main() {
 	app.Main()
 }
 
-func grid(w *app.Window, width, height, x1, x2, y1, y2, xincr, yincr, lw float32, bgcolor, gridcolor string) error {
+func grid(w *app.Window, x1, x2, y1, y2, xincr, yincr, lw float32, bgcolor, gridcolor string) error {
 	bcolor := giocanvas.ColorLookup(bgcolor)
 	color := giocanvas.ColorLookup(gridcolor)
 	textcolor := color

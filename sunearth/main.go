@@ -12,7 +12,7 @@ import (
 	"github.com/ajstarks/giocanvas"
 )
 
-func sunearth(w *app.Window, width, height float32) error {
+func sunearth(w *app.Window) error {
 
 	yellow := color.NRGBA{255, 248, 231, 255}
 	blue := color.NRGBA{44, 77, 232, 255}
@@ -46,7 +46,7 @@ func main() {
 
 	go func() {
 		w := app.NewWindow(app.Title("sun+earth"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := sunearth(w, width, height); err != nil {
+		if err := sunearth(w); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
 		}

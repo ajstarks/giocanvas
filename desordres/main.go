@@ -173,7 +173,7 @@ func kbpointer(q input.Source, context *op.Ops) {
 }
 
 // desordres makes tiles of random conentric squares
-func desordres(w *app.Window, width, height float32, cfg config) error {
+func desordres(w *app.Window, cfg config) error {
 	bg := giocanvas.ColorLookup(cfg.bgcolor)
 	maxlw := cfg.maxlw
 	h1, h2 := parseHues(cfg.color) // set hue range, or named color
@@ -289,7 +289,7 @@ func main() {
 
 	go func() {
 		w := app.NewWindow(app.Title("desordres"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := desordres(w, width, height, cfg); err != nil {
+		if err := desordres(w, cfg); err != nil {
 			fmt.Fprintf(os.Stderr, "Cannot create the window: %v\n", err)
 			os.Exit(1)
 		}

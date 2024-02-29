@@ -65,7 +65,7 @@ func grid(canvas *giocanvas.Canvas, x, y, step float32, bcolor, dcolor color.NRG
 	}
 }
 
-func lego(w *app.Window, width, height float32) error {
+func lego(w *app.Window) error {
 	incar := []pdata{
 		{name: "White", value: 39, fill: "rgb(160,82,45,120)"},
 		{name: "Hispanic", value: 19, fill: "rgb(160,82,45,180)"},
@@ -109,7 +109,7 @@ func main() {
 
 	go func() {
 		w := app.NewWindow(app.Title("lego"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := lego(w, width, height); err != nil {
+		if err := lego(w); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
 		}

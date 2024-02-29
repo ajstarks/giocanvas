@@ -23,7 +23,7 @@ func main() {
 
 	go func() {
 		w := app.NewWindow(app.Title("rgb"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := rgb(w, width, height); err != nil {
+		if err := rgb(w); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
 		}
@@ -33,7 +33,7 @@ func main() {
 
 }
 
-func rgb(w *app.Window, width, height float32) error {
+func rgb(w *app.Window) error {
 	colortab := []string{
 		"orange",
 		"rgb(100)",

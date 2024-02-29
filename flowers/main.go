@@ -22,7 +22,7 @@ func petals(canvas *giocanvas.Canvas, x, y, w, h float32, fill color.NRGBA) {
 	}
 }
 
-func flower(w *app.Window, width, height float32) error {
+func flower(w *app.Window) error {
 	red := color.NRGBA{128, 0, 0, 100}
 	blue := color.NRGBA{0, 0, 128, 100}
 	green := color.NRGBA{0, 128, 0, 100}
@@ -56,7 +56,7 @@ func main() {
 
 	go func() {
 		w := app.NewWindow(app.Title("flowers"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := flower(w, width, height); err != nil {
+		if err := flower(w); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
 		}

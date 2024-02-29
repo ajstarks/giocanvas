@@ -68,7 +68,7 @@ func cchue(canvas *giocanvas.Canvas, r, step float32, starthue int, bgcolor colo
 	}
 }
 
-func cc(w *app.Window, width, height float32) error {
+func cc(w *app.Window) error {
 	for {
 		e := w.NextEvent()
 		switch e := e.(type) {
@@ -92,7 +92,7 @@ func main() {
 
 	go func() {
 		w := app.NewWindow(app.Title("cchue"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := cc(w, width, height); err != nil {
+		if err := cc(w); err != nil {
 			fmt.Fprintf(os.Stderr, "Cannot create the window: %v\n", err)
 			os.Exit(1)
 		}

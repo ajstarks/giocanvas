@@ -17,7 +17,7 @@ func pct(p float32, m float32) float32 {
 	return ((p / 100.0) * m)
 }
 
-func twrap(w *app.Window, width, height float32) error {
+func twrap(w *app.Window) error {
 	var ts float32 = 2.8
 	subsize := ts * 0.6
 	gray := color.NRGBA{100, 100, 100, 255}
@@ -70,7 +70,7 @@ func main() {
 
 	go func() {
 		w := app.NewWindow(app.Title("text wrapping"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := twrap(w, width, height); err != nil {
+		if err := twrap(w); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
 		}

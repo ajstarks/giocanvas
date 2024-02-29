@@ -198,7 +198,7 @@ func kbpointer(q input.Source, context *op.Ops, ns int) {
 }
 
 // pie is the app
-func pie(w *app.Window, width, height float32, files []string) error {
+func pie(w *app.Window, files []string) error {
 	var err error
 	var data [][]piedata
 	var title []string
@@ -274,7 +274,7 @@ func main() {
 
 	go func() {
 		w := app.NewWindow(app.Title("pie"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := pie(w, width, height, flag.Args()); err != nil {
+		if err := pie(w, flag.Args()); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
 		}

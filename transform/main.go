@@ -13,7 +13,7 @@ import (
 	gc "github.com/ajstarks/giocanvas"
 )
 
-func transforms(w *app.Window, width, height float32) error {
+func transforms(w *app.Window) error {
 	var midx, rectw, recth, recty, ts, ts2 float32
 	midx = 50
 	rectw = 40
@@ -69,7 +69,7 @@ func main() {
 
 	go func() {
 		w := app.NewWindow(app.Title("transform"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := transforms(w, width, height); err != nil {
+		if err := transforms(w); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
 		}

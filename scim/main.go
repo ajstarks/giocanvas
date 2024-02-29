@@ -26,7 +26,7 @@ func getimage(s string) (image.Image, error) {
 	return im, nil
 }
 
-func scimage(w *app.Window, filename string, width, height float32) error {
+func scimage(w *app.Window, filename string) error {
 	im, err := getimage(filename)
 	if err != nil {
 		return err
@@ -70,7 +70,7 @@ func main() {
 
 	go func() {
 		w := app.NewWindow(app.Title("Scaled Image"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := scimage(w, imfile, width, height); err != nil {
+		if err := scimage(w, imfile); err != nil {
 			fmt.Fprintf(os.Stderr, "Cannot create the window: %v\n", err)
 			os.Exit(1)
 		}

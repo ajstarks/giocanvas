@@ -12,7 +12,7 @@ import (
 	"github.com/ajstarks/giocanvas"
 )
 
-func eclipse(w *app.Window, width, height float32) error {
+func eclipse(w *app.Window) error {
 	black := color.NRGBA{0, 0, 0, 255}
 	white := color.NRGBA{255, 255, 255, 255}
 	for {
@@ -46,7 +46,7 @@ func main() {
 
 	go func() {
 		w := app.NewWindow(app.Title("eclipse"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := eclipse(w, width, height); err != nil {
+		if err := eclipse(w); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
 		}

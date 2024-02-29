@@ -29,7 +29,7 @@ func getimage(s string) (image.Image, error) {
 	return im, nil
 }
 
-func ref(w *app.Window, width, height float32, showgrid bool) error {
+func ref(w *app.Window, showgrid bool) error {
 	var col1, col2, col3 float32 = 15, 50, 85
 	var top, subtop float32 = 92, 82
 	var titlesize, headsize, apisize, dotsize float32 = 4, 3, 0.9, 0.3
@@ -204,7 +204,7 @@ func main() {
 
 	go func() {
 		w := app.NewWindow(app.Title("API Sheet"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := ref(w, width, height, showgrid); err != nil {
+		if err := ref(w, showgrid); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
 		}

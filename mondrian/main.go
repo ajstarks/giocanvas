@@ -12,7 +12,7 @@ import (
 	"github.com/ajstarks/giocanvas"
 )
 
-func mondrian(w *app.Window, width, height float32) error {
+func mondrian(w *app.Window) error {
 
 	black := color.NRGBA{0, 0, 0, 255}
 	white := color.NRGBA{255, 255, 255, 255}
@@ -63,7 +63,7 @@ func main() {
 
 	go func() {
 		w := app.NewWindow(app.Title("mondrian"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := mondrian(w, width, height); err != nil {
+		if err := mondrian(w); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
 		}
