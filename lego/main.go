@@ -82,7 +82,7 @@ func lego(w *app.Window) error {
 	var c1, c2 float32 = 15, 60
 
 	for {
-		e := w.NextEvent()
+		e := w.Event()
 		switch e := e.(type) {
 		case app.DestroyEvent:
 			return e.Err
@@ -108,7 +108,8 @@ func main() {
 	height := float32(ch)
 
 	go func() {
-		w := app.NewWindow(app.Title("lego"), app.Size(unit.Dp(width), unit.Dp(height)))
+		w := &app.Window{}
+		w.Option(app.Title("lego"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := lego(w); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)

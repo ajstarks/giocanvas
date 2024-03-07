@@ -64,7 +64,8 @@ func main() {
 	// kick off the application
 
 	go func() {
-		w := app.NewWindow(app.Title("shapesketch"), app.Size(unit.Dp(cfg.width), unit.Dp(cfg.height)))
+		w := &app.Window{}
+		w.Option(app.Title("shapesketch"), app.Size(unit.Dp(cfg.width), unit.Dp(cfg.height)))
 		if err := shapesketch(w, cfg); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
@@ -287,7 +288,7 @@ func shapesketch(w *app.Window, cfg config) error {
 	begincolor, endcolor, shapecolor := cfg.begincolor, cfg.endcolor, cfg.shapecolor
 	// app loop
 	for {
-		switch e := w.NextEvent().(type) {
+		switch e := w.Event().(type) {
 		// return an error on close
 		case app.DestroyEvent:
 			return e.Err

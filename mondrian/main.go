@@ -29,7 +29,7 @@ func mondrian(w *app.Window) error {
 	t2h := t2 + halft
 
 	for {
-		e := w.NextEvent()
+		e := w.Event()
 		switch e := e.(type) {
 		case app.DestroyEvent:
 			return e.Err
@@ -62,7 +62,8 @@ func main() {
 	height := float32(ch)
 
 	go func() {
-		w := app.NewWindow(app.Title("mondrian"), app.Size(unit.Dp(width), unit.Dp(height)))
+		w := &app.Window{}
+		w.Option(app.Title("mondrian"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := mondrian(w); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)

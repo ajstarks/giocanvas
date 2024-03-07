@@ -14,7 +14,7 @@ import (
 
 func linetest(w *app.Window) error {
 	for {
-		e := w.NextEvent()
+		e := w.Event()
 		switch e := e.(type) {
 		case app.DestroyEvent:
 			os.Exit(0)
@@ -53,7 +53,8 @@ func main() {
 	height := float32(ch)
 
 	go func() {
-		w := app.NewWindow(app.Title("lines"), app.Size(unit.Dp(width), unit.Dp(height)))
+		w := &app.Window{}
+		w.Option(app.Title("lines"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := linetest(w); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)

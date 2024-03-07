@@ -35,7 +35,8 @@ func main() {
 	// kick off the application
 
 	go func() {
-		w := app.NewWindow(app.Title("dots"), app.Size(unit.Dp(cw), unit.Dp(ch)))
+		w := &app.Window{}
+		w.Option(app.Title("dots"), app.Size(unit.Dp(cw), unit.Dp(ch)))
 		if err := dots(w, nc, bgcolor, palette); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
@@ -121,7 +122,7 @@ func dots(w *app.Window, nc int, bgcolor, colorlist string) error {
 	coordinates[0].X, coordinates[0].Y = 50, 50
 	bg := giocanvas.ColorLookup(bgcolor)
 	for {
-		ev := w.NextEvent()
+		ev := w.Event()
 		switch e := ev.(type) {
 		case app.DestroyEvent:
 			return e.Err

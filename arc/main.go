@@ -37,7 +37,7 @@ func arc(w *app.Window, width, height float32) error {
 	black := color.NRGBA{0, 0, 0, 255}
 
 	for {
-		e := w.NextEvent()
+		e := w.Event()
 		switch e := e.(type) {
 		case app.DestroyEvent:
 			return e.Err
@@ -81,7 +81,8 @@ func main() {
 	height := float32(ch)
 
 	go func() {
-		w := app.NewWindow(app.Title("Arc"), app.Size(unit.Dp(width), unit.Dp(height)))
+		w := &app.Window{}
+		w.Option(app.Title("Arc"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := arc(w, width, height); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)

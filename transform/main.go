@@ -22,7 +22,7 @@ func transforms(w *app.Window) error {
 	ts2 = ts / 3
 	textcolor := color.NRGBA{0, 0, 0, 255}
 	for {
-		e := w.NextEvent()
+		e := w.Event()
 		switch e := e.(type) {
 		case app.DestroyEvent:
 			return e.Err
@@ -68,7 +68,8 @@ func main() {
 	height := float32(ch)
 
 	go func() {
-		w := app.NewWindow(app.Title("transform"), app.Size(unit.Dp(width), unit.Dp(height)))
+		w := &app.Window{}
+		w.Option(app.Title("transform"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := transforms(w); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)

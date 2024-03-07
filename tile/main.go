@@ -38,7 +38,8 @@ func main() {
 	opts.top, opts.bottom, opts.right, opts.left = float32(top), float32(bottom), float32(right), float32(left)
 
 	go func() {
-		w := app.NewWindow(app.Title("tile"), app.Size(unit.Dp(float32(opts.width)), unit.Dp(float32(opts.height))))
+		w := &app.Window{}
+		w.Option(app.Title("tile"), app.Size(unit.Dp(float32(opts.width)), unit.Dp(float32(opts.height))))
 		if err := tile(w, opts); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
@@ -54,7 +55,7 @@ func tile(w *app.Window, opts options) error {
 	bgcolor := gc.ColorLookup(opts.bgcolor)
 
 	for {
-		e := w.NextEvent()
+		e := w.Event()
 		switch e := e.(type) {
 		case app.DestroyEvent:
 			return e.Err

@@ -238,7 +238,7 @@ func pie(w *app.Window, files []string) error {
 		bottom  float32 = 100 - top
 	)
 	for {
-		e := w.NextEvent()
+		e := w.Event()
 		switch e := e.(type) {
 		case app.DestroyEvent:
 			return err
@@ -273,7 +273,8 @@ func main() {
 	height := float32(ch)
 
 	go func() {
-		w := app.NewWindow(app.Title("pie"), app.Size(unit.Dp(width), unit.Dp(height)))
+		w := &app.Window{}
+		w.Option(app.Title("pie"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := pie(w, flag.Args()); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)

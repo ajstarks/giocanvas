@@ -49,7 +49,7 @@ func ref(w *app.Window, showgrid bool) error {
 	}
 
 	for {
-		e := w.NextEvent()
+		e := w.Event()
 		switch e := e.(type) {
 		case app.DestroyEvent:
 			return e.Err
@@ -203,7 +203,8 @@ func main() {
 	height := float32(ch)
 
 	go func() {
-		w := app.NewWindow(app.Title("API Sheet"), app.Size(unit.Dp(width), unit.Dp(height)))
+		w := &app.Window{}
+		w.Option(app.Title("API Sheet"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := ref(w, showgrid); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)

@@ -33,7 +33,7 @@ func images(w *app.Window) error {
 	}
 	bgcolor := color.NRGBA{0, 0, 0, 255}
 	for {
-		e := w.NextEvent()
+		e := w.Event()
 		switch e := e.(type) {
 		case app.DestroyEvent:
 			return e.Err
@@ -61,7 +61,8 @@ func main() {
 	width, height := float32(cw), float32(ch)
 
 	go func() {
-		w := app.NewWindow(app.Title("images"), app.Size(unit.Dp(width), unit.Dp(height)))
+		w := &app.Window{}
+		w.Option(app.Title("images"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := images(w); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)

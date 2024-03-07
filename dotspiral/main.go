@@ -33,10 +33,11 @@ func dotspiral(canvas *giocanvas.Canvas, cx, cy float32, c config) {
 }
 
 func work(title string, width, height float32, c config) {
-	w := app.NewWindow(app.Title(title), app.Size(unit.Dp(width), unit.Dp(height)))
+	w := &app.Window{}
+	w.Option(app.Title(title), app.Size(unit.Dp(width), unit.Dp(height)))
 	var cx, cy float32 = 50, 50
 	for {
-		e := w.NextEvent()
+		e := w.Event()
 		switch e := e.(type) {
 		case app.DestroyEvent:
 			os.Exit(0)

@@ -181,7 +181,7 @@ func desordres(w *app.Window, cfg config) error {
 	tilesize = cfg.tiles
 	var top, left, size float64
 	for {
-		e := w.NextEvent()
+		e := w.Event()
 		switch e := e.(type) {
 		case app.DestroyEvent:
 			return e.Err
@@ -288,7 +288,8 @@ func main() {
 	}
 
 	go func() {
-		w := app.NewWindow(app.Title("desordres"), app.Size(unit.Dp(width), unit.Dp(height)))
+		w := &app.Window{}
+		w.Option(app.Title("desordres"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := desordres(w, cfg); err != nil {
 			fmt.Fprintf(os.Stderr, "Cannot create the window: %v\n", err)
 			os.Exit(1)

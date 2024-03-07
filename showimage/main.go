@@ -32,7 +32,7 @@ func imageinfo(imagefile string) (image.Image, int, int, error) {
 // showimage shows an image, centered on the canvas at the specified scale and size
 func showimage(w *app.Window, im image.Image, width, height int, scale float32) error {
 	for {
-		e := w.NextEvent()
+		e := w.Event()
 		switch e := e.(type) {
 		case app.DestroyEvent:
 			return e.Err
@@ -71,7 +71,8 @@ func main() {
 			sw *= sc / 100
 			sh *= sc / 100
 		}
-		w := app.NewWindow(app.Title(imagefile), app.Size(unit.Dp(sw), unit.Dp(sh)))
+		w := &app.Window{}
+		w.Option(app.Title(imagefile), app.Size(unit.Dp(sw), unit.Dp(sh)))
 		if err := showimage(w, im, width, height, sc); err != nil {
 			fmt.Fprintf(os.Stderr, "%v\n", err)
 			os.Exit(1)

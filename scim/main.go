@@ -38,7 +38,7 @@ func scimage(w *app.Window, filename string) error {
 	gridcolor := fgcolor
 	gridcolor.A = 75
 	for {
-		e := w.NextEvent()
+		e := w.Event()
 		switch e := e.(type) {
 		case app.DestroyEvent:
 			return e.Err
@@ -69,7 +69,8 @@ func main() {
 	width, height := float32(cw), float32(ch)
 
 	go func() {
-		w := app.NewWindow(app.Title("Scaled Image"), app.Size(unit.Dp(width), unit.Dp(height)))
+		w := &app.Window{}
+		w.Option(app.Title("Scaled Image"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := scimage(w, imfile); err != nil {
 			fmt.Fprintf(os.Stderr, "Cannot create the window: %v\n", err)
 			os.Exit(1)

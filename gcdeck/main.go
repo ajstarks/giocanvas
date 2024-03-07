@@ -649,9 +649,10 @@ func slidedeck(s string, initpage int, filename, pagesize string) {
 	}
 	slidenumber = initpage - 1
 	gridstate = false
-	w := app.NewWindow(app.Title(s), app.Size(unit.Dp(width), unit.Dp(height)))
+	w := &app.Window{}
+	w.Option(app.Title(s), app.Size(unit.Dp(width), unit.Dp(height)))
 	for {
-		ev := w.NextEvent()
+		ev := w.Event()
 		switch e := ev.(type) {
 		case app.DestroyEvent:
 			os.Exit(0)

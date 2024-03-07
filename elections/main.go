@@ -272,11 +272,12 @@ func kbpointer(q input.Source, context *op.Ops, ns int) {
 
 func elect(title string, opts options, elections []election) {
 	cw, ch := float32(opts.width), float32(opts.height)
-	w := app.NewWindow(app.Title(title), app.Size(unit.Dp(cw), unit.Dp(ch)))
+	w := &app.Window{}
+	w.Option(app.Title(title), app.Size(unit.Dp(cw), unit.Dp(ch)))
 	ne := len(elections) - 1
 
 	for {
-		e := w.NextEvent()
+		e := w.Event()
 		switch e := e.(type) {
 		case app.DestroyEvent:
 			os.Exit(0)

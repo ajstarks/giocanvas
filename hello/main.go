@@ -22,7 +22,8 @@ func main() {
 	height := float32(ch)
 
 	go func() {
-		w := app.NewWindow(app.Title("hello"), app.Size(unit.Dp(width), unit.Dp(height)))
+		w := &app.Window{}
+		w.Option(app.Title("hello"), app.Size(unit.Dp(width), unit.Dp(height)))
 		if err := hello(w); err != nil {
 			io.WriteString(os.Stderr, "Cannot create the window\n")
 			os.Exit(1)
@@ -37,7 +38,7 @@ func hello(w *app.Window) error {
 	blue := color.NRGBA{0, 0, 255, 255}
 	white := color.NRGBA{255, 255, 255, 255}
 	for {
-		switch e := w.NextEvent().(type) {
+		switch e := w.Event().(type) {
 		case app.DestroyEvent:
 			return e.Err
 		case app.FrameEvent:
