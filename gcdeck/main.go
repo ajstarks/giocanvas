@@ -535,6 +535,7 @@ func main() {
 		*title = filename
 	}
 	go slidedeck(*title, *initpage, filename, *pagesize)
+	app.Main()
 }
 
 var pressed bool
@@ -546,7 +547,7 @@ func kbpointer(q input.Source, context *op.Ops, ns int) {
 	for {
 		e, ok := q.Event(
 			key.Filter{Optional: key.ModCtrl},
-			pointer.Filter{Target: &pressed, Kinds: pointer.Press | pointer.Move | pointer.Release, ScrollBounds: image.Rect(0, 0, 1000, 1000)},
+			pointer.Filter{Target: &pressed, Kinds: pointer.Press | pointer.Move | pointer.Release},
 		)
 		if !ok {
 			break
@@ -652,8 +653,7 @@ func slidedeck(s string, initpage int, filename, pagesize string) {
 	w := &app.Window{}
 	w.Option(app.Title(s), app.Size(unit.Dp(width), unit.Dp(height)))
 	for {
-		ev := w.Event()
-		switch e := ev.(type) {
+		switch e := w.Event().(type) {
 		case app.DestroyEvent:
 			os.Exit(0)
 		case app.FrameEvent:
