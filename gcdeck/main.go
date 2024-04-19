@@ -542,7 +542,7 @@ var pressed bool
 var gridstate bool
 var slidenumber int
 
-func kbpointer(q input.Source, context *op.Ops, ns int) {
+func kbpointer(q input.Source, context *op.Ops, ns, xsize, ysize int) {
 	nev := 0
 	for {
 		e, ok := q.Event(
@@ -550,8 +550,8 @@ func kbpointer(q input.Source, context *op.Ops, ns int) {
 			pointer.Filter{
 				Target:  &pressed,
 				Kinds:   pointer.Press | pointer.Move | pointer.Release | pointer.Scroll,
-				ScrollX: pointer.ScrollRange{Min: 0, Max: 1000},
-				ScrollY: pointer.ScrollRange{Min: 0, Max: 1000}},
+				ScrollX: pointer.ScrollRange{Min: 0, Max: xsize},
+				ScrollY: pointer.ScrollRange{Min: 0, Max: ysize}},
 		)
 		if !ok {
 			break
@@ -687,7 +687,7 @@ func slidedeck(s string, initpage int, filename, pagesize string) {
 				}
 				nslides = len(deck.Slide) - 1
 			}
-			kbpointer(e.Source, canvas.Context.Ops, nslides)
+			kbpointer(e.Source, canvas.Context.Ops, nslides, e.Size.X, e.Size.Y)
 			e.Frame(canvas.Context.Ops)
 		}
 	}
