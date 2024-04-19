@@ -547,7 +547,11 @@ func kbpointer(q input.Source, context *op.Ops, ns int) {
 	for {
 		e, ok := q.Event(
 			key.Filter{Optional: key.ModCtrl},
-			pointer.Filter{Target: &pressed, Kinds: pointer.Press | pointer.Move | pointer.Release},
+			pointer.Filter{
+				Target:  &pressed,
+				Kinds:   pointer.Press | pointer.Move | pointer.Release | pointer.Scroll,
+				ScrollX: pointer.ScrollRange{Min: 0, Max: 1000},
+				ScrollY: pointer.ScrollRange{Min: 0, Max: 1000}},
 		)
 		if !ok {
 			break
