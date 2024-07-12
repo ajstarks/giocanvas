@@ -298,7 +298,7 @@ func dolist(doc *gc.Canvas, cw, x, y, fs, lwidth, rotation, spacing float64, lis
 }
 
 // showslide shows a slide
-func showslide(doc *gc.Canvas, d *deck.Deck, n int) {
+func showslide(doc *gc.Canvas, d *deck.Deck, n int, layers string) {
 	if n < 0 || n > len(d.Slide)-1 {
 		return
 	}
@@ -322,150 +322,166 @@ func showslide(doc *gc.Canvas, d *deck.Deck, n int) {
 	if slide.Fg == "" {
 		slide.Fg = "black"
 	}
-	// for every image on the slide...
-	for _, im := range slide.Image {
-		img, err := imageInfo(im.Name)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "%v\n", err)
-			continue
-		}
-		iw := img.Bounds().Dx()
-		ih := img.Bounds().Dy()
-		if im.Scale == 0 {
-			im.Scale = 100
-		}
-		// scale the image to a percentage of the canvas width
-		if im.Width > 0 && im.Height == 0 {
-			im.Scale = float64(im.Width)
-		}
-		//fmt.Fprintf(os.Stderr, "[%d] %q %v %v %v %v %v (%v,%v)\n", n, im.Name, im.Xp, im.Yp, iw, ih, im.Scale, cw, ch)
-		doc.Img(img, float32(im.Xp), float32(im.Yp), iw, ih, float32(im.Scale))
-		if len(im.Caption) > 0 {
-			capsize := 1.5
-			if im.Font == "" {
-				im.Font = "sans"
-			}
-			if im.Color == "" {
-				im.Color = slide.Fg
-			}
-			if im.Align == "" {
-				im.Align = "center"
-			}
-			var cx, cy float64
-			iw := float64(im.Width) * (im.Scale / 100)
-			ih := float64(im.Height) * (im.Scale / 100)
-			cimx := im.Xp
-			switch im.Align {
-			case "center", "c", "mid":
-				cx = im.Xp
-			case "end", "e", "right":
-				cx = cimx + pct((iw/2), cw)
-			default:
-				cx = cimx - pct((iw/2), cw)
-			}
-			cy = im.Yp - (ih/2)/ch*100 - (capsize * 2)
-			showtext(doc, cx, cy, im.Caption, capsize, gc.ColorLookup(im.Color), im.Font, im.Align)
-		}
-	}
-	// every graphic on the slide
 	const defaultColor = "rgb(127,127,127)"
-	// rect
-	for _, rect := range slide.Rect {
-		if rect.Color == "" {
-			rect.Color = defaultColor
-		}
-		if rect.Hr == 100 {
-			c := gc.ColorLookup(rect.Color)
-			c.A = setop(rect.Opacity)
-			doc.CenterRect(float32(rect.Xp), float32(rect.Yp), float32(rect.Wp), float32((rect.Wp)*(cw/ch)), c)
-		} else {
-			dorect(doc, rect.Xp, rect.Yp, rect.Wp, rect.Hp, rect.Color, rect.Opacity)
-		}
-	}
-	// ellipse
-	for _, ellipse := range slide.Ellipse {
-		if ellipse.Color == "" {
-			ellipse.Color = defaultColor
-		}
-		if ellipse.Hr == 100 {
-			c := gc.ColorLookup(ellipse.Color)
-			c.A = setop(ellipse.Opacity)
-			doc.Circle(float32(ellipse.Xp), float32(ellipse.Yp), float32(ellipse.Wp/2), c)
-		} else {
-			doellipse(doc, ellipse.Xp, ellipse.Yp, ellipse.Wp, ellipse.Hp, ellipse.Color, ellipse.Opacity)
-		}
-	}
-	// curve
-	for _, curve := range slide.Curve {
-		if curve.Color == "" {
-			curve.Color = defaultColor
-		}
-		if curve.Sp == 0 {
-			curve.Sp = 0.2
-		}
-		docurve(doc, curve.Xp1, curve.Yp1, curve.Xp2, curve.Yp2, curve.Xp3, curve.Yp3, curve.Sp, curve.Color, curve.Opacity)
-	}
-	// arc
-	for _, arc := range slide.Arc {
-		if arc.Color == "" {
-			arc.Color = defaultColor
-		}
-		w := arc.Wp
-		h := arc.Hp
-		if arc.Sp == 0 {
-			arc.Sp = 0.2
-		}
-		doarc(doc, arc.Xp, arc.Yp, w/2, h/2, arc.A1, arc.A2, arc.Sp, arc.Color, arc.Opacity)
-	}
-	// line
-	for _, line := range slide.Line {
-		if line.Color == "" {
-			line.Color = defaultColor
-		}
-		if line.Sp == 0 {
-			line.Sp = 0.2
-		}
-		doline(doc, line.Xp1, line.Yp1, line.Xp2, line.Yp2, line.Sp, line.Color, line.Opacity)
-	}
-	// polygon
-	for _, poly := range slide.Polygon {
-		if poly.Color == "" {
-			poly.Color = defaultColor
-		}
-		dopoly(doc, poly.XC, poly.YC, cw, ch, poly.Color, poly.Opacity)
-	}
 
-	// for every text element...
-	var tdata string
-	for _, t := range slide.Text {
-		if t.Color == "" {
-			t.Color = slide.Fg
+	layerlist := strings.Split(layers, ":")
+	for il := 0; il < len(layerlist); il++ {
+		switch layerlist[il] {
+		case "image":
+			// for every image on the slide...
+			for _, im := range slide.Image {
+				img, err := imageInfo(im.Name)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "%v\n", err)
+					continue
+				}
+				iw := img.Bounds().Dx()
+				ih := img.Bounds().Dy()
+				if im.Scale == 0 {
+					im.Scale = 100
+				}
+				// scale the image to a percentage of the canvas width
+				if im.Width > 0 && im.Height == 0 {
+					im.Scale = float64(im.Width)
+				}
+				//fmt.Fprintf(os.Stderr, "[%d] %q %v %v %v %v %v (%v,%v)\n", n, im.Name, im.Xp, im.Yp, iw, ih, im.Scale, cw, ch)
+				doc.Img(img, float32(im.Xp), float32(im.Yp), iw, ih, float32(im.Scale))
+				if len(im.Caption) > 0 {
+					capsize := 1.5
+					if im.Font == "" {
+						im.Font = "sans"
+					}
+					if im.Color == "" {
+						im.Color = slide.Fg
+					}
+					if im.Align == "" {
+						im.Align = "center"
+					}
+					var cx, cy float64
+					iw := float64(im.Width) * (im.Scale / 100)
+					ih := float64(im.Height) * (im.Scale / 100)
+					cimx := im.Xp
+					switch im.Align {
+					case "center", "c", "mid":
+						cx = im.Xp
+					case "end", "e", "right":
+						cx = cimx + pct((iw/2), cw)
+					default:
+						cx = cimx - pct((iw/2), cw)
+					}
+					cy = im.Yp - (ih/2)/ch*100 - (capsize * 2)
+					showtext(doc, cx, cy, im.Caption, capsize, gc.ColorLookup(im.Color), im.Font, im.Align)
+				}
+			}
+		// every graphic on the slide
+		// rect
+		case "rect":
+
+			for _, rect := range slide.Rect {
+				if rect.Color == "" {
+					rect.Color = defaultColor
+				}
+				if rect.Hr == 100 {
+					c := gc.ColorLookup(rect.Color)
+					c.A = setop(rect.Opacity)
+					doc.CenterRect(float32(rect.Xp), float32(rect.Yp), float32(rect.Wp), float32((rect.Wp)*(cw/ch)), c)
+				} else {
+					dorect(doc, rect.Xp, rect.Yp, rect.Wp, rect.Hp, rect.Color, rect.Opacity)
+				}
+			}
+		// ellipse
+		case "ellipse":
+			for _, ellipse := range slide.Ellipse {
+				if ellipse.Color == "" {
+					ellipse.Color = defaultColor
+				}
+				if ellipse.Hr == 100 {
+					c := gc.ColorLookup(ellipse.Color)
+					c.A = setop(ellipse.Opacity)
+					doc.Circle(float32(ellipse.Xp), float32(ellipse.Yp), float32(ellipse.Wp/2), c)
+				} else {
+					doellipse(doc, ellipse.Xp, ellipse.Yp, ellipse.Wp, ellipse.Hp, ellipse.Color, ellipse.Opacity)
+				}
+			}
+		// curve
+		case "curve":
+			for _, curve := range slide.Curve {
+				if curve.Color == "" {
+					curve.Color = defaultColor
+				}
+				if curve.Sp == 0 {
+					curve.Sp = 0.2
+				}
+				docurve(doc, curve.Xp1, curve.Yp1, curve.Xp2, curve.Yp2, curve.Xp3, curve.Yp3, curve.Sp, curve.Color, curve.Opacity)
+			}
+		// arc
+		case "arc":
+			for _, arc := range slide.Arc {
+				if arc.Color == "" {
+					arc.Color = defaultColor
+				}
+				w := arc.Wp
+				h := arc.Hp
+				if arc.Sp == 0 {
+					arc.Sp = 0.2
+				}
+				doarc(doc, arc.Xp, arc.Yp, w/2, h/2, arc.A1, arc.A2, arc.Sp, arc.Color, arc.Opacity)
+			}
+		// line
+		case "line":
+			for _, line := range slide.Line {
+				if line.Color == "" {
+					line.Color = defaultColor
+				}
+				if line.Sp == 0 {
+					line.Sp = 0.2
+				}
+				doline(doc, line.Xp1, line.Yp1, line.Xp2, line.Yp2, line.Sp, line.Color, line.Opacity)
+			}
+		// polygon
+		case "poly":
+			for _, poly := range slide.Polygon {
+				if poly.Color == "" {
+					poly.Color = defaultColor
+				}
+				dopoly(doc, poly.XC, poly.YC, cw, ch, poly.Color, poly.Opacity)
+			}
+
+		// for every text element...
+		case "text":
+			var tdata string
+			for _, t := range slide.Text {
+				if t.Color == "" {
+					t.Color = slide.Fg
+				}
+				if t.Font == "" {
+					t.Font = "sans"
+				}
+				if t.File != "" {
+					tdata = includefile(t.File)
+				} else {
+					tdata = t.Tdata
+				}
+				if t.Lp == 0 {
+					t.Lp = linespacing
+				}
+				dotext(doc, t.Xp, t.Yp, t.Sp, t.Wp, t.Rotation, t.Lp*1.2, tdata, t.Font, t.Align, t.Type, t.Color, t.Opacity)
+			}
+		case "list":
+			// for every list element...
+			for _, l := range slide.List {
+				if l.Color == "" {
+					l.Color = slide.Fg
+				}
+				if l.Lp == 0 {
+					l.Lp = listspacing
+				}
+				if l.Wp == 0 {
+					l.Wp = listwrap
+				}
+				dolist(doc, cw, l.Xp, l.Yp, l.Sp, l.Wp, l.Rotation, l.Lp, l.Li, l.Font, l.Type, l.Align, l.Color, l.Opacity)
+			}
 		}
-		if t.Font == "" {
-			t.Font = "sans"
-		}
-		if t.File != "" {
-			tdata = includefile(t.File)
-		} else {
-			tdata = t.Tdata
-		}
-		if t.Lp == 0 {
-			t.Lp = linespacing
-		}
-		dotext(doc, t.Xp, t.Yp, t.Sp, t.Wp, t.Rotation, t.Lp*1.2, tdata, t.Font, t.Align, t.Type, t.Color, t.Opacity)
-	}
-	// for every list element...
-	for _, l := range slide.List {
-		if l.Color == "" {
-			l.Color = slide.Fg
-		}
-		if l.Lp == 0 {
-			l.Lp = listspacing
-		}
-		if l.Wp == 0 {
-			l.Wp = listwrap
-		}
-		dolist(doc, cw, l.Xp, l.Yp, l.Sp, l.Wp, l.Rotation, l.Lp, l.Li, l.Font, l.Type, l.Align, l.Color, l.Opacity)
 	}
 
 }
@@ -519,6 +535,7 @@ func main() {
 	var (
 		title    = flag.String("title", "", "slide title")
 		pagesize = flag.String("pagesize", "Letter", "pagesize: w,h, or one of: Letter, Legal, Tabloid, A3, A4, A5, ArchA, 4R, Index, Widescreen")
+		layers   = flag.String("layers", "image:rect:ellipse:curve:arc:line:poly:text:list", "Drawing order")
 		initpage = flag.Int("page", 1, "initial page")
 	)
 	flag.Parse()
@@ -534,7 +551,7 @@ func main() {
 	if *title == "" {
 		*title = filename
 	}
-	go slidedeck(*title, *initpage, filename, *pagesize)
+	go slidedeck(*title, *initpage, filename, *pagesize, *layers)
 	app.Main()
 }
 
@@ -632,7 +649,7 @@ func kbpointer(q input.Source, context *op.Ops, ns, xsize, ysize int) {
 	event.Op(context, &pressed)
 }
 
-func slidedeck(s string, initpage int, filename, pagesize string) {
+func slidedeck(s string, initpage int, filename, pagesize, layers string) {
 	var btime, ftime time.Time
 	var err error
 	var deck deck.Deck
@@ -670,7 +687,7 @@ func slidedeck(s string, initpage int, filename, pagesize string) {
 			}
 			deck.Canvas.Width = int(e.Size.X)
 			deck.Canvas.Height = int(e.Size.Y)
-			showslide(canvas, &deck, slidenumber)
+			showslide(canvas, &deck, slidenumber, layers)
 			if gridstate {
 				ngrid(canvas, 5, 1, gc.ColorLookup(deck.Slide[slidenumber].Fg))
 			}
