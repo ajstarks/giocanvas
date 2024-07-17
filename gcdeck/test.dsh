@@ -24,7 +24,7 @@ deck
 
 	slide "hsv(21,100,100)"
 		ctext "Slide 5" mx my ts
- 	eslide	
+ 	eslide
 
 	slide "hsv(14,100,100)"
 		ctext "Slide 6" mx my ts
@@ -36,7 +36,7 @@ deck
  	eslide
  	ts+=2
 
-	opts="-fulldeck=f -xlabel=5 -yaxis -yrange=0,100,20 -grid -val -bar -val=f -min=0 -max=100 -vcolor=maroon -datacond=20,50,orange"
+	opts="-fulldeck=f -xlabel=5 -yaxis -line -yrange=0,100,20 -grid -val -bar -val=f -min=0 -max=100 -vcolor=maroon -datacond=20,50,orange"
 	slide
 		dchart opts rand.d
 		etext "Slide 8" 95 5 2
@@ -50,6 +50,11 @@ deck
 			circle 50 y 4 "darkblue" y
 		efor
 		etext "Slide 9" 95 5 2
+	eslide
+
+	slide
+	   dchart -pmap -top 50 -pwidth 10 pct.d
+	   etext "Slide 10" 95 5 2
 	eslide
 
 	slide "black" "white"

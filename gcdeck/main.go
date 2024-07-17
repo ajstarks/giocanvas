@@ -140,7 +140,14 @@ func gradient(doc *gc.Canvas, w, h float64, gc1, gc2 string, gp float64) {
 func doline(doc *gc.Canvas, xp1, yp1, xp2, yp2, sw float64, color string, opacity float64) {
 	c := gc.ColorLookup(color)
 	c.A = setop(opacity)
-	doc.Line(float32(xp1), float32(yp1), float32(xp2), float32(yp2), float32(sw), c)
+	switch {
+	case yp1 == yp2: // horizontal line
+		doc.CornerRect(float32(xp1), float32(yp1+(sw/2)), float32(xp2-xp1), float32(sw), c)
+	case xp1 == xp2: // vertical line
+		doc.CornerRect(float32(xp1-(sw/2)), float32(yp2), float32(sw), float32(yp2-yp1), c)
+	default: // any other line
+		doc.Line(float32(xp1), float32(yp1), float32(xp2), float32(yp2), float32(sw), c)
+	}
 }
 
 // doarc draws an arc
