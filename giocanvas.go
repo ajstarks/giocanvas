@@ -5,6 +5,7 @@ import (
 	"image/color"
 
 	"gioui.org/app"
+	"gioui.org/font"
 	"gioui.org/font/gofont"
 	"gioui.org/layout"
 	"gioui.org/op"
@@ -28,6 +29,23 @@ func NewCanvas(width, height float32, e app.FrameEvent) *Canvas {
 	canvas.TextColor = color.NRGBA{0, 0, 0, 255}
 	theme := material.NewTheme()
 	theme.Shaper = text.NewShaper(text.NoSystemFonts(), text.WithCollection(gofont.Regular()))
+	canvas.Theme = theme
+	canvas.Context = app.NewContext(new(op.Ops), e)
+	iw, ih := int(width), int(height)
+	canvas.Context.Constraints.Min.X = iw
+	canvas.Context.Constraints.Min.Y = ih
+	canvas.Context.Constraints.Max.X = iw
+	canvas.Context.Constraints.Max.Y = ih
+	return canvas
+}
+
+func NewCanvasFonts(width, height float32, fonts []font.FontFace, e app.FrameEvent) *Canvas {
+	canvas := new(Canvas)
+	canvas.Width = width
+	canvas.Height = height
+	canvas.TextColor = color.NRGBA{0, 0, 0, 255}
+	theme := material.NewTheme()
+	theme.Shaper = text.NewShaper(text.NoSystemFonts(), text.WithCollection(fonts))
 	canvas.Theme = theme
 	canvas.Context = app.NewContext(new(op.Ops), e)
 	iw, ih := int(width), int(height)

@@ -3,7 +3,10 @@ deck
 	my=50
 	ts=10
 	slide
-		ctext "First" mx my ts
+		ctext  "First" mx 80 ts
+		ctext  "Serif" 20 40 5 "serif" "red"
+		ctext  "Sans"  mx 40 5 "sans"  "green"
+		ctext  "Mono"  80 40 5 "mono"  "blue"
  	eslide
  	ts+=2
 

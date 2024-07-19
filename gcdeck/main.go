@@ -8,6 +8,7 @@ import (
 	"image/color"
 	"math"
 	"os"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -18,6 +19,9 @@ import (
 	_ "image/png"
 
 	"gioui.org/app"
+	"gioui.org/font"
+	"gioui.org/font/gofont"
+	"gioui.org/font/opentype"
 	"gioui.org/io/event"
 	"gioui.org/io/input"
 	"gioui.org/io/key"
@@ -252,6 +256,8 @@ func whitespace(r rune) bool {
 
 // loadfont loads a font at the specified size
 func loadfont(doc *gc.Canvas, s string, size float64) {
+	doc.Theme.Face = font.Typeface(s)
+	//fmt.Fprintf(os.Stderr, "loadfont: %v\n", doc.Theme.Face)
 }
 
 // showtext places fully attributed text at the specified location
@@ -516,6 +522,7 @@ func readDeck(filename string, w, h float32) (deck.Deck, error) {
 	return d, err
 }
 
+// modtime returns the modification time of a file
 func modtime(filename string) (time.Time, error) {
 	if filename == "-" {
 		return time.Time{}, nil
@@ -538,8 +545,41 @@ func ngrid(c *gc.Canvas, interval, ts float32, color color.NRGBA) {
 	}
 }
 
+// readfonts creates a collection of fonts based on names in a font directory
+func readfonts(fonts map[string]string, fontdir string) ([]font.FontFace, error) {
+	collection := []font.FontFace{}
+	fc := font.FontFace{}
+	for k, v := range fonts {
+		fontdata, err := os.ReadFile(path.Join(fontdir, v+".ttf"))
+		if err != nil {
+			return collection, err
+		}
+		face, err := opentype.Parse(fontdata)
+		if err != nil {
+			return collection, err
+		}
+		fc.Font.Typeface = font.Typeface(k)
+		fc.Face = face
+		collection = append(collection, fc)
+	}
+	return collection, nil
+}
+
+// setfontdir returns the directory where fonts are stored,
+// using an environment variable if set
+func setfontdir(s string) string {
+	if len(s) > 0 {
+		return s
+	}
+	envdef := os.Getenv("DECKFONTS")
+	if len(envdef) > 0 {
+		return envdef
+	}
+	return path.Join(os.Getenv("HOME"), "deckfonts")
+}
+
 func main() {
-	var title, pagesize, layers, sans, serif, mono string
+	var title, pagesize, layers, sans, serif, mono, fontdir, filename string
 	var initpage int
 
 	flag.StringVar(&title, "title", "", "slide title")
@@ -547,16 +587,15 @@ func main() {
 	flag.StringVar(&layers, "layers", "image:rect:ellipse:curve:arc:line:poly:text:list", "Drawing order")
 	flag.IntVar(&initpage, "page", 1, "initial page")
 	flag.StringVar(&sans, "sans", "Go-Regular", "sans font")
-	flag.StringVar(&serif, "serif", "Go-Italic", "serif font")
+	flag.StringVar(&serif, "serif", "Go-Smallcaps", "serif font")
 	flag.StringVar(&mono, "mono", "Go-Mono", "mono font")
-
+	flag.StringVar(&fontdir, "fontdir", setfontdir(""), "font directory")
 	flag.Parse()
-
-	// get the filename
-	var filename string
 	fontmap["sans"] = sans
 	fontmap["serif"] = serif
 	fontmap["mono"] = mono
+
+	// get the filename
 	if len(flag.Args()) < 1 {
 		filename = "-"
 		title = "Standard Input"
@@ -566,7 +605,7 @@ func main() {
 	if title == "" {
 		title = filename
 	}
-	go slidedeck(title, initpage, filename, pagesize, layers)
+	go slidedeck(title, initpage, filename, pagesize, fontdir, layers)
 	app.Main()
 }
 
@@ -664,7 +703,7 @@ func kbpointer(q input.Source, context *op.Ops, ns, xsize, ysize int) {
 	event.Op(context, &pressed)
 }
 
-func slidedeck(s string, initpage int, filename, pagesize, layers string) {
+func slidedeck(s string, initpage int, filename, pagesize, fontdir, layers string) {
 	var btime, ftime time.Time
 	var err error
 	var deck deck.Deck
@@ -688,12 +727,18 @@ func slidedeck(s string, initpage int, filename, pagesize, layers string) {
 	gridstate = false
 	w := &app.Window{}
 	w.Option(app.Title(s), app.Size(unit.Dp(width), unit.Dp(height)))
+	fontcollection, err := readfonts(fontmap, fontdir)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "falling back to Go fonts")
+		fontcollection = gofont.Regular()
+	}
 	for {
 		switch e := w.Event().(type) {
 		case app.DestroyEvent:
 			os.Exit(0)
 		case app.FrameEvent:
-			canvas := gc.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
+			canvas := gc.NewCanvasFonts(float32(e.Size.X), float32(e.Size.Y), fontcollection, app.FrameEvent{})
+			//fmt.Fprintf(os.Stderr, "theme=%q\n", canvas.Theme.Face)
 			if slidenumber > nslides {
 				slidenumber = 0
 			}

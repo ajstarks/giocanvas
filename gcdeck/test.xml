@@ -1,6 +1,9 @@
 <deck>
 <slide>
-<text align="c" xp="50" yp="50" sp="10" >First</text>
+<text align="c" xp="50" yp="80" sp="10" >First</text>
+<text align="c" xp="20" yp="40" sp="5" font="serif" color="red">Serif</text>
+<text align="c" xp="50" yp="40" sp="5" font="sans" color="green">Sans</text>
+<text align="c" xp="80" yp="40" sp="5" font="mono" color="blue">Mono</text>
 </slide>
 <slide bg="hsv(42,100,100)">
 <text align="c" xp="50" yp="50" sp="12" >Slide 2</text>
