@@ -539,26 +539,34 @@ func ngrid(c *gc.Canvas, interval, ts float32, color color.NRGBA) {
 }
 
 func main() {
-	var (
-		title    = flag.String("title", "", "slide title")
-		pagesize = flag.String("pagesize", "Letter", "pagesize: w,h, or one of: Letter, Legal, Tabloid, A3, A4, A5, ArchA, 4R, Index, Widescreen")
-		layers   = flag.String("layers", "image:rect:ellipse:curve:arc:line:poly:text:list", "Drawing order")
-		initpage = flag.Int("page", 1, "initial page")
-	)
+	var title, pagesize, layers, sans, serif, mono string
+	var initpage int
+
+	flag.StringVar(&title, "title", "", "slide title")
+	flag.StringVar(&pagesize, "pagesize", "Letter", "pagesize: w,h, or one of: Letter, Legal, Tabloid, A3, A4, A5, ArchA, 4R, Index, Widescreen")
+	flag.StringVar(&layers, "layers", "image:rect:ellipse:curve:arc:line:poly:text:list", "Drawing order")
+	flag.IntVar(&initpage, "page", 1, "initial page")
+	flag.StringVar(&sans, "sans", "Go-Regular", "sans font")
+	flag.StringVar(&serif, "serif", "Go-Italic", "serif font")
+	flag.StringVar(&mono, "mono", "Go-Mono", "mono font")
+
 	flag.Parse()
 
 	// get the filename
 	var filename string
+	fontmap["sans"] = sans
+	fontmap["serif"] = serif
+	fontmap["mono"] = mono
 	if len(flag.Args()) < 1 {
 		filename = "-"
-		*title = "Standard Input"
+		title = "Standard Input"
 	} else {
 		filename = flag.Args()[0]
 	}
-	if *title == "" {
-		*title = filename
+	if title == "" {
+		title = filename
 	}
-	go slidedeck(*title, *initpage, filename, *pagesize, *layers)
+	go slidedeck(title, initpage, filename, pagesize, layers)
 	app.Main()
 }
 

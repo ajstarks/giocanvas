@@ -11,7 +11,7 @@ do
 			./elections nyt-????.d &
 			;;
 		gcdeck)
-			./gcdeck test.xml &
+			./gcdeck -pagesize 800x500 .xml &
 			;;
 		*)
 			./$i &

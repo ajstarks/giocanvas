@@ -53,7 +53,7 @@ deck
 	eslide
 
 	slide
-	   dchart -pmap -top 50 -pwidth 10 pct.d
+	   dchart -val=f  -pmap -top 50 -pwidth 10 pct.d
 	   etext "Slide 10" 95 5 2
 	eslide
 
