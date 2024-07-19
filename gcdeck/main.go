@@ -35,7 +35,7 @@ import (
 const (
 	mm2pt       = 2.83464 // mm to pt conversion
 	linespacing = 1.8
-	listspacing = 1.8
+	listspacing = 2.0
 	fontfactor  = 1.0
 	listwrap    = 95.0
 )
@@ -285,10 +285,11 @@ func dolist(doc *gc.Canvas, cw, x, y, fs, lwidth, rotation, spacing float64, lis
 	if rotation > 0 {
 		tstack = doc.Rotate(float32(x), float32(y), float32(rotation*(math.Pi/180)))
 	}
-	c := gc.ColorLookup(color)
-	ls := listspacing * fs * 1.4
+
+	ls := listspacing * fs
 	for i, tl := range list {
 		loadfont(doc, font, fs)
+		c := gc.ColorLookup(color)
 		if len(tl.Color) > 0 {
 			c = gc.ColorLookup(tl.Color)
 		}
