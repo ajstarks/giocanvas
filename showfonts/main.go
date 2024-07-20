@@ -122,7 +122,7 @@ func main() {
 	flag.StringVar(&options.bgcolor, "bgcolor", "white", "background color")
 	flag.StringVar(&options.txcolor, "txcolor", "black", "text color")
 	flag.IntVar(&options.width, "width", 1000, "canvas width")
-	flag.IntVar(&options.height, "height", 1000, "canvas height")
+	flag.IntVar(&options.height, "height", 1500, "canvas height")
 	flag.Float64Var(&options.ts, "ts", 0, "text size (0 for autoscale)")
 	flag.Parse()
 	go showfonts("showfonts", flag.Args(), options)

@@ -4,8 +4,11 @@ do
 	cd $i
 	echo -n "$i "
 	case $i in
+	   showfonts)
+			./showfonts -text 'Hello Gio' OpenSans*.ttf &
+			;;
 		showimage)
-			./showimage showimage.png & 
+			./showimage showimage.png &
 			;;
 		elections)
 			./elections nyt-????.d &
