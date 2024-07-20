@@ -4,7 +4,6 @@ package main
 import (
 	"flag"
 	"image/color"
-	"io"
 	"math"
 	"os"
 
@@ -13,24 +12,27 @@ import (
 	"github.com/ajstarks/giocanvas"
 )
 
-func circles(w *app.Window) error {
+func polar(title string, width, height float32) {
+	w := &app.Window{}
+	w.Option(app.Title("polar"), app.Size(unit.Dp(width), unit.Dp(height)))
+
 	for {
 		e := w.Event()
 		switch e := e.(type) {
 		case app.DestroyEvent:
-			return e.Err
+			os.Exit(0)
 		case app.FrameEvent:
 			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			canvas.Background(color.NRGBA{0, 0, 0, 255})
 			var theta, radius float32
-			for radius = 5; radius < 50; radius += 5 {
+			for radius = 2; radius < 50; radius += 2 {
 				for theta = 180; theta <= 360; theta += 15 {
 					x, y := canvas.PolarDegrees(50, 50, radius, theta)
-					canvas.Circle(x, y, radius/12, color.NRGBA{128, 0, 0, 120})
+					canvas.Circle(x, y, radius/12, color.NRGBA{255, 0, 0, 100})
 				}
 				for theta = math.Pi / 16; theta < math.Pi; theta += math.Pi / 16 {
 					x, y := canvas.Polar(50, 50, radius, theta)
-					canvas.Circle(x, y, radius/12, color.NRGBA{0, 0, 128, 120})
+					canvas.Circle(x, y, radius/12, color.NRGBA{0, 0, 255, 100})
 				}
 			}
 			e.Frame(canvas.Context.Ops)
@@ -39,21 +41,10 @@ func circles(w *app.Window) error {
 }
 
 func main() {
-	var cw, ch int
-	flag.IntVar(&cw, "width", 1000, "canvas width")
-	flag.IntVar(&ch, "height", 1000, "canvas height")
-	flag.Parse()
-	width := float32(cw)
-	height := float32(ch)
 
-	go func() {
-		w := &app.Window{}
-		w.Option(app.Title("polar"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := circles(w); err != nil {
-			io.WriteString(os.Stderr, "Cannot create the window\n")
-			os.Exit(1)
-		}
-		os.Exit(0)
-	}()
+	cw := flag.Int("width", 1000, "canvas width")
+	ch := flag.Int("height", 1000, "canvas height")
+	flag.Parse()
+	go polar("polar", float32(*cw), float32(*ch))
 	app.Main()
 }
