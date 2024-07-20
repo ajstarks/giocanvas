@@ -19,7 +19,7 @@ import (
 type config struct {
 	text, bgcolor, txcolor string
 	width, height          int
-	ts                     float64
+	ts, spacing            float64
 }
 
 // basename returns the basename of a path, removing extension
@@ -57,6 +57,7 @@ func showfonts(title string, fontnames []string, cfg config) {
 	ts := float32(cfg.ts)
 	cw := float32(cfg.width)
 	ch := float32(cfg.height)
+	ls := float32(cfg.spacing)
 	message := cfg.text
 	// compute text sizing
 	const (
@@ -67,16 +68,16 @@ func showfonts(title string, fontnames []string, cfg config) {
 		mid    = 50.0
 	)
 	var y, yskip float32
-
+	const spacing = 1.5
 	nf := float32(len(fontnames) - 1)
 	if ts == 0 && nf > 0 {
 		ts = (top - bottom) / nf
-		ts /= 1.4
+		ts /= ls
 	}
 	if ts > 10 || nf < 2 {
 		ts = 5
 	}
-	yskip = ts * 1.4
+	yskip = ts * ls
 
 	// load fonts
 	fc, err := loadfonts(fontnames)
@@ -122,7 +123,8 @@ func main() {
 	flag.StringVar(&options.bgcolor, "bgcolor", "white", "background color")
 	flag.StringVar(&options.txcolor, "txcolor", "black", "text color")
 	flag.IntVar(&options.width, "width", 1000, "canvas width")
-	flag.IntVar(&options.height, "height", 1500, "canvas height")
+	flag.IntVar(&options.height, "height", 1000, "canvas height")
+	flag.Float64Var(&options.spacing, "ls", 1.5, "line spacing")
 	flag.Float64Var(&options.ts, "ts", 0, "text size (0 for autoscale)")
 	flag.Parse()
 	go showfonts("showfonts", flag.Args(), options)

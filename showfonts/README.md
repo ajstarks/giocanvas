@@ -4,25 +4,27 @@ Show fonts
 
 ![showfont](gofonts.png)
 
-```/showfonts Go*.ttf```
+```showfonts Go*.ttf```
 
 ![message](message.png)
 
-```/showfonts -text Hello -bgcolor black -txcolor white Go*.ttf```
+```showfonts -text Hello -bgcolor black -txcolor white Go*.ttf```
 
 ![other](other.png)
 
-```./showfonts -text hello,world /usr/share/fonts/open-sans/*.ttf```
+```showfonts -text hello,world /usr/share/fonts/open-sans/*.ttf```
 
 
 ## options
-```
-showfonts [options] ttf files...
+```showfonts [options] files...```
 
+```
 -bgcolor string
   	background color (default "white")
 -height int
   	canvas height (default 1000)
+-ls float
+  	line spacing (default 1.5)
 -text string
   	text to show
 -ts float
