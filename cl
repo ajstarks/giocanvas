@@ -23,6 +23,7 @@ polar
 rgb
 scim
 shapesketch
+showfonts
 showimage
 spiral
 sunearth
