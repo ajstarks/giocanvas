@@ -3,6 +3,7 @@ package giocanvas
 import (
 	"image"
 	"image/color"
+	"math"
 
 	"gioui.org/text"
 )
@@ -131,14 +132,51 @@ func (c *Canvas) Arc(x, y, r float32, a1, a2 float64, fillcolor color.NRGBA) {
 // center is (x, y), the arc begins at angle a1, and ends at a2, with radius r.
 // The arc is stroked with the specified stroke size and color
 func (c *Canvas) ArcLine(x, y, r float32, a1, a2 float64, size float32, fillcolor color.NRGBA) {
-	step := (a2 - a1) / 100
+	/*
+		step := (a2 - a1) / 100
+		x1, y1 := c.Polar(x, y, r, float32(a1))
+		for t := a1 + step; t <= a2; t += step {
+			x2, y2 := c.Polar(x, y, r, float32(t))
+			c.Line(x1, y1, x2, y2, size, fillcolor)
+			x1 = x2
+			y1 = y2
+		}
+	*/
+	// Define minimum and maximum step sizes
+	const minstep = 0.001
+	const maxstep = 0.1
+	const twoPi = math.Pi * 2
+
+	// Ensure the angles are in the range [0, 2π)
+	a1 = math.Mod(a1, twoPi)
+	a2 = math.Mod(a2, twoPi)
+
+	// Calculate step size based on the radius (Smaller steps for larger radius)
+	step := float64(1.0 / (3.0 * r * twoPi))
+
+	// Clamp step to be within the defined range for performance reasons
+	if step < minstep {
+		step = minstep
+	}
+	if step > maxstep {
+		step = maxstep
+	}
+
+	// Ensure we handle crossing the 0/2π boundary correctly
+	if a2 < a1 {
+		a2 += twoPi
+	}
+
+	// Initialize the starting point
 	x1, y1 := c.Polar(x, y, r, float32(a1))
-	for t := a1 + step; t <= a2; t += step {
+
+	for t := a1; t < a2; t += step {
 		x2, y2 := c.Polar(x, y, r, float32(t))
 		c.Line(x1, y1, x2, y2, size, fillcolor)
 		x1 = x2
 		y1 = y2
 	}
+
 }
 
 // Text methods
