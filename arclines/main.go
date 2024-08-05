@@ -25,7 +25,7 @@ const (
 	mid = 50.0
 	x3  = 100 - x1
 
-	opFramerate = time.Second / 50.0 // 40ms
+	opFramerate = time.Second / 20.0 // 40ms
 )
 
 func main() {
