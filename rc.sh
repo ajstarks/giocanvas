@@ -4,19 +4,22 @@ do
 	cd $i
 	echo -n "$i "
 	case $i in
-	   showfonts)
+	showfonts)
 			./showfonts -text 'Hello Gio' OpenSans*.ttf &
 			;;
-		showimage)
+	showimage)
 			./showimage showimage.png &
 			;;
-		elections)
+	elections)
 			./elections nyt-????.d &
 			;;
-		gcdeck)
+	gcdeck)
 			./gcdeck -pagesize 800x500 test.xml &
 			;;
-		*)
+	gchart)
+			./gchart -bar -top 80 -bottom 60 -xlabel 10 cos.d &
+			;;
+	*)
 			./$i &
 			;;
 	esac

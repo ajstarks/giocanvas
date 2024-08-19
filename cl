@@ -13,6 +13,7 @@ elections
 eclipse
 flowers
 gcdeck
+gchart
 grid
 hello
 images

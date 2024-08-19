@@ -16,7 +16,7 @@ func main() {
 func hello() {
 	black := giocanvas.ColorLookup("black")
 	white := giocanvas.ColorLookup("white")
-	w := &app.Window{}
+	w := new(app.Window)
 	w.Option(app.Title("hello"))
 	for {
 		switch e := w.Event().(type) {
