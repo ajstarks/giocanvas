@@ -85,8 +85,8 @@ func main() {
 		os.Exit(2)
 	}
 	// must specify at least one of line, bar, hbar, scatter, area, pie, lego
-	if !opts.line && !opts.scatter && !opts.bar && !opts.area && !opts.hbar && !opts.lego && !opts.pie {
-		perr("pick a chart type (line, bar, hbar, area, scatter, lego, pie)", infile)
+	if !(opts.line || opts.scatter || opts.bar || opts.area || opts.hbar || opts.lego || opts.pie) {
+		perr("pick a chart type (-line, -bar, -hbar, -area, -scatter, -lego, -pie)", infile)
 		os.Exit(3)
 	}
 	// make the chart
