@@ -37,9 +37,9 @@ func main() {
 	flag.Float64Var(&opts.dotsize, "dotsize", 0.5, "bar width")
 	flag.Float64Var(&opts.textsize, "textsize", 1.5, "bar width")
 	flag.Float64Var(&opts.top, "top", 80, "bar width")
-	flag.Float64Var(&opts.bottom, "bottom", 40, "bar width")
-	flag.Float64Var(&opts.left, "left", 10, "bar width")
-	flag.Float64Var(&opts.right, "right", 90, "bar width")
+	flag.Float64Var(&opts.bottom, "bottom", 20, "bar width")
+	flag.Float64Var(&opts.left, "left", 20, "bar width")
+	flag.Float64Var(&opts.right, "right", 80, "bar width")
 	flag.Float64Var(&opts.ty, "ty", 5, "title position relative to the top")
 	flag.Float64Var(&opts.frameOp, "frame", 0, "frame opacity")
 	flag.Float64Var(&opts.areaOp, "areaop", 50, "area opacity")
@@ -84,13 +84,19 @@ func main() {
 		perr("unable to read ", infile)
 		os.Exit(2)
 	}
+	// must specify at least one of line, bar, hbar, scatter, area, pie, lego
+	if !opts.line && !opts.scatter && !opts.bar && !opts.area && !opts.hbar && !opts.lego && !opts.pie {
+		perr("pick a chart type (line, bar, hbar, area, scatter, lego, pie)", infile)
+		os.Exit(3)
+	}
 	// make the chart
 	go gchart("charts", width, height, data, opts)
 	app.Main()
 }
 
+// perr prints a filename and message to stderr
 func perr(msg, file string) {
-	io.WriteString(os.Stderr, msg+file+"\n")
+	io.WriteString(os.Stderr, file+": "+msg+"\n")
 }
 
 // string to floating point
@@ -123,6 +129,7 @@ func yr(yrange string, dmin, dmax float64) (float64, float64, float64) {
 	return min, max, step
 }
 
+// gchart draws a chart
 func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 	defer os.Exit(0)
 	width := float32(w)
