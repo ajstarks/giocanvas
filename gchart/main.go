@@ -30,21 +30,21 @@ func main() {
 
 	flag.IntVar(&width, "w", 1000, "canvas width")
 	flag.IntVar(&height, "h", 1000, "canvas height")
-	flag.IntVar(&opts.xlabel, "xlabel", 1, "x-xaxis label")
+	flag.IntVar(&opts.xlabel, "xlabel", 1, "x-axis label interval")
 	flag.Float64Var(&opts.barwidth, "barwidth", 0.5, "bar width")
-	flag.Float64Var(&opts.linewidth, "linewidth", 0.25, "bar width")
-	flag.Float64Var(&opts.linespacing, "ls", opts.barwidth*4, "bar width")
-	flag.Float64Var(&opts.dotsize, "dotsize", 0.5, "bar width")
-	flag.Float64Var(&opts.textsize, "textsize", 1.5, "bar width")
-	flag.Float64Var(&opts.top, "top", 80, "bar width")
-	flag.Float64Var(&opts.bottom, "bottom", 20, "bar width")
-	flag.Float64Var(&opts.left, "left", 20, "bar width")
-	flag.Float64Var(&opts.right, "right", 80, "bar width")
+	flag.Float64Var(&opts.linewidth, "linewidth", 0.25, "line width")
+	flag.Float64Var(&opts.linespacing, "ls", opts.barwidth*4, "line spacing")
+	flag.Float64Var(&opts.dotsize, "dotsize", 0.5, "dot size")
+	flag.Float64Var(&opts.textsize, "textsize", 1.5, "text size")
+	flag.Float64Var(&opts.top, "top", 80, "chart top")
+	flag.Float64Var(&opts.bottom, "bottom", 20, "chart bottom")
+	flag.Float64Var(&opts.left, "left", 20, "chart left")
+	flag.Float64Var(&opts.right, "right", 80, "chart right")
 	flag.Float64Var(&opts.ty, "ty", 5, "title position relative to the top")
 	flag.Float64Var(&opts.frameOp, "frame", 0, "frame opacity")
 	flag.Float64Var(&opts.areaOp, "areaop", 50, "area opacity")
 	flag.Float64Var(&opts.piesize, "piesize", 20, "pie chart radius")
-	flag.StringVar(&opts.yrange, "yrange", "", "y axis range (min,max,step")
+	flag.StringVar(&opts.yrange, "yrange", "", "y axis range (min,max,step)")
 	flag.StringVar(&opts.chartitle, "chartitle", "", "chart title")
 	flag.StringVar(&opts.yaxfmt, "yfmt", "%v", "yaxis format")
 	flag.StringVar(&opts.dcolor, "color", "steelblue", "color")
@@ -177,7 +177,6 @@ func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 			}
 			if opts.pie {
 				data.Pie(canvas, opts.piesize)
-				// data.Left -= opts.piesize // adjust for title
 			}
 			if opts.lego {
 				data.Lego(canvas, opts.dotsize)
