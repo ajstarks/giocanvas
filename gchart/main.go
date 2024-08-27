@@ -22,84 +22,52 @@ type chartOptions struct {
 	zb, line, bar, hbar, scatter, area, pie, lego, showtitle, showgrid                bool
 }
 
-func main() {
+func cmdUsage() {
+	usage := `
+gchart [options] file...
 
-	// Command line options
-	var opts chartOptions
-	var width, height int
+Options     Default               Description
+.....................................................................
+-area        false                make an area chart
+-bar         false                make a bar chart
+-hbar        false                make a horizontal bar chart
+-lego        false                make a lego chart
+-line        false                make a line chart
+-pie         false                make a pie chart
+-scatter     false                make a scatter chart
+.....................................................................
+-color       "steelblue"          data color
+-labelcolor  "rgb(100,100,100)"   label color
+-areaop      50                   area opacity
+-frame       0                    frame opacity
+.....................................................................
+-h           1000                 canvas height
+-w           1000                 canvas width
+-left        20                   chart left
+-top         80                   chart top
+-bottom      20                   chart bottom
+-right       80                   chaart right
+.....................................................................
+-barwidth    0.5                  bar width
+-dotsize     0.5                  bar width
+-linewidth   0.25                 line width
+-ls          2                    line spacing
+-piesize     20                   pie chart radius
+-textsize    1.5                  text size
+.....................................................................
+-chartitle   ""                   chart title
+-ty          5                    title position relative to the top
+-xlabel      1                    x-xaxis label interval
+-yfmt        "%v"                 yaxis format
+-yrange      ""                   y axis range (min,max,step)
+.....................................................................
+-grid        false                show y axis grid
+-title       false                show the title
+-zero        true                 zero minumum
+......................................................................
 
-	// chart types
-	flag.BoolVar(&opts.lego, "lego", false, "lego chart")
-	flag.BoolVar(&opts.area, "area", false, "area chart")
-	flag.BoolVar(&opts.bar, "bar", false, "bar chart")
-	flag.BoolVar(&opts.line, "line", false, "line chart")
-	flag.BoolVar(&opts.hbar, "hbar", false, "horizontal bar")
-	flag.BoolVar(&opts.scatter, "scatter", false, "scatter chart")
-	flag.BoolVar(&opts.pie, "pie", false, "show a pie chart")
-	// chart element sizes
-	flag.IntVar(&opts.xlabel, "xlabel", 1, "x-axis label interval")
-	flag.Float64Var(&opts.barwidth, "barwidth", 0.5, "bar width")
-	flag.Float64Var(&opts.linewidth, "linewidth", 0.25, "line width")
-	flag.Float64Var(&opts.linespacing, "ls", opts.barwidth*4, "line spacing")
-	flag.Float64Var(&opts.dotsize, "dotsize", 0.5, "dot size")
-	flag.Float64Var(&opts.piesize, "piesize", 20, "pie chart radius")
-	flag.Float64Var(&opts.textsize, "textsize", 1.5, "text size")
-	// canvas sizes
-	flag.IntVar(&width, "w", 1000, "canvas width")
-	flag.IntVar(&height, "h", 1000, "canvas height")
-	// chart positions
-	flag.Float64Var(&opts.top, "top", 80, "chart top")
-	flag.Float64Var(&opts.bottom, "bottom", 20, "chart bottom")
-	flag.Float64Var(&opts.left, "left", 20, "chart left")
-	flag.Float64Var(&opts.right, "right", 80, "chart right")
-	// titles and y axis settings
-	flag.Float64Var(&opts.ty, "ty", 5, "title position relative to the top")
-	flag.StringVar(&opts.yrange, "yrange", "", "y axis range (min,max,step)")
-	flag.StringVar(&opts.chartitle, "chartitle", "", "chart title")
-	flag.StringVar(&opts.yaxfmt, "yfmt", "%v", "yaxis format")
-	// colors and opacities
-	flag.StringVar(&opts.dcolor, "color", "steelblue", "color")
-	flag.StringVar(&opts.bgcolor, "bgcolor", "white", "background color")
-	flag.StringVar(&opts.labelcolor, "labelcolor", "rgb(100,100,100)", "label color")
-	flag.Float64Var(&opts.frameOp, "frame", 0, "frame opacity")
-	flag.Float64Var(&opts.areaOp, "areaop", 50, "area opacity")
-	// on-off flags
-	flag.BoolVar(&opts.showtitle, "title", true, "show the title")
-	flag.BoolVar(&opts.showgrid, "grid", false, "show y axis grid")
-	flag.BoolVar(&opts.zb, "zero", true, "zero minumum")
-
-	flag.Parse()
-
-	var input io.Reader
-	var ferr error
-	var infile string
-
-	// Read from stdin or specified file
-	if len(flag.Args()) == 0 {
-		input = os.Stdin
-		infile = "stdin"
-	} else {
-		infile = flag.Args()[0]
-		input, ferr = os.Open(infile)
-		if ferr != nil {
-			perr("unable to open ", infile)
-			os.Exit(1)
-		}
-	}
-	// read the data
-	data, err := chart.DataRead(input)
-	if err != nil {
-		perr("unable to read ", infile)
-		os.Exit(2)
-	}
-	// specify at least one of line, bar, hbar, scatter, area, pie, lego
-	if !(opts.line || opts.scatter || opts.bar || opts.area || opts.hbar || opts.lego || opts.pie) {
-		perr("pick a chart type (-line, -bar, -hbar, -area, -scatter, -lego, -pie)", infile)
-		os.Exit(3)
-	}
-	// make the chart
-	go gchart("charts", width, height, data, opts)
-	app.Main()
+`
+	io.WriteString(os.Stderr, usage)
 }
 
 // perr prints a filename and message to stderr
@@ -214,4 +182,84 @@ func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 			os.Exit(0)
 		}
 	}
+}
+
+func main() {
+
+	// Command line options
+	var opts chartOptions
+	var width, height int
+
+	// chart types
+	flag.BoolVar(&opts.lego, "lego", false, "lego chart")
+	flag.BoolVar(&opts.area, "area", false, "area chart")
+	flag.BoolVar(&opts.bar, "bar", false, "bar chart")
+	flag.BoolVar(&opts.line, "line", false, "line chart")
+	flag.BoolVar(&opts.hbar, "hbar", false, "horizontal bar")
+	flag.BoolVar(&opts.scatter, "scatter", false, "scatter chart")
+	flag.BoolVar(&opts.pie, "pie", false, "show a pie chart")
+	// chart element sizes
+	flag.Float64Var(&opts.barwidth, "barwidth", 0.5, "bar width")
+	flag.Float64Var(&opts.dotsize, "dotsize", 0.5, "dot size")
+	flag.Float64Var(&opts.linewidth, "linewidth", 0.25, "line width")
+	flag.Float64Var(&opts.linespacing, "ls", opts.barwidth*4, "line spacing")
+	flag.Float64Var(&opts.piesize, "piesize", 20, "pie chart radius")
+	flag.Float64Var(&opts.textsize, "textsize", 1.5, "text size")
+	// canvas sizes
+	flag.IntVar(&width, "w", 1000, "canvas width")
+	flag.IntVar(&height, "h", 1000, "canvas height")
+	// chart positions
+	flag.Float64Var(&opts.top, "top", 80, "chart top")
+	flag.Float64Var(&opts.bottom, "bottom", 20, "chart bottom")
+	flag.Float64Var(&opts.left, "left", 20, "chart left")
+	flag.Float64Var(&opts.right, "right", 80, "chart right")
+	// titles and axis settings
+	flag.Float64Var(&opts.ty, "ty", 5, "title position relative to the top")
+	flag.IntVar(&opts.xlabel, "xlabel", 1, "x-axis label interval")
+	flag.StringVar(&opts.yrange, "yrange", "", "y axis range (min,max,step)")
+	flag.StringVar(&opts.chartitle, "chartitle", "", "chart title")
+	flag.StringVar(&opts.yaxfmt, "yfmt", "%v", "yaxis format")
+	// colors and opacities
+	flag.StringVar(&opts.dcolor, "color", "steelblue", "color")
+	flag.StringVar(&opts.bgcolor, "bgcolor", "white", "background color")
+	flag.StringVar(&opts.labelcolor, "labelcolor", "rgb(100,100,100)", "label color")
+	flag.Float64Var(&opts.frameOp, "frame", 0, "frame opacity")
+	flag.Float64Var(&opts.areaOp, "areaop", 50, "area opacity")
+	// on-off flags
+	flag.BoolVar(&opts.showtitle, "title", true, "show the title")
+	flag.BoolVar(&opts.showgrid, "grid", false, "show y axis grid")
+	flag.BoolVar(&opts.zb, "zero", true, "zero minumum")
+	flag.Usage = cmdUsage
+	flag.Parse()
+
+	var input io.Reader
+	var ferr error
+	var infile string
+
+	// Read from stdin or specified file
+	if len(flag.Args()) == 0 {
+		input = os.Stdin
+		infile = "stdin"
+	} else {
+		infile = flag.Args()[0]
+		input, ferr = os.Open(infile)
+		if ferr != nil {
+			perr("unable to open ", infile)
+			os.Exit(1)
+		}
+	}
+	// read the data
+	data, err := chart.DataRead(input)
+	if err != nil {
+		perr("unable to read ", infile)
+		os.Exit(2)
+	}
+	// specify at least one of line, bar, hbar, scatter, area, pie, lego
+	if !(opts.line || opts.scatter || opts.bar || opts.area || opts.hbar || opts.lego || opts.pie) {
+		perr("pick a chart type (-line, -bar, -hbar, -area, -scatter, -lego, -pie)", infile)
+		os.Exit(3)
+	}
+	// make the chart
+	go gchart("charts", width, height, data, opts)
+	app.Main()
 }
