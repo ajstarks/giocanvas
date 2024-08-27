@@ -152,8 +152,7 @@ func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 	for {
 		switch e := win.Event().(type) {
 		case app.FrameEvent:
-			w, h := float32(e.Size.X), float32(e.Size.Y)
-			canvas := giocanvas.NewCanvas(w, h, e)
+			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), e)
 			canvas.Background(bgcolor)
 
 			// Draw the data
@@ -178,7 +177,7 @@ func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 			}
 			if opts.pie {
 				data.Pie(canvas, opts.piesize)
-				data.Left -= opts.piesize // adjust for title
+				// data.Left -= opts.piesize // adjust for title
 			}
 			if opts.lego {
 				data.Lego(canvas, opts.dotsize)
