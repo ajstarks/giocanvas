@@ -185,7 +185,6 @@ func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 }
 
 func main() {
-
 	// Command line options
 	var opts chartOptions
 	var width, height int
