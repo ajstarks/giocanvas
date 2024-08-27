@@ -12,8 +12,6 @@ import (
 	"strings"
 
 	"gioui.org/app"
-	"gioui.org/io/key"
-	"gioui.org/io/system"
 	"gioui.org/unit"
 	gc "github.com/ajstarks/giocanvas"
 )
@@ -139,16 +137,18 @@ func areachart(canvas *gc.Canvas, x, y, width, height float32, data []NameValue,
 func chart(s string, w, h int, data []NameValue, chartopts ChartOptions) {
 	width := float32(w)
 	height := float32(h)
-	size := app.Size(unit.Px(width), unit.Px(height))
+	size := app.Size(unit.Dp(width), unit.Dp(height))
 	title := app.Title(s)
-	win := app.NewWindow(title, size)
+	win := new(app.Window)
+	win.Option(title, size)
 	black := color.NRGBA{0, 0, 0, 255}
 	datacolor := gc.ColorLookup(chartopts.color)
 	framecolor := color.NRGBA{0, 0, 0, 20}
-	canvas := gc.NewCanvas(width, height, system.FrameEvent{})
-	for e := range win.Events() {
-		switch e := e.(type) {
-		case system.FrameEvent:
+
+	for {
+		switch e := win.Event().(type) {
+		case app.FrameEvent:
+			canvas := gc.NewCanvas(width, height, e)
 			if chartopts.showtitle {
 				canvas.Text(10, 90, 3, chartopts.title, black)
 			}
@@ -172,11 +172,9 @@ func chart(s string, w, h int, data []NameValue, chartopts ChartOptions) {
 				barchart(canvas, 10, 15, 90, 70, data, datacolor)
 			}
 			e.Frame(canvas.Context.Ops)
-		case key.Event:
-			switch e.Name {
-			case "Q", key.NameEscape:
-				os.Exit(0)
-			}
+
+		case app.DestroyEvent:
+			os.Exit(0)
 
 		}
 	}
