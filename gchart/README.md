@@ -2,7 +2,7 @@
 
 ![gchart-sine](gchart-sine.png)
 
-```gchart -bar -area -areaop=20 -zero=f -xlabel=10 -barwidth=0.2 -yrange=-1,1,0.5 -grid -color=red sin.d```
+```gchart -bar -area -areaop=20 -zero=f -w 1200 -h 600 -xlabel=10 -barwidth=0.2 -yrange=-1,1,0.5 -grid -color=red sin.d```
 
 ## options
 ```
