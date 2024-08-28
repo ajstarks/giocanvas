@@ -46,7 +46,7 @@ Options     Default               Description
 -left        20                   chart left
 -top         80                   chart top
 -bottom      20                   chart bottom
--right       80                   chaart right
+-right       80                   chart right
 .....................................................................
 -barwidth    0.5                  bar width
 -dotsize     0.5                  bar width

@@ -6,9 +6,9 @@ Gallery of chart types
 
 ## Introduction
 
-gchart makes charts reading data from files or standard input.
-The data format is tab-separated, with optional comments.
-The first field is a data label and the second is the value.
+gchart makes charts from data read from files or standard input.
+
+The data format is tab-separated name, value fields with optional comments.
 An optional third field specifying a color is used by the pie and lego chart types.
 
 For example:
@@ -34,7 +34,7 @@ ten	100
 ![area](area-x.png)
 
 ```
-opts="-zero=f -h 600 -xlabel=10 -yrange -1,1,0.25  -yfmt=%0.2f -grid"
+opts="-zero=f -h 600 -xlabel=10 -yrange -1,1,0.25 -yfmt=%0.2f -grid"
 gchart $opts -area sin.d
 ```
 
@@ -56,7 +56,6 @@ gchart $opts -area sin.d
 
 ```gchart $opts -scatter sin.d```
 
-
 Chart types may be combined, for example scatter, line and area charts
 may be used together.
 
@@ -69,7 +68,7 @@ may be used together.
 
 ![hbar](hbar-x.png)
 
-```gchart -hbar -ls 5 -barwidth 1.2 -textsize 3 -w 600 -h 600   data.d ```
+```gchart -hbar -ls 5 -barwidth 1.2 -textsize 3 -w 600 -h 600  data.d ```
 
 ### lego chart
 
@@ -84,7 +83,7 @@ gchart $opts -dotsize 5 -lego pop.d
 
 ![pie](pie-x.png)
 
-```gchart $opts -top 75 -left 15 -piesize 30   -pie browser.d ```
+```gchart $opts -top 75 -left 15 -piesize 30 -pie browser.d ```
 
 
 
@@ -98,7 +97,7 @@ The unit for some of the options
 refer to the percentage of the canvas.
 
 When specifying colors, you may use named colors ("red"), RGB ("rgb(128,0,0"),
-or HSV ("hsv(0,100,0)"). Opacities range from 0-100.
+or HSV ("hsv(0,100,0)"). Opacities range from 0 (invisible) to 100 (fully opaque).
 
 The options are:
 
@@ -125,7 +124,7 @@ Options     Default               Description
 -left        20                   chart left
 -top         80                   chart top
 -bottom      20                   chart bottom
--right       80                   chaart right
+-right       80                   chart right
 .....................................................................
 -barwidth    0.5                  bar width
 -dotsize     0.5                  bar width
