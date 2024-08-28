@@ -1,8 +1,8 @@
 # gchart -- gio canvas charting command
 
-![gchart-sine](gchart-sine.png)
+![allcharts](allcharts.png)
 
-```gchart -bar -area -areaop=20 -zero=f -w 1200 -h 600 -xlabel=10 -barwidth=0.2 -yrange=-1,1,0.5 -grid -color=red sin.d```
+Gallery of chart types
 
 ## Introduction
 

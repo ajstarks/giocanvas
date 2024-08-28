@@ -1,0 +1,15 @@
+#!/bin/sh
+opts="-zero=f -h 600 -xlabel=10 -yrange -1,1,0.25  -yfmt=%0.2f -grid"
+./gchart $opts -area                        sin.d &
+./gchart $opts -bar                         sin.d &
+./gchart $opts -line                        sin.d &
+./gchart $opts -scatter                     sin.d &
+./gchart $opts -area -line                  sin.d &
+./gchart $opts -area -bar -line -scatter    sin.d &
+./gchart -hbar -ls 5 -barwidth 1.2 -textsize 3 -w 600 -h 600   data.d &
+
+opts="-left 30 -w 600 -h 600"
+./gchart $opts -top 75 -left 15 -piesize 30   -pie browser.d &
+./gchart $opts -dotsize 5 -lego                    pop.d &
+
+

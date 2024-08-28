@@ -17,7 +17,7 @@ do
 			./gcdeck -pagesize 800x500 test.xml &
 			;;
 	gchart)
-			./gchart -bar -top 80 -bottom 60 -xlabel 10 cos.d &
+			./allcharts 
 			;;
 	*)
 			./$i &
