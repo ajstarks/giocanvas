@@ -1,6 +1,6 @@
 # gchart -- gio canvas charting command
 
-![allcharts](allcharts.png)
+![allcharts-x](allcharts-x.png)
 
 Gallery of chart types
 
@@ -29,54 +29,64 @@ ten	100
 
 ## Chart types
 
-gchart makes several kinds of charts; types may be combined, for example scatter, line and area charts
-may be used together.
-
-![combo](combo.png)
-
-```gchart -xlabel 10 -h 600 -line -area -scatter c19.d```
-
 ### area chart
 
-![area](area.png)
+![area](area-x.png)
 
-```gchart -area c19.d```
+```
+opts="-zero=f -h 600 -xlabel=10 -yrange -1,1,0.25  -yfmt=%0.2f -grid"
+gchart $opts -area sin.d
+```
 
 ### bar chart
 
-![bar](bar.png)
+![bar](bar-x.png)
 
-```gchart -bar -xlabel 10 -h 600 c19.d```
-
-### horizontal bar chart
-
-![hbar](hbar.png)
-
-```gchart -hbar data.d```
-
-### lego chart
-
-![lego](lego.png)
-
-```gchart -lego -dotsize 5 pop.d```
+```gchart $opts -bar sin.d```
 
 ### line chart
 
-![line](line.png)
+![line](line-x.png)
 
-```gchart -line -xlabel 10 -h 600 c19.d```
-
-### pie chart
-
-![pie](pie.png)
-
-```gchart -left 30 -pie  browser.d```
+```gchart $opts -line sin.d```
 
 ### scatter chart
 
-![scatter](scatter.png)
+![scatter](scatter-x.png)
 
-```gchart -scatter -xlabel 10 -h 600 c19.d```
+```gchart $opts -scatter sin.d```
+
+
+Chart types may be combined, for example scatter, line and area charts
+may be used together.
+
+![combo](combo-x.png)
+
+```gchart $opts -area -bar -line -scatter sin.d```
+
+
+### horizontal bar chart
+
+![hbar](hbar-x.png)
+
+```gchart -hbar -ls 5 -barwidth 1.2 -textsize 3 -w 600 -h 600   data.d ```
+
+### lego chart
+
+![lego](lego-x.png)
+
+```
+opts="-left 30 -w 600 -h 600"
+gchart $opts -dotsize 5 -lego pop.d
+```
+
+### pie chart
+
+![pie](pie-x.png)
+
+```gchart $opts -top 75 -left 15 -piesize 30   -pie browser.d ```
+
+
 
 ## Options
 
