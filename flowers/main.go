@@ -4,7 +4,6 @@ package main
 import (
 	"flag"
 	"image/color"
-	"io"
 	"math"
 	"os"
 
@@ -22,18 +21,17 @@ func petals(canvas *giocanvas.Canvas, x, y, w, h float32, fill color.NRGBA) {
 	}
 }
 
-func flower(w *app.Window) error {
+func flower(width, height float32) {
 	red := color.NRGBA{128, 0, 0, 100}
 	blue := color.NRGBA{0, 0, 128, 100}
 	green := color.NRGBA{0, 128, 0, 100}
 	orange := giocanvas.ColorLookup("orange")
 	bgcolor := giocanvas.ColorLookup("linen")
-
+	w := new(app.Window)
+	w.Option(app.Title("flowers"), app.Size(unit.Dp(width), unit.Dp(height)))
 	for {
 		e := w.Event()
 		switch e := e.(type) {
-		case app.DestroyEvent:
-			return e.Err
 		case app.FrameEvent:
 			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
 			canvas.Background(bgcolor)
@@ -42,6 +40,8 @@ func flower(w *app.Window) error {
 			petals(canvas, 50, 50, 15, 3.0, blue)
 			petals(canvas, 80, 20, 20, 4.5, orange)
 			e.Frame(canvas.Context.Ops)
+		case app.DestroyEvent:
+			os.Exit(0)
 		}
 	}
 }
@@ -51,17 +51,6 @@ func main() {
 	flag.IntVar(&cw, "width", 1000, "canvas width")
 	flag.IntVar(&ch, "height", 1000, "canvas height")
 	flag.Parse()
-	width := float32(cw)
-	height := float32(ch)
-
-	go func() {
-		w := &app.Window{}
-		w.Option(app.Title("flowers"), app.Size(unit.Dp(width), unit.Dp(height)))
-		if err := flower(w); err != nil {
-			io.WriteString(os.Stderr, "Cannot create the window\n")
-			os.Exit(1)
-		}
-		os.Exit(0)
-	}()
+	go flower(float32(cw), float32(ch))
 	app.Main()
 }

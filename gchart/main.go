@@ -9,6 +9,9 @@ import (
 	"strings"
 
 	"gioui.org/app"
+	"gioui.org/font"
+	"gioui.org/font/gofont"
+	"gioui.org/font/opentype"
 	"gioui.org/unit"
 	"github.com/ajstarks/giocanvas"
 	"github.com/ajstarks/giocanvas/chart"
@@ -17,7 +20,7 @@ import (
 type chartOptions struct {
 	top, bottom, left, right                                                          float64
 	barwidth, linewidth, linespacing, dotsize, textsize, piesize, ty, frameOp, areaOp float64
-	bgcolor, dcolor, labelcolor, chartitle, yaxfmt, yrange                            string
+	bgcolor, dcolor, labelcolor, chartitle, yaxfmt, yrange, fontname                  string
 	xlabel                                                                            int
 	zb, line, bar, hbar, scatter, area, pie, lego, showtitle, showgrid                bool
 }
@@ -40,6 +43,7 @@ Options     Default               Description
 -labelcolor  "rgb(100,100,100)"   label color
 -areaop      50                   area opacity
 -frame       0                    frame opacity
+-font        ""                   specify font
 .....................................................................
 -h           1000                 canvas height
 -w           1000                 canvas width
@@ -68,6 +72,32 @@ Options     Default               Description
 
 `
 	io.WriteString(os.Stderr, usage)
+}
+
+// loadfont loads a font collections from a name
+// if the name is empty or on error, use the default Go fonts
+func loadfont(name string) []font.FontFace {
+	// if empty string return default
+	if name == "" {
+		return gofont.Regular()
+	}
+	collection := []font.FontFace{}
+	ff := font.FontFace{}
+	// read the font data
+	fontdata, err := os.ReadFile(name)
+	if err != nil {
+		return gofont.Regular()
+	}
+	// Parse...
+	face, err := opentype.Parse(fontdata)
+	if err != nil {
+		return gofont.Regular()
+	}
+	// load the collection
+	ff.Font.Typeface = font.Typeface(name)
+	ff.Face = face
+	collection = append(collection, ff)
+	return collection
 }
 
 // perr prints a filename and message to stderr
@@ -125,10 +155,13 @@ func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 	data.Top, data.Bottom = opts.top, opts.bottom
 	data.Left, data.Right = opts.left, opts.right
 
+	// set the font
+	fc := loadfont(opts.fontname)
+
 	for {
 		switch e := win.Event().(type) {
 		case app.FrameEvent:
-			canvas := giocanvas.NewCanvas(float32(e.Size.X), float32(e.Size.Y), e)
+			canvas := giocanvas.NewCanvasFonts(float32(e.Size.X), float32(e.Size.Y), fc, e)
 			canvas.Background(bgcolor)
 
 			// Draw the data
@@ -221,6 +254,7 @@ func main() {
 	// colors and opacities
 	flag.StringVar(&opts.dcolor, "color", "steelblue", "color")
 	flag.StringVar(&opts.bgcolor, "bgcolor", "white", "background color")
+	flag.StringVar(&opts.fontname, "font", "", "font name")
 	flag.StringVar(&opts.labelcolor, "labelcolor", "rgb(100,100,100)", "label color")
 	flag.Float64Var(&opts.frameOp, "frame", 0, "frame opacity")
 	flag.Float64Var(&opts.areaOp, "areaop", 50, "area opacity")
