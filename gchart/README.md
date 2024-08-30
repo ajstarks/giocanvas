@@ -6,9 +6,11 @@ Gallery of chart types
 
 ## Introduction
 
-gchart makes charts from data read from files or standard input.
+gchart makes charts using data read from a file or standard input.
 
-The data format is tab-separated name, value fields with optional comments.
+The data format is tab-separated [name, value] fields with optional comments that
+serve as the chart's title.
+
 An optional third field specifying a color is used by the pie and lego chart types.
 
 For example:
@@ -118,6 +120,7 @@ Options     Default               Description
 -labelcolor  "rgb(100,100,100)"   label color
 -areaop      50                   area opacity
 -frame       0                    frame opacity
+-font        ""                   font file
 .....................................................................
 -h           1000                 canvas height
 -w           1000                 canvas width
