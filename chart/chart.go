@@ -103,6 +103,19 @@ func zerobase(usez bool, n float64) float64 {
 	return n
 }
 
+// drawline makes lines, with special consideration for horizontal and vertical lines
+// by default gio draws lines with round end-caps, this fixes it for straight lines.
+func drawline(canvas *gc.Canvas, x1, y1, x2, y2, sw float32, color color.NRGBA) {
+	switch {
+	case y1 == y2: // horizontal
+		canvas.CornerRect(x1, y1+(sw/2), x2-x1, sw, color)
+	case x1 == x2: // vertical
+		canvas.CornerRect(x1-(sw/2), y2, sw, y2-y1, color)
+	default:
+		canvas.Line(x1, y1, x2, y2, sw, color)
+	}
+}
+
 // Bar makes a (column) bar chart
 func (c *ChartBox) Bar(canvas *gc.Canvas, size float64) {
 	dlen := float64(len(c.Data) - 1)
@@ -110,7 +123,7 @@ func (c *ChartBox) Bar(canvas *gc.Canvas, size float64) {
 	for i, d := range c.Data {
 		x := float32(gc.MapRange(float64(i), 0, dlen, c.Left, c.Right))
 		y := float32(gc.MapRange(d.value, ymin, c.Maxvalue, c.Bottom, c.Top))
-		canvas.Line(float32(x), float32(c.Bottom), x, y, float32(size), c.Color)
+		drawline(canvas, float32(x), float32(c.Bottom), x, y, float32(size), c.Color)
 	}
 }
 
@@ -122,7 +135,7 @@ func (c *ChartBox) HBar(canvas *gc.Canvas, size, linespacing, textsize float64) 
 	for _, d := range c.Data {
 		canvas.EText(cl-2, y-float32(size/2), float32(textsize), d.label, labelcolor)
 		x2 := gc.MapRange(d.value, xmin, c.Maxvalue, c.Left, c.Right)
-		canvas.Line(cl, y, float32(x2), y, float32(size), c.Color)
+		drawline(canvas, cl, y, float32(x2), y, float32(size), c.Color)
 		y -= float32(linespacing)
 	}
 }
