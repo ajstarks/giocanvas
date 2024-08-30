@@ -74,15 +74,14 @@ Options     Default               Description
 	io.WriteString(os.Stderr, usage)
 }
 
-// loadfont loads a font collections from a name
+// loadfont loads a font collection from a name
 // if the name is empty or on error, use the default Go fonts
 func loadfont(name string) []font.FontFace {
 	// if empty string return default
 	if name == "" {
 		return gofont.Regular()
 	}
-	collection := []font.FontFace{}
-	ff := font.FontFace{}
+	collection := make([]font.FontFace, 1) // only 1 needed
 	// read the font data
 	fontdata, err := os.ReadFile(name)
 	if err != nil {
@@ -93,10 +92,8 @@ func loadfont(name string) []font.FontFace {
 	if err != nil {
 		return gofont.Regular()
 	}
-	// load the collection
-	ff.Font.Typeface = font.Typeface(name)
-	ff.Face = face
-	collection = append(collection, ff)
+	collection[0].Font.Typeface = font.Typeface(name)
+	collection[0].Face = face
 	return collection
 }
 
