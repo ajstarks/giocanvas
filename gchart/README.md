@@ -65,12 +65,23 @@ may be used together.
 
 ```gchart $opts -area -bar -line -scatter sin.d```
 
+### dotchart
+
+![dotchart](dotchart-x.png)
+
+```./gchart -dot  -scatter -dotsize 1  -w 600 -h 600  data.d &```
 
 ### horizontal bar chart
 
 ![hbar](hbar-x.png)
 
 ```gchart -hbar -ls 5 -barwidth 1.2 -textsize 3 -w 600 -h 600  data.d ```
+
+### horizontal word chart
+
+![wbar](wbar-x.png)
+
+```./gchart $opts -wbar  data.d &```
 
 ### lego chart
 
@@ -110,7 +121,9 @@ Options     Default               Description
 .....................................................................
 -area        false                make an area chart
 -bar         false                make a bar chart
+-dot         false                make a dot chart
 -hbar        false                make a horizontal bar chart
+-wbar        false                make a horizontal word bar chart
 -lego        false                make a lego chart
 -line        false                make a line chart
 -pie         false                make a pie chart

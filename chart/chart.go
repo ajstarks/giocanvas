@@ -116,6 +116,45 @@ func drawline(canvas *gc.Canvas, x1, y1, x2, y2, sw float32, color color.NRGBA) 
 	}
 }
 
+// dottedvline makes a dotted vertical line, using circles
+func dottedvline(canvas *gc.Canvas, x, y1, y2, dotsize, step float32, color color.NRGBA) {
+	if y1 < y2 { // positive
+		for y := y1; y <= y2; y += step {
+			canvas.Circle(x, y, dotsize, color)
+		}
+	} else { // negative
+		for y := y2; y <= y1; y += step {
+			canvas.Circle(x, y, dotsize, color)
+		}
+	}
+}
+
+// Dot makes a dot chart
+func (c *ChartBox) Dot(canvas *gc.Canvas, size float64) {
+	dlen := float64(len(c.Data) - 1)
+	ymin := zerobase(c.Zerobased, c.Minvalue)
+	for i, d := range c.Data {
+		x := float32(gc.MapRange(float64(i), 0, dlen, c.Left, c.Right))
+		y := float32(gc.MapRange(d.value, ymin, c.Maxvalue, c.Bottom, c.Top))
+		//canvas.Circle(x, y, float32(size), c.Color)
+		dottedvline(canvas, x, float32(c.Bottom), y, 0.3, 2, color.NRGBA{128, 128, 128, 128})
+	}
+}
+
+// WBar makes a word bar chart
+func (c *ChartBox) WBar(canvas *gc.Canvas, textsize, linespacing float64) {
+	y := float32(c.Top)
+	cl := float32(c.Left)
+	xmin := zerobase(c.Zerobased, c.Minvalue)
+	c.Color.A = 50
+	for _, d := range c.Data {
+		canvas.Text(cl, y, float32(textsize), d.label, labelcolor)
+		x2 := gc.MapRange(d.value, xmin, c.Maxvalue, c.Left, c.Right)
+		drawline(canvas, cl, y+float32(textsize/3), float32(x2), y+float32(textsize/3), float32(textsize), c.Color)
+		y -= float32(linespacing)
+	}
+}
+
 // Bar makes a (column) bar chart
 func (c *ChartBox) Bar(canvas *gc.Canvas, size float64) {
 	dlen := float64(len(c.Data) - 1)

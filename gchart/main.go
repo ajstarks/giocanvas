@@ -22,7 +22,7 @@ type chartOptions struct {
 	barwidth, linewidth, linespacing, dotsize, textsize, piesize, ty, frameOp, areaOp float64
 	bgcolor, dcolor, labelcolor, chartitle, yaxfmt, yrange, fontname                  string
 	xlabel                                                                            int
-	zb, line, bar, hbar, scatter, area, pie, lego, showtitle, showgrid                bool
+	zb, line, bar, hbar, scatter, area, pie, lego, dot, wbar, showtitle, showgrid     bool
 }
 
 func cmdUsage() {
@@ -33,7 +33,9 @@ Options     Default               Description
 .....................................................................
 -area        false                make an area chart
 -bar         false                make a bar chart
+-dot         false                make a dot chart
 -hbar        false                make a horizontal bar chart
+-wbar        false                make a horizontal word bar chart
 -lego        false                make a lego chart
 -line        false                make a line chart
 -pie         false                make a pie chart
@@ -178,6 +180,12 @@ func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 			if opts.hbar {
 				data.HBar(canvas, opts.barwidth, opts.linespacing, opts.textsize)
 			}
+			if opts.wbar {
+				data.WBar(canvas, opts.textsize, opts.linespacing)
+			}
+			if opts.dot {
+				data.Dot(canvas, opts.dotsize)
+			}
 			if opts.area {
 				data.Area(canvas, opts.areaOp)
 			}
@@ -190,7 +198,7 @@ func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 
 			// Draw labels, axes if specified
 			data.Color = labelcolor
-			if opts.line || opts.bar || opts.scatter || opts.area {
+			if opts.line || opts.bar || opts.scatter || opts.area || opts.dot {
 				data.Label(canvas, opts.textsize, opts.xlabel)
 				if len(opts.yrange) > 0 {
 					yaxmin, yaxmax, yaxstep := yr(opts.yrange, data.Minvalue, data.Maxvalue)
@@ -223,8 +231,10 @@ func main() {
 	flag.BoolVar(&opts.lego, "lego", false, "lego chart")
 	flag.BoolVar(&opts.area, "area", false, "area chart")
 	flag.BoolVar(&opts.bar, "bar", false, "bar chart")
+	flag.BoolVar(&opts.dot, "dot", false, "dot chart")
 	flag.BoolVar(&opts.line, "line", false, "line chart")
 	flag.BoolVar(&opts.hbar, "hbar", false, "horizontal bar")
+	flag.BoolVar(&opts.wbar, "wbar", false, "horizontal word bar")
 	flag.BoolVar(&opts.scatter, "scatter", false, "scatter chart")
 	flag.BoolVar(&opts.pie, "pie", false, "show a pie chart")
 	// chart element sizes
@@ -285,7 +295,7 @@ func main() {
 		os.Exit(2)
 	}
 	// specify at least one of line, bar, hbar, scatter, area, pie, lego
-	if !(opts.line || opts.scatter || opts.bar || opts.area || opts.hbar || opts.lego || opts.pie) {
+	if !(opts.line || opts.scatter || opts.bar || opts.dot || opts.wbar || opts.area || opts.hbar || opts.lego || opts.pie) {
 		perr("pick a chart type (-line, -bar, -hbar, -area, -scatter, -lego, -pie)", infile)
 		os.Exit(3)
 	}
