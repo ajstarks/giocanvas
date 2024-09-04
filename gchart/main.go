@@ -18,62 +18,11 @@ import (
 )
 
 type chartOptions struct {
-	top, bottom, left, right                                                          float64
-	barwidth, linewidth, linespacing, dotsize, textsize, piesize, ty, frameOp, areaOp float64
-	bgcolor, dcolor, labelcolor, chartitle, yaxfmt, yrange, fontname                  string
-	xlabel                                                                            int
-	zb, line, bar, hbar, scatter, area, pie, lego, dot, wbar, showtitle, showgrid     bool
-}
-
-func cmdUsage() {
-	usage := `
-gchart [options] file...
-
-Options     Default               Description
-.....................................................................
--area        false                make an area chart
--bar         false                make a bar chart
--dot         false                make a dot chart
--hbar        false                make a horizontal bar chart
--wbar        false                make a horizontal word bar chart
--lego        false                make a lego chart
--line        false                make a line chart
--pie         false                make a pie chart
--scatter     false                make a scatter chart
-.....................................................................
--color       "steelblue"          data color
--labelcolor  "rgb(100,100,100)"   label color
--areaop      50                   area opacity
--frame       0                    frame opacity
--font        ""                   specify font
-.....................................................................
--h           1000                 canvas height
--w           1000                 canvas width
--left        20                   chart left
--top         80                   chart top
--bottom      20                   chart bottom
--right       80                   chart right
-.....................................................................
--barwidth    0.5                  bar width
--dotsize     0.5                  bar width
--linewidth   0.25                 line width
--ls          2                    line spacing
--piesize     20                   pie chart radius
--textsize    1.5                  text size
-.....................................................................
--chartitle   ""                   chart title
--ty          5                    title position relative to the top
--xlabel      1                    x-xaxis label interval
--yfmt        "%v"                 yaxis format
--yrange      ""                   y axis range (min,max,step)
-.....................................................................
--grid        false                show y axis grid
--title       false                show the title
--zero        true                 zero minumum
-......................................................................
-
-`
-	io.WriteString(os.Stderr, usage)
+	top, bottom, left, right                                                               float64
+	barwidth, linewidth, linespacing, dotsize, textsize, piesize, ty, frameOp, opacity     float64
+	bgcolor, dcolor, labelcolor, valuecolor, chartitle, yaxfmt, yrange, fontname, valuefmt string
+	xlabel                                                                                 int
+	zb, line, bar, hbar, scatter, area, pie, lego, dot, wbar, showtitle, showgrid          bool
 }
 
 // loadfont loads a font collection from a name
@@ -178,16 +127,16 @@ func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 				data.Scatter(canvas, opts.dotsize)
 			}
 			if opts.hbar {
-				data.HBar(canvas, opts.barwidth, opts.linespacing, opts.textsize)
+				data.HBar(canvas, opts.barwidth, opts.linespacing, opts.textsize, opts.valuefmt, opts.valuecolor)
 			}
 			if opts.wbar {
-				data.WBar(canvas, opts.textsize, opts.linespacing)
+				data.WBar(canvas, opts.linespacing, opts.textsize, opts.opacity, opts.valuefmt, opts.valuecolor)
 			}
 			if opts.dot {
 				data.Dot(canvas, opts.dotsize)
 			}
 			if opts.area {
-				data.Area(canvas, opts.areaOp)
+				data.Area(canvas, opts.opacity)
 			}
 			if opts.pie {
 				data.Pie(canvas, opts.piesize)
@@ -199,10 +148,17 @@ func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 			// Draw labels, axes if specified
 			data.Color = labelcolor
 			if opts.line || opts.bar || opts.scatter || opts.area || opts.dot {
-				data.Label(canvas, opts.textsize, opts.xlabel)
+				data.Label(canvas, opts.textsize, opts.xlabel, opts.valuefmt, opts.valuecolor)
 				if len(opts.yrange) > 0 {
 					yaxmin, yaxmax, yaxstep := yr(opts.yrange, data.Minvalue, data.Maxvalue)
 					data.YAxis(canvas, opts.textsize, yaxmin, yaxmax, yaxstep, opts.yaxfmt, opts.showgrid)
+				}
+			}
+
+			if opts.hbar || opts.wbar {
+				if len(opts.yrange) > 0 {
+					yaxmin, yaxmax, yaxstep := yr(opts.yrange, data.Minvalue, data.Maxvalue)
+					data.XAxis(canvas, opts.textsize, yaxmin, yaxmax, yaxstep, opts.yaxfmt, opts.showgrid)
 				}
 			}
 
@@ -220,6 +176,59 @@ func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
 			os.Exit(0)
 		}
 	}
+}
+
+func cmdUsage() {
+	usage := `
+gchart [options] file...
+
+Options     Default               Description
+.....................................................................
+-area        false                make an area chart
+-bar         false                make a bar chart
+-dot         false                make a dot chart
+-hbar        false                make a horizontal bar chart
+-wbar        false                make a horizontal word bar chart
+-lego        false                make a lego chart
+-line        false                make a line chart
+-pie         false                make a pie chart
+-scatter     false                make a scatter chart
+.....................................................................
+-color       "lightsteelblue"     data color
+-labelcolor  "rgb(100,100,100)"   label color
+-valuecolor  "rgb(128,0,0)"       value color
+-opacity     40                   opacity for area and wbar charts
+-frame       0                    frame opacity
+-font        ""                   specify font file (\"\": default)
+.....................................................................
+-h           1000                 canvas height
+-w           1000                 canvas width
+-left        20                   chart left
+-top         80                   chart top
+-bottom      20                   chart bottom
+-right       80                   chart right
+.....................................................................
+-barwidth    0.5                  bar width
+-dotsize     0.5                  bar width
+-linewidth   0.25                 line width
+-ls          2                    line spacing
+-piesize     20                   pie chart radius
+-textsize    1.5                  text size
+.....................................................................
+-chartitle   ""                   chart title
+-ty          5                    title position relative to the top
+-xlabel      1                    x-xaxis label interval (0: no labels)
+-yfmt        "%v"                 yaxis format
+-vfmt        ""                   value format ("": no values)
+-yrange      ""                   y axis range (min,max,step)
+.....................................................................
+-grid        false                show y axis grid
+-title       false                show the title
+-zero        true                 zero minumum
+......................................................................
+
+`
+	io.WriteString(os.Stderr, usage)
 }
 
 func main() {
@@ -257,14 +266,16 @@ func main() {
 	flag.IntVar(&opts.xlabel, "xlabel", 1, "x-axis label interval")
 	flag.StringVar(&opts.yrange, "yrange", "", "y axis range (min,max,step)")
 	flag.StringVar(&opts.chartitle, "chartitle", "", "chart title")
-	flag.StringVar(&opts.yaxfmt, "yfmt", "%v", "yaxis format")
+	flag.StringVar(&opts.valuefmt, "vfmt", "", "value format (\"\": no values)")
+	flag.StringVar(&opts.yaxfmt, "yfmt", "%v", "yaxis format (\"\" no y axis)")
 	// colors and opacities
-	flag.StringVar(&opts.dcolor, "color", "steelblue", "color")
+	flag.StringVar(&opts.dcolor, "color", "lightsteelblue", "color")
 	flag.StringVar(&opts.bgcolor, "bgcolor", "white", "background color")
 	flag.StringVar(&opts.fontname, "font", "", "font name")
 	flag.StringVar(&opts.labelcolor, "labelcolor", "rgb(100,100,100)", "label color")
-	flag.Float64Var(&opts.frameOp, "frame", 0, "frame opacity")
-	flag.Float64Var(&opts.areaOp, "areaop", 50, "area opacity")
+	flag.StringVar(&opts.valuecolor, "valuecolor", "rgb(128,100,0)", "value color")
+	flag.Float64Var(&opts.frameOp, "frame", 0, "frame opacity (0: no frame)")
+	flag.Float64Var(&opts.opacity, "opacity", 40, "% opacity for area and wbar charts")
 	// on-off flags
 	flag.BoolVar(&opts.showtitle, "title", true, "show the title")
 	flag.BoolVar(&opts.showgrid, "grid", false, "show y axis grid")

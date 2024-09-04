@@ -36,7 +36,10 @@ const (
 	fullcircle = 3.14159265358979323846264338327950288419716939937510582097494459 * 2
 )
 
+const gridlw = 0.075
+
 var labelcolor = color.NRGBA{100, 100, 100, 255}
+var gridcolor = color.NRGBA{128, 128, 128, 128}
 
 // DataRead reads tab separated values into a ChartBox
 // default values for the top, bottom, left, right (90,50,10,90) are filled in
@@ -129,32 +132,6 @@ func dottedvline(canvas *gc.Canvas, x, y1, y2, dotsize, step float32, color colo
 	}
 }
 
-// Dot makes a dot chart
-func (c *ChartBox) Dot(canvas *gc.Canvas, size float64) {
-	dlen := float64(len(c.Data) - 1)
-	ymin := zerobase(c.Zerobased, c.Minvalue)
-	for i, d := range c.Data {
-		x := float32(gc.MapRange(float64(i), 0, dlen, c.Left, c.Right))
-		y := float32(gc.MapRange(d.value, ymin, c.Maxvalue, c.Bottom, c.Top))
-		//canvas.Circle(x, y, float32(size), c.Color)
-		dottedvline(canvas, x, float32(c.Bottom), y, 0.3, 2, color.NRGBA{128, 128, 128, 128})
-	}
-}
-
-// WBar makes a word bar chart
-func (c *ChartBox) WBar(canvas *gc.Canvas, textsize, linespacing float64) {
-	y := float32(c.Top)
-	cl := float32(c.Left)
-	xmin := zerobase(c.Zerobased, c.Minvalue)
-	c.Color.A = 50
-	for _, d := range c.Data {
-		canvas.Text(cl, y, float32(textsize), d.label, labelcolor)
-		x2 := gc.MapRange(d.value, xmin, c.Maxvalue, c.Left, c.Right)
-		drawline(canvas, cl, y+float32(textsize/3), float32(x2), y+float32(textsize/3), float32(textsize), c.Color)
-		y -= float32(linespacing)
-	}
-}
-
 // Bar makes a (column) bar chart
 func (c *ChartBox) Bar(canvas *gc.Canvas, size float64) {
 	dlen := float64(len(c.Data) - 1)
@@ -167,14 +144,37 @@ func (c *ChartBox) Bar(canvas *gc.Canvas, size float64) {
 }
 
 // HBar makes a horizontal bar chart
-func (c *ChartBox) HBar(canvas *gc.Canvas, size, linespacing, textsize float64) {
+func (c *ChartBox) HBar(canvas *gc.Canvas, size, linespacing, textsize float64, valuefmt, valuecolor string) {
 	y := float32(c.Top)
 	cl := float32(c.Left)
 	xmin := zerobase(c.Zerobased, c.Minvalue)
 	for _, d := range c.Data {
-		canvas.EText(cl-2, y-float32(size/2), float32(textsize), d.label, labelcolor)
+		ty := y - float32(textsize/3)
+		canvas.EText(cl-2, ty, float32(textsize), d.label, labelcolor)
 		x2 := gc.MapRange(d.value, xmin, c.Maxvalue, c.Left, c.Right)
 		drawline(canvas, cl, y, float32(x2), y, float32(size), c.Color)
+		if len(valuefmt) > 0 {
+			canvas.Text(float32(x2+textsize), ty, float32(textsize*0.75), fmt.Sprintf(valuefmt, d.value), gc.ColorLookup(valuecolor))
+		}
+		y -= float32(linespacing)
+	}
+}
+
+// WBar makes a word bar chart
+func (c *ChartBox) WBar(canvas *gc.Canvas, linespacing, textsize, opacity float64, valuefmt, valuecolor string) {
+	y := float32(c.Top)
+	cl := float32(c.Left)
+	xmin := zerobase(c.Zerobased, c.Minvalue)
+	vcolor := c.Color
+	vcolor.A = uint8(255.0 * (opacity / 100))
+	for _, d := range c.Data {
+		ty := y - float32(textsize/3)
+		canvas.Text(cl, ty, float32(textsize), d.label, labelcolor)
+		x2 := gc.MapRange(d.value, xmin, c.Maxvalue, c.Left, c.Right)
+		drawline(canvas, cl, y, float32(x2), y, float32(textsize), vcolor)
+		if len(valuefmt) > 0 {
+			canvas.EText(cl-float32(textsize/2), ty, float32(textsize/2), fmt.Sprintf(valuefmt, d.value), gc.ColorLookup(valuecolor))
+		}
 		y -= float32(linespacing)
 	}
 }
@@ -216,8 +216,20 @@ func (c *ChartBox) Area(canvas *gc.Canvas, opacity float64) {
 		ax[i+1] = xp
 		ay[i+1] = yp
 	}
-	c.Color.A = uint8(255.0 * (opacity / 100))
-	canvas.Polygon(ax, ay, c.Color)
+	vcolor := c.Color
+	vcolor.A = uint8(255.0 * (opacity / 100))
+	canvas.Polygon(ax, ay, vcolor)
+}
+
+// Dot makes a dot chart
+func (c *ChartBox) Dot(canvas *gc.Canvas, size float64) {
+	dlen := float64(len(c.Data) - 1)
+	ymin := zerobase(c.Zerobased, c.Minvalue)
+	for i, d := range c.Data {
+		x := float32(gc.MapRange(float64(i), 0, dlen, c.Left, c.Right))
+		y := float32(gc.MapRange(d.value, ymin, c.Maxvalue, c.Bottom, c.Top))
+		dottedvline(canvas, x, float32(c.Bottom), y, 0.3, 2, color.NRGBA{128, 128, 128, 128})
+	}
 }
 
 // datasum returns the sum of the data
@@ -293,17 +305,6 @@ func (c *ChartBox) Lego(canvas *gc.Canvas, size float64) {
 	}
 }
 
-// Label draws the x axis labels
-func (c *ChartBox) Label(canvas *gc.Canvas, size float64, n int) {
-	fn := float64(len(c.Data) - 1)
-	for i, d := range c.Data {
-		x := float32(gc.MapRange(float64(i), 0, fn, c.Left, c.Right))
-		if i%n == 0 {
-			canvas.CText(x, float32(c.Bottom-(size*2)), float32(size), d.label, c.Color)
-		}
-	}
-}
-
 // Scatter makes a scatter chart
 func (c *ChartBox) Scatter(canvas *gc.Canvas, size float64) {
 	dlen := float64(len(c.Data) - 1)
@@ -312,6 +313,23 @@ func (c *ChartBox) Scatter(canvas *gc.Canvas, size float64) {
 		x := float32(gc.MapRange(float64(i), 0, dlen, c.Left, c.Right))
 		y := float32(gc.MapRange(d.value, ymin, c.Maxvalue, c.Bottom, c.Top))
 		canvas.Circle(x, y, float32(size), c.Color)
+	}
+}
+
+// Label draws the x axis and data labels
+func (c *ChartBox) Label(canvas *gc.Canvas, size float64, n int, valuefmt, valuecolor string) {
+	fn := float64(len(c.Data) - 1)
+	ymin := zerobase(c.Zerobased, c.Minvalue)
+	vsize := float32(size * 0.75)
+	for i, d := range c.Data {
+		x := float32(gc.MapRange(float64(i), 0, fn, c.Left, c.Right))
+		if n > 0 && i%n == 0 {
+			canvas.CText(x, float32(c.Bottom-(size*2)), float32(size), d.label, c.Color)
+		}
+		if len(valuefmt) > 0 {
+			y := float32(gc.MapRange(d.value, ymin, c.Maxvalue, c.Bottom, c.Top))
+			canvas.CText(x, y+vsize, vsize, fmt.Sprintf(valuefmt, d.value), gc.ColorLookup(valuecolor))
+		}
 	}
 }
 
@@ -325,16 +343,32 @@ func Grid(canvas *gc.Canvas, left, bottom, width, height, size float64, color co
 	}
 }
 
+// XAxis makes the X Axis with optional grid lines for Hbar and WBar
+func (c *ChartBox) XAxis(canvas *gc.Canvas, size, min, max, step float64, format string, gridlines bool) {
+	bottom := float32(c.Bottom)
+	top := float32(c.Top)
+	textsize := float32(size)
+	ymin := zerobase(c.Zerobased, c.Minvalue)
+	for v := min; v <= max; v += step {
+		x := float32(gc.MapRange(v, ymin, c.Maxvalue, c.Left, c.Right))
+		canvas.CText(x, bottom, textsize, fmt.Sprintf(format, v), c.Color)
+		if gridlines {
+			drawline(canvas, x, bottom+textsize, x, top+textsize, gridlw, gridcolor)
+		}
+	}
+}
+
 // YAxis makes the Y axis with optional grid lines
 func (c *ChartBox) YAxis(canvas *gc.Canvas, size, min, max, step float64, format string, gridlines bool) {
 	w := c.Right - c.Left
+	textsize := float32(size)
 	ymin := zerobase(c.Zerobased, c.Minvalue)
 	for v := min; v <= max; v += step {
 		y := float32(gc.MapRange(v, ymin, c.Maxvalue, c.Bottom, c.Top))
+		canvas.EText(float32(c.Left-2), (y - float32(size/3)), textsize, fmt.Sprintf(format, v), c.Color)
 		if gridlines {
-			canvas.Line(float32(c.Left), y, float32(c.Left+w), y, 0.05, color.NRGBA{128, 128, 128, 255})
+			drawline(canvas, float32(c.Left), y, float32(c.Left+w), y, gridlw, gridcolor)
 		}
-		canvas.EText(float32(c.Left-2), (y - float32(size/3)), float32(size), fmt.Sprintf(format, v), c.Color)
 	}
 }
 

@@ -1,6 +1,6 @@
 # gchart -- gio canvas charting command
 
-![allcharts-x](allcharts-x.png)
+![allcharts-x](allcharts.png)
 
 Gallery of chart types
 
@@ -99,7 +99,6 @@ gchart $opts -dotsize 5 -lego pop.d
 ```gchart $opts -top 75 -left 15 -piesize 30 -pie browser.d ```
 
 
-
 ## Options
 
 Command line options determine the behavior of gchart.
@@ -112,10 +111,13 @@ refer to the percentage of the canvas.
 When specifying colors, you may use named colors ("red"), RGB ("rgb(128,0,0"),
 or HSV ("hsv(0,100,0)"). Opacities range from 0 (invisible) to 100 (fully opaque).
 
+Value and data formats follow the Go fmt-package conventions.  For example -yfmt="%.2f"
+for a floating point values with 2 decimal places.
+
 The options are:
 
 ```
-gchart [options] file
+gchart [options] file...
 
 Options     Default               Description
 .....................................................................
@@ -129,11 +131,12 @@ Options     Default               Description
 -pie         false                make a pie chart
 -scatter     false                make a scatter chart
 .....................................................................
--color       "steelblue"          data color
+-color       "lightsteelblue"     data color
 -labelcolor  "rgb(100,100,100)"   label color
--areaop      50                   area opacity
+-valuecolor  "rgb(128,0,0)"       value color
+-opacity     40                   opacity for area and wbar charts
 -frame       0                    frame opacity
--font        ""                   font file
+-font        ""                   specify font file (\"\": default)
 .....................................................................
 -h           1000                 canvas height
 -w           1000                 canvas width
@@ -151,8 +154,9 @@ Options     Default               Description
 .....................................................................
 -chartitle   ""                   chart title
 -ty          5                    title position relative to the top
--xlabel      1                    x-xaxis label interval
+-xlabel      1                    x-xaxis label interval (0: no labels)
 -yfmt        "%v"                 yaxis format
+-vfmt        ""                   value format ("": no values)
 -yrange      ""                   y axis range (min,max,step)
 .....................................................................
 -grid        false                show y axis grid
