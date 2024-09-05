@@ -136,10 +136,12 @@ func dottedvline(canvas *gc.Canvas, x, y1, y2, dotsize, step float32, color colo
 func (c *ChartBox) Bar(canvas *gc.Canvas, size float64) {
 	dlen := float64(len(c.Data) - 1)
 	ymin := zerobase(c.Zerobased, c.Minvalue)
+	lw := float32(size)
+	bottom := float32(c.Bottom)
 	for i, d := range c.Data {
 		x := float32(gc.MapRange(float64(i), 0, dlen, c.Left, c.Right))
 		y := float32(gc.MapRange(d.value, ymin, c.Maxvalue, c.Bottom, c.Top))
-		drawline(canvas, float32(x), float32(c.Bottom), x, y, float32(size), c.Color)
+		drawline(canvas, x, bottom, x, y, lw, c.Color)
 	}
 }
 
@@ -147,16 +149,19 @@ func (c *ChartBox) Bar(canvas *gc.Canvas, size float64) {
 func (c *ChartBox) HBar(canvas *gc.Canvas, size, linespacing, textsize float64, valuefmt, valuecolor string) {
 	y := float32(c.Top)
 	cl := float32(c.Left)
+	ts := float32(textsize)
+	ts3 := ts / 3
+	ls := float32(linespacing)
 	xmin := zerobase(c.Zerobased, c.Minvalue)
 	for _, d := range c.Data {
-		ty := y - float32(textsize/3)
-		canvas.EText(cl-2, ty, float32(textsize), d.label, labelcolor)
-		x2 := gc.MapRange(d.value, xmin, c.Maxvalue, c.Left, c.Right)
-		drawline(canvas, cl, y, float32(x2), y, float32(size), c.Color)
+		ty := y - ts3
+		canvas.EText(cl-2, ty, ts, d.label, labelcolor)
+		x2 := float32(gc.MapRange(d.value, xmin, c.Maxvalue, c.Left, c.Right))
+		drawline(canvas, cl, y, x2, y, float32(size), c.Color)
 		if len(valuefmt) > 0 {
-			canvas.Text(float32(x2+textsize), ty, float32(textsize*0.75), fmt.Sprintf(valuefmt, d.value), gc.ColorLookup(valuecolor))
+			canvas.Text(x2+ts, ty, ts*0.75, fmt.Sprintf(valuefmt, d.value), gc.ColorLookup(valuecolor))
 		}
-		y -= float32(linespacing)
+		y -= ls
 	}
 }
 
@@ -164,18 +169,22 @@ func (c *ChartBox) HBar(canvas *gc.Canvas, size, linespacing, textsize float64, 
 func (c *ChartBox) WBar(canvas *gc.Canvas, linespacing, textsize, opacity float64, valuefmt, valuecolor string) {
 	y := float32(c.Top)
 	cl := float32(c.Left)
+	ts := float32(textsize)
+	ts2 := ts / 2
+	ts3 := ts / 3
+	ls := float32(linespacing)
 	xmin := zerobase(c.Zerobased, c.Minvalue)
 	vcolor := c.Color
 	vcolor.A = uint8(255.0 * (opacity / 100))
 	for _, d := range c.Data {
-		ty := y - float32(textsize/3)
-		canvas.Text(cl, ty, float32(textsize), d.label, labelcolor)
-		x2 := gc.MapRange(d.value, xmin, c.Maxvalue, c.Left, c.Right)
-		drawline(canvas, cl, y, float32(x2), y, float32(textsize), vcolor)
+		ty := y - ts3
+		canvas.Text(cl, ty, ts, d.label, labelcolor)
+		x2 := float32(gc.MapRange(d.value, xmin, c.Maxvalue, c.Left, c.Right))
+		drawline(canvas, cl, y, x2, y, ts, vcolor)
 		if len(valuefmt) > 0 {
-			canvas.EText(cl-float32(textsize/2), ty, float32(textsize/2), fmt.Sprintf(valuefmt, d.value), gc.ColorLookup(valuecolor))
+			canvas.EText(cl-ts2, ty, ts2, fmt.Sprintf(valuefmt, d.value), gc.ColorLookup(valuecolor))
 		}
-		y -= float32(linespacing)
+		y -= ls
 	}
 }
 
@@ -225,10 +234,13 @@ func (c *ChartBox) Area(canvas *gc.Canvas, opacity float64) {
 func (c *ChartBox) Dot(canvas *gc.Canvas, size float64) {
 	dlen := float64(len(c.Data) - 1)
 	ymin := zerobase(c.Zerobased, c.Minvalue)
+	dotsize := float32(size)
+	bottom := float32(c.Bottom)
 	for i, d := range c.Data {
 		x := float32(gc.MapRange(float64(i), 0, dlen, c.Left, c.Right))
 		y := float32(gc.MapRange(d.value, ymin, c.Maxvalue, c.Bottom, c.Top))
-		dottedvline(canvas, x, float32(c.Bottom), y, 0.3, 2, color.NRGBA{128, 128, 128, 128})
+		dottedvline(canvas, x, bottom, y, 0.2, 2, color.NRGBA{128, 128, 128, 128})
+		canvas.Circle(x, y, dotsize, c.Color)
 	}
 }
 
@@ -309,10 +321,11 @@ func (c *ChartBox) Lego(canvas *gc.Canvas, size float64) {
 func (c *ChartBox) Scatter(canvas *gc.Canvas, size float64) {
 	dlen := float64(len(c.Data) - 1)
 	ymin := zerobase(c.Zerobased, c.Minvalue)
+	dotsize := float32(size)
 	for i, d := range c.Data {
 		x := float32(gc.MapRange(float64(i), 0, dlen, c.Left, c.Right))
 		y := float32(gc.MapRange(d.value, ymin, c.Maxvalue, c.Bottom, c.Top))
-		canvas.Circle(x, y, float32(size), c.Color)
+		canvas.Circle(x, y, dotsize, c.Color)
 	}
 }
 
@@ -320,11 +333,13 @@ func (c *ChartBox) Scatter(canvas *gc.Canvas, size float64) {
 func (c *ChartBox) Label(canvas *gc.Canvas, size float64, n int, valuefmt, valuecolor string) {
 	fn := float64(len(c.Data) - 1)
 	ymin := zerobase(c.Zerobased, c.Minvalue)
+	textsize := float32(size)
 	vsize := float32(size * 0.75)
+	labely := float32(c.Bottom) - (textsize * 2)
 	for i, d := range c.Data {
 		x := float32(gc.MapRange(float64(i), 0, fn, c.Left, c.Right))
 		if n > 0 && i%n == 0 {
-			canvas.CText(x, float32(c.Bottom-(size*2)), float32(size), d.label, c.Color)
+			canvas.CText(x, labely, textsize, d.label, c.Color)
 		}
 		if len(valuefmt) > 0 {
 			y := float32(gc.MapRange(d.value, ymin, c.Maxvalue, c.Bottom, c.Top))
@@ -360,14 +375,16 @@ func (c *ChartBox) XAxis(canvas *gc.Canvas, size, min, max, step float64, format
 
 // YAxis makes the Y axis with optional grid lines
 func (c *ChartBox) YAxis(canvas *gc.Canvas, size, min, max, step float64, format string, gridlines bool) {
-	w := c.Right - c.Left
+	w := float32(c.Right - c.Left)
 	textsize := float32(size)
+	ts3 := textsize / 3
+	cl := float32(c.Left)
 	ymin := zerobase(c.Zerobased, c.Minvalue)
 	for v := min; v <= max; v += step {
 		y := float32(gc.MapRange(v, ymin, c.Maxvalue, c.Bottom, c.Top))
-		canvas.EText(float32(c.Left-2), (y - float32(size/3)), textsize, fmt.Sprintf(format, v), c.Color)
+		canvas.EText(cl-2, (y - ts3), textsize, fmt.Sprintf(format, v), c.Color)
 		if gridlines {
-			drawline(canvas, float32(c.Left), y, float32(c.Left+w), y, gridlw, gridcolor)
+			drawline(canvas, cl, y, cl+w, y, gridlw, gridcolor)
 		}
 	}
 }
@@ -384,10 +401,12 @@ func (c *ChartBox) Frame(canvas *gc.Canvas, op float64) {
 		return
 	}
 	a := c.Color.A // Save opacity
+	left := float32(c.Left)
+	bottom := float32(c.Bottom)
 	w := float32(c.Right - c.Left)
 	h := float32(c.Top - c.Bottom)
 	fa := uint8((op / 100) * 255.0)
 	c.Color.A = fa
-	canvas.CenterRect(float32(c.Left)+w/2, float32(c.Bottom)+h/2, w, h, c.Color)
+	canvas.CenterRect(left+(w/2), bottom+(h/2), w, h, c.Color)
 	c.Color.A = a // Restore opacity
 }

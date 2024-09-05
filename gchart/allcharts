@@ -7,13 +7,13 @@ opts="-zero=f -h=600 -xlabel=10 -yrange=1,1,0.25 -yfmt=%0.2f -grid"
 ./gchart $opts -area -line                                             sin.d &
 ./gchart $opts -area -bar -line -scatter                               sin.d &
 
-./gchart -h=600 -xlabel=5 -scatter -vfmt=%.2f -yrange=0,100,10 -grid   rand.d &
-./gchart -textsize=2      -scatter -dot -dotsize 1 -w=600 -h=600       data.d &
+./gchart -xlabel=5 -scatter -vfmt=%.2f -yrange=0,100,10 -grid          rand.d &
+./gchart -textsize=2 -dot -dotsize=1                                   data.d &
 
-opts="-ls=5 -textsize=3 -w=600 -h=600 -yrange=0,100,20 -grid"
+opts="-ls=5 -textsize=3 -yrange=0,100,20 -grid"
 ./gchart $opts -hbar  -barwidth=2                                      data.d &
 ./gchart $opts -wbar                                                   data.d &
 
-opts="-left=30 -w=600 -h=600"
+opts="-left=30"
 ./gchart $opts -top 75 -left 15 -piesize 30   -pie                     browser.d &
 ./gchart $opts -dotsize 5 -lego                                        pop.d &
