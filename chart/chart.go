@@ -40,6 +40,7 @@ const gridlw = 0.075
 
 var labelcolor = color.NRGBA{100, 100, 100, 255}
 var gridcolor = color.NRGBA{128, 128, 128, 128}
+var dottedcolor = color.NRGBA{128, 128, 128, 128}
 
 // DataRead reads tab separated values into a ChartBox
 // default values for the top, bottom, left, right (90,50,10,90) are filled in
@@ -239,7 +240,7 @@ func (c *ChartBox) Dot(canvas *gc.Canvas, size float64) {
 	for i, d := range c.Data {
 		x := float32(gc.MapRange(float64(i), 0, dlen, c.Left, c.Right))
 		y := float32(gc.MapRange(d.value, ymin, c.Maxvalue, c.Bottom, c.Top))
-		dottedvline(canvas, x, bottom, y, 0.2, 2, color.NRGBA{128, 128, 128, 128})
+		dottedvline(canvas, x, bottom, y, 0.2, 2, dottedcolor)
 		canvas.Circle(x, y, dotsize, c.Color)
 	}
 }
@@ -400,13 +401,7 @@ func (c *ChartBox) Frame(canvas *gc.Canvas, op float64) {
 	if op <= 0 {
 		return
 	}
-	a := c.Color.A // Save opacity
-	left := float32(c.Left)
-	bottom := float32(c.Bottom)
-	w := float32(c.Right - c.Left)
-	h := float32(c.Top - c.Bottom)
-	fa := uint8((op / 100) * 255.0)
-	c.Color.A = fa
-	canvas.CenterRect(left+(w/2), bottom+(h/2), w, h, c.Color)
-	c.Color.A = a // Restore opacity
+	frameColor := c.Color
+	frameColor.A = uint8((op / 100) * 255.0)
+	canvas.CornerRect(float32(c.Left), float32(c.Top), float32(c.Right-c.Left), float32(c.Top-c.Bottom), frameColor)
 }

@@ -1,11 +1,11 @@
 #!/bin/sh
-opts="-zero=f -h=600 -xlabel=10 -yrange=1,1,0.25 -yfmt=%0.2f -grid"
+opts="-zero=f -h=600 -xlabel=10 -yrange=-1,1,0.25 -yfmt=%0.2f -grid"
 ./gchart $opts -area                                                   sin.d &
 ./gchart $opts -bar                                                    sin.d &
 ./gchart $opts -line                                                   sin.d &
 ./gchart $opts -scatter                                                sin.d &
 ./gchart $opts -area -line                                             sin.d &
-./gchart $opts -area -bar -line -scatter                               sin.d &
+./gchart $opts -area -bar -line -scatter -frame 20                     sin.d &
 
 ./gchart -xlabel=5 -scatter -vfmt=%.2f -yrange=0,100,10 -grid          rand.d &
 ./gchart -textsize=2 -dot -dotsize=1                                   data.d &
