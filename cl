@@ -3,6 +3,7 @@ apisheet
 arc
 arclines
 cchue
+colorwall
 concentric
 compchart
 confetti
