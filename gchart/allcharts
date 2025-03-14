@@ -14,6 +14,5 @@ opts="-ls=5 -textsize=3 -yrange=0,100,20 -grid"
 ./gchart $opts -hbar  -barwidth=2                                      data.d &
 ./gchart $opts -wbar                                                   data.d &
 
-opts="-left=30"
-./gchart $opts -top 75 -left 15 -piesize 30   -pie                     browser.d &
-./gchart $opts -dotsize 5 -lego                                        pop.d &
+./gchart $opts -ty 20 -top 75 -left 15 -piesize 30   -pie                 browser.d &
+./gchart -left 30 -dotsize 5 -lego                                        pop.d &
