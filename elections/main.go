@@ -43,7 +43,7 @@ type options struct {
 	bgcolor, textcolor          string
 }
 
-var partyColors = map[string]string{"r": "red", "d": "blue", "i": "gray", "w": "red", "dr": "purple", "f": "orange"}
+var partyColors = map[string]string{"r": "red", "d": "blue", "i": "gray", "w": "peru", "dr": "purple", "f": "green"}
 
 // maprange maps one range into another
 func maprange(value, low1, high1, low2, high2 float64) float64 {

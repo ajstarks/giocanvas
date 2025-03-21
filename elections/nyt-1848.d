@@ -1,4 +1,4 @@
-# 1848 Cass  Taylor Van-Buren
+# 1848 Cass  Taylor:w
 AL	6	6	d	590756
 AR	5	4	d	97574
 CT	3	9	w	309978

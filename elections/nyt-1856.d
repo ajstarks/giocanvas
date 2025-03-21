@@ -1,4 +1,4 @@
-# 1856 Buchanan  Frémont Fillmore
+# 1856 Buchanan  Frémont Fillmore:w
 AL	6	6	d	771623
 AR	5	4	d	209897
 CA	4	0	d	92597
@@ -12,7 +12,7 @@ IA	3	4	r	192214
 KY	4	5	d	982405
 LA	6	4	d	517762
 ME	0	10	r	583169
-MD	4	8	i	583034
+MD	4	8	w	583034
 MA	2	9	r	994514
 MI	2	6	r	397654
 MS	6	5	d	606526

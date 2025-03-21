@@ -1,4 +1,4 @@
-# 1852 Pierce  Scott
+# 1852 Pierce  Scott:w
 AL	6	6	d	771623
 AR	5	4	d	209897
 CA	4	0	d	92597

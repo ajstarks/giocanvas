@@ -1,4 +1,4 @@
-# 1832 Jackson  Clay Nullifier/Anti-Masonic
+# 1832 Jackson  Clay Floyd/Wirt
 AL	6	6	d	309527
 CT	3	9	r	297675
 DE	4	9	r	76748

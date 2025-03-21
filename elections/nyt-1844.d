@@ -1,4 +1,4 @@
-# 1844 Polk  Clay
+# 1844 Polk  Clay:w
 AL	6	6	d	590756
 AR	5	4	d	97574
 CT	3	9	w	309978
