@@ -1,4 +1,4 @@
-# 1836 Van-Buren  Harrison,et.al:w
+# 1836 Van-Buren  Harrison:w
 AL	6	6	d	309527
 AR	5	4	d	30388
 CT	3	9	d	297675

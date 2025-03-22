@@ -1,4 +1,4 @@
-# 1940 Roosevelt Wdlkie
+# 1940 Roosevelt Willkie
 AL	6	6	d	2845000
 AZ	5	1	d	499000
 AR	5	4	d	1955000

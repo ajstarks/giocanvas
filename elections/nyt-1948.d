@@ -1,4 +1,4 @@
-# 1948 Truman Dewey
+# 1948 Truman Dewey Thurmond
 AL	6	6	i	2969000
 AZ	5	1	d	690000
 AR	5	4	d	1825000
