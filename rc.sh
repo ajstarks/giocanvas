@@ -12,6 +12,11 @@ do
 			;;
 	elections)
 			./elections nyt-????.d &
+			./elections -shape h nyt-19??.d &
+			./elections -shape s nyt-19??.d &
+			./elections -bgcolor linen -textcolor black -shape l nyt-19??.d &
+			./elections -bgcolor linen -textcolor black -shape p nyt-19??.d &
+			./elections -bgcolor linen -textcolor black -shape g nyt-19??.d &
 			;;
 	gcdeck)
 			./gcdeck -pagesize 800x500 test.xml &

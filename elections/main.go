@@ -8,10 +8,13 @@ import (
 	"io"
 	"math"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
 	"gioui.org/app"
+	"gioui.org/font"
+	"gioui.org/font/opentype"
 	"gioui.org/io/event"
 	"gioui.org/io/input"
 	"gioui.org/io/key"
@@ -38,11 +41,67 @@ type election struct {
 }
 
 type options struct {
-	width, height               int
-	top, left, rowsize, colsize float64
-	bgcolor, textcolor          string
+	width, height                                   int
+	top, left, rowsize, colsize                     float64
+	bgcolor, textcolor, shape, sansfont, symbolfont string
 }
 
+// character map for the Stateface font
+var statemap = map[string]string{
+	"AL": "B",
+	"AK": "A",
+	"AZ": "D",
+	"AR": "C",
+	"CA": "E",
+	"CO": "F",
+	"CT": "G",
+	"DE": "H",
+	"FL": "I",
+	"GA": "J",
+	"HI": "K",
+	"ID": "M",
+	"IL": "N",
+	"IN": "O",
+	"IA": "L",
+	"KS": "P",
+	"KY": "Q",
+	"LA": "R",
+	"ME": "U",
+	"MD": "T",
+	"MA": "S",
+	"MI": "V",
+	"MN": "W",
+	"MS": "Y",
+	"MO": "X",
+	"MT": "Z",
+	"NE": "c",
+	"NV": "g",
+	"NH": "d",
+	"NJ": "e",
+	"NM": "f",
+	"NY": "h",
+	"NC": "a",
+	"ND": "b",
+	"OH": "i",
+	"OK": "j",
+	"OR": "k",
+	"PA": "l",
+	"RI": "m",
+	"SC": "n",
+	"SD": "o",
+	"TN": "p",
+	"TX": "q",
+	"UT": "r",
+	"VT": "t",
+	"VA": "s",
+	"WA": "u",
+	"WV": "w",
+	"WI": "v",
+	"WY": "x",
+	"DC": "y",
+}
+
+var fontmap = map[string]string{"sans": "Go-Regular", "symbol": "stateface"}
 var partyColors = map[string]string{"r": "red", "d": "blue", "i": "gray", "w": "peru", "dr": "purple", "f": "green"}
 
 // maprange maps one range into another
@@ -108,21 +167,53 @@ func readData(r io.Reader) (election, error) {
 	return e, scanner.Err()
 }
 
-// process walks the data, making the visualization
 func process(canvas *gc.Canvas, opts options, e election) {
-	amin := area(float64(e.min))
-	amax := area(float64(e.max))
 	beginPage(canvas, opts.bgcolor)
-	pop := 0
+	fmin, fmax := float64(e.min), float64(e.max)
+	amin, amax := area(fmin), area(fmax)
+	sumpop := 0
 	for _, d := range e.data {
-		pop += d.population
+		sumpop += d.population
 		x := opts.left + (float64(d.row) * opts.colsize)
 		y := opts.top - (float64(d.col) * opts.rowsize)
-		r := maprange(area(float64(d.population)), amin, amax, 2, opts.colsize)
-		circle(canvas, x, y, r, partyColors[d.party])
-		ctext(canvas, x, y-0.5, 1.2, d.name, "white")
+		fpop := float64(d.population)
+		apop := area(fpop)
+
+		// defaults
+		txcolor := "white"
+		txsize := 1.2
+		font := "sans"
+		name := d.name
+
+		switch opts.shape {
+		case "c": // circle
+			r := maprange(apop, amin, amax, 2, opts.colsize)
+			circle(canvas, x, y, r, partyColors[d.party])
+		case "h": // hexagom
+			r := maprange(apop, amin, amax, 2, opts.colsize)
+			hexagon(canvas, x, y, r/2, partyColors[d.party])
+		case "s": // square
+			r := maprange(fpop, fmin, fmax, 2, opts.colsize)
+			square(canvas, x, y, r, partyColors[d.party])
+		case "l": // lines
+			r := maprange(apop, amin, amax, 2, opts.colsize)
+			polylines(canvas, x, y, r/2, 0.25, partyColors[d.party])
+			txcolor = partyColors[d.party]
+		case "p": // plain text
+			txcolor = partyColors[d.party]
+			txsize = maprange(fpop, fmin, fmax, 2, opts.colsize*0.75)
+		case "g": // geographic
+			txcolor = partyColors[d.party]
+			name = statemap[d.name]
+			font = "symbol"
+			txsize = maprange(fpop, fmin, fmax, 2, opts.colsize)
+		default:
+			r := maprange(apop, amin, amax, 2, opts.colsize)
+			circle(canvas, x, y, r, partyColors[d.party])
+		}
+		ctext(canvas, x, y-0.5, txsize, name, font, txcolor)
 	}
-	showtitle(canvas, e.title, pop, opts.top+15, opts.textcolor)
+	showtitle(canvas, e.title, sumpop, opts.top+15, opts.textcolor)
 	endPage(canvas)
 }
 
@@ -152,8 +243,8 @@ func showtitle(canvas *gc.Canvas, s string, pop int, top float64, textcolor stri
 		return
 	}
 	suby := top - 7
-	ctext(canvas, 50, top, 3.6, fields[0]+" US Presidential Election", textcolor)
-	ctext(canvas, 85, 5, 1.5, "Population: "+million(pop), textcolor)
+	ctext(canvas, 50, top, 3.6, fields[0]+" US Presidential Election", "sans", textcolor)
+	ctext(canvas, 85, 5, 1.5, "Population: "+million(pop), "sans", textcolor)
 
 	var party string
 	var cand string
@@ -178,7 +269,8 @@ func circle(canvas *gc.Canvas, x, y, r float64, color string) {
 }
 
 // ctext makes centered text
-func ctext(canvas *gc.Canvas, x, y, size float64, s string, color string) {
+func ctext(canvas *gc.Canvas, x, y, size float64, s string, fontname string, color string) {
+	canvas.Theme.Face = font.Typeface(fontmap[fontname])
 	tx, ty, ts := float32(x), float32(y), float32(size)
 	canvas.CText(tx, ty, ts, s, gc.ColorLookup(color))
 }
@@ -187,6 +279,42 @@ func ctext(canvas *gc.Canvas, x, y, size float64, s string, color string) {
 func ltext(canvas *gc.Canvas, x, y, size float64, s string, color string) {
 	tx, ty, ts := float32(x), float32(y), float32(size)
 	canvas.Text(tx, ty, ts, s, gc.ColorLookup(color))
+}
+
+// square makes a square centered ar (x,y), width w.
+func square(canvas *gc.Canvas, x, y, w float64, color string) {
+	canvas.Square(float32(x), float32(y), float32(w), gc.ColorLookup(color))
+}
+
+// hexagon makes a filled hexagon centered at (cx, cy), size is the subscribed circle radius r
+func hexagon(canvas *gc.Canvas, cx, cy, r float64, color string) {
+	// construct a polygon with points at these angles
+	angles := []float32{30, 90, 150, 210, 270, 330}
+	px := make([]float32, len(angles))
+	py := make([]float32, len(angles))
+	x, y, rad := float32(cx), float32(cy), float32(r)
+	for i, a := range angles {
+		px[i], py[i] = canvas.PolarDegrees(x, y, rad, a)
+	}
+	canvas.Polygon(px, py, gc.ColorLookup(color))
+}
+
+// polylines makes a outlined hexagon, centered at (cx, cy), size is the subscribed circle radius r
+func polylines(canvas *gc.Canvas, cx, cy, r, lw float64, color string) {
+	// construct a polygon with points at these angles
+	angles := []float32{30, 90, 150, 210, 270, 330} // square: []float64{45, 135, 225, 315}
+	px := make([]float32, len(angles))
+	py := make([]float32, len(angles))
+	x, y, rad := float32(cx), float32(cy), float32(r)
+	linewidth := float32(lw)
+	for i, a := range angles {
+		px[i], py[i] = canvas.PolarDegrees(x, y, rad, a)
+	}
+	lx := len(px) - 1
+	for i := 0; i < lx; i++ {
+		canvas.Line(px[i], py[i], px[i+1], py[i+1], linewidth, gc.ColorLookup(color))
+	}
+	canvas.Line(px[0], py[0], px[lx], py[lx], linewidth, gc.ColorLookup(color))
 }
 
 // legend makes the subtitle
@@ -202,7 +330,7 @@ func beginPage(canvas *gc.Canvas, bgcolor string) {
 
 // endPage ends a page
 func endPage(canvas *gc.Canvas) {
-	ctext(canvas, 50, 5, 1.5, "The area of a circle denotes state population: source U.S. Census", "gray")
+	ctext(canvas, 50, 5, 1.5, "The area of a circle denotes state population: source U.S. Census", "sans", "gray")
 }
 
 var pressed bool
@@ -293,7 +421,42 @@ func kbpointer(q input.Source, context *op.Ops, ns int) {
 	event.Op(context, &pressed)
 }
 
+// basename returns the basename of a path, removing extension
+func basename(s, ext string) string {
+	s = filepath.Base(s)
+	i := strings.Index(s, ext)
+	if i > 0 {
+		return s[0:i]
+	}
+	return s
+}
+
+// loadfonts reads ttf files and returns a Gio font collection
+func loadfonts(fonts []string) ([]font.FontFace, error) {
+	collection := []font.FontFace{}
+	fc := font.FontFace{}
+	for _, v := range fonts {
+		fontdata, err := os.ReadFile(v)
+		if err != nil {
+			return collection, fmt.Errorf("%s: %v\n", v, err)
+		}
+		face, err := opentype.Parse(fontdata)
+		if err != nil {
+			return collection, fmt.Errorf("%s: %v\n", v, err)
+		}
+		fc.Font.Typeface = font.Typeface(basename(v, ".ttf"))
+		fc.Face = face
+		collection = append(collection, fc)
+	}
+	return collection, nil
+}
+
 func elect(title string, opts options, elections []election) {
+	fc, err := loadfonts([]string{"Go-Bold.ttf", "stateface.ttf"})
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		os.Exit(1)
+	}
 	cw, ch := float32(opts.width), float32(opts.height)
 	w := &app.Window{}
 	w.Option(app.Title(title), app.Size(unit.Dp(cw), unit.Dp(ch)))
@@ -305,7 +468,7 @@ func elect(title string, opts options, elections []election) {
 		case app.DestroyEvent:
 			os.Exit(0)
 		case app.FrameEvent:
-			canvas := gc.NewCanvas(float32(e.Size.X), float32(e.Size.Y), app.FrameEvent{})
+			canvas := gc.NewCanvasFonts(float32(e.Size.X), float32(e.Size.Y), fc, app.FrameEvent{})
 			if electionNumber > ne {
 				electionNumber = 0
 			}
@@ -324,13 +487,16 @@ func main() {
 	// command line options
 	var opts options
 	flag.Float64Var(&opts.top, "top", 75, "map top value (canvas %)")
-	flag.Float64Var(&opts.left, "left", 7, "map left value (canvas %)")
+	flag.Float64Var(&opts.left, "left", 15, "map left value (canvas %)")
 	flag.Float64Var(&opts.rowsize, "rowsize", 9, "rowsize (canvas %)")
 	flag.Float64Var(&opts.colsize, "colsize", 7, "column size (canvas %)")
 	flag.IntVar(&opts.width, "width", 1200, "canvas width")
 	flag.IntVar(&opts.height, "height", 900, "canvas height")
+	flag.StringVar(&opts.sansfont, "sans", "Go-Regular", "sans font")
+	flag.StringVar(&opts.symbolfont, "symbol", "stateface", "symbol font")
 	flag.StringVar(&opts.bgcolor, "bgcolor", "black", "background color")
 	flag.StringVar(&opts.textcolor, "textcolor", "white", "text color")
+	flag.StringVar(&opts.shape, "shape", "c", "shape for states:\n\"c\": circle,\n\"h\": hexagon,\n\"s\": square\n\"l\": line\n\"g\": geographic\n\"p\": plain text")
 	flag.Parse()
 
 	// Read in the data
