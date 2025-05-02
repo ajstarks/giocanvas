@@ -3,6 +3,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"image/color"
 	"os"
 
@@ -12,56 +13,68 @@ import (
 	"github.com/ajstarks/giocanvas/chart"
 )
 
-func comp(canvas *giocanvas.Canvas) error {
+func comp(canvas *giocanvas.Canvas) {
 	sr, err := os.Open("sine.d")
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		os.Exit(1)
 	}
-	cr, err := os.Open("cosine.d")
+	sr2, err := os.Open("sine2.d")
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		os.Exit(2)
 	}
 	sine, err := chart.DataRead(sr)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		os.Exit(3)
 	}
-	cosine, err := chart.DataRead(cr)
+	sine2, err := chart.DataRead(sr2)
 	if err != nil {
-		return err
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		os.Exit(4)
 	}
-	cosine.Zerobased = false
-	sine.Zerobased = false
-	cosine.Frame(canvas, 5)
+
+	minv, maxv := -2.0, 2.0
+	dotsize := 0.4
+	frameOpacity := 5.0
+	sine2.Zerobased, sine.Zerobased = false, false
+	sine.Minvalue, sine.Maxvalue = minv, maxv
+	sine2.Minvalue, sine2.Maxvalue = minv, maxv
+
+	sine.Frame(canvas, frameOpacity)
 	sine.Label(canvas, 1.5, 10, "", "gray")
-	cosine.YAxis(canvas, 1.2, -1.0, 1.0, 0.5, "%0.2f", true)
-	cosine.Color = color.NRGBA{0, 128, 0, 255}
+	sine.YAxis(canvas, 1.5, minv, maxv, 0.5, "%0.2f", true)
+
+	sine2.Color = color.NRGBA{0, 128, 0, 255}
 	sine.Color = color.NRGBA{128, 0, 0, 255}
-	cosine.Scatter(canvas, 0.5)
-	sine.Scatter(canvas, 0.5)
+	sine2.Scatter(canvas, dotsize)
+	sine.Scatter(canvas, dotsize)
 
 	sine.Left = 10
-	sine.Right = sine.Left + 40
-	sine.Top, cosine.Top = 30, 30
-	sine.Bottom, cosine.Bottom = 10, 10
+	sine.Right = sine.Left + 30
+	sine.Top, sine2.Top = 30, 30
+	sine.Bottom, sine2.Bottom = 10, 10
+	dotsize /= 2
+	frameOpacity *= 2
 
 	sine.CTitle(canvas, 2, 2)
-	sine.Frame(canvas, 10)
-	sine.Scatter(canvas, 0.25)
+	sine.Frame(canvas, frameOpacity)
+	sine.Scatter(canvas, dotsize)
 
-	offset := 45.0
-	cosine.Left = sine.Left + offset
-	cosine.Right = sine.Right + offset
+	offset := 50.0
+	sine2.Left = sine.Left + offset
+	sine2.Right = sine.Right + offset
 
-	cosine.CTitle(canvas, 2, 2)
-	cosine.Frame(canvas, 10)
-	cosine.Scatter(canvas, 0.25)
+	sine2.CTitle(canvas, 2, 2)
+	sine2.Frame(canvas, frameOpacity)
+	sine2.Scatter(canvas, dotsize)
 
-	return nil
 }
 
 func sincos(width, height float32) error {
 	w := new(app.Window)
-	w.Option(app.Title("sine+cosine"), app.Size(unit.Dp(width), unit.Dp(height)))
+	w.Option(app.Title("composite chart"), app.Size(unit.Dp(width), unit.Dp(height)))
 	for {
 		e := w.Event()
 		switch e := e.(type) {
