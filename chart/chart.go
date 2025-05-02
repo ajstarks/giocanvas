@@ -133,6 +133,12 @@ func dottedvline(canvas *gc.Canvas, x, y1, y2, dotsize, step float32, color colo
 	}
 }
 
+// MinMax set the minimum and maximum value for charting a dataset
+func (c *ChartBox) MinMax(minval, maxval float64) {
+	c.Minvalue = minval
+	c.Maxvalue = maxval
+}
+
 // Bar makes a (column) bar chart
 func (c *ChartBox) Bar(canvas *gc.Canvas, size float64) {
 	dlen := float64(len(c.Data) - 1)

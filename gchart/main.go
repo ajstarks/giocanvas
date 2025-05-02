@@ -18,7 +18,7 @@ import (
 )
 
 type chartOptions struct {
-	top, bottom, left, right                                                               float64
+	top, bottom, left, right, minvalue, maxvalue                                           float64
 	barwidth, linewidth, linespacing, dotsize, textsize, piesize, ty, frameOp, opacity     float64
 	bgcolor, dcolor, labelcolor, valuecolor, chartitle, yaxfmt, yrange, fontname, valuefmt string
 	xlabel                                                                                 int
@@ -207,6 +207,8 @@ Options     Default               Description
 -top         80                   chart top
 -bottom      20                   chart bottom
 -right       80                   chart right
+-min         data min             chart minimum value
+-max         data max             chart maximum value    
 .....................................................................
 -barwidth    0.5                  bar width
 -dotsize     0.5                  bar width
@@ -253,6 +255,8 @@ func main() {
 	flag.Float64Var(&opts.linespacing, "ls", opts.barwidth*4, "line spacing")
 	flag.Float64Var(&opts.piesize, "piesize", 20, "pie chart radius")
 	flag.Float64Var(&opts.textsize, "textsize", 1.5, "text size")
+	flag.Float64Var(&opts.minvalue, "min", -1, "text size")
+	flag.Float64Var(&opts.maxvalue, "max", -1, "text size")
 	// canvas sizes
 	flag.IntVar(&width, "w", 1000, "canvas width")
 	flag.IntVar(&height, "h", 1000, "canvas height")
@@ -304,6 +308,12 @@ func main() {
 	if err != nil {
 		perr("unable to read ", infile)
 		os.Exit(2)
+	}
+	if opts.minvalue >= 0 {
+		data.Minvalue = opts.minvalue
+	}
+	if opts.maxvalue >= 0 {
+		data.Maxvalue = opts.maxvalue
 	}
 	// specify at least one of line, bar, hbar, scatter, area, pie, lego
 	if !(opts.line || opts.scatter || opts.bar || opts.dot || opts.wbar || opts.area || opts.hbar || opts.lego || opts.pie) {
