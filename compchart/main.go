@@ -27,8 +27,8 @@ func comp(canvas *giocanvas.Canvas) {
 			fmt.Fprintln(&s1buf, "# y=sin(x)")
 			fmt.Fprintln(&s2buf, "# y=2*sin(x)")
 		}
-		fmt.Fprintf(&s1buf, fmt.Sprintf("%.2f\t%f\n", x, math.Sin(x)))
-		fmt.Fprintf(&s2buf, fmt.Sprintf("%.2f\t%f\n", x, 2*math.Sin(x)))
+		fmt.Fprintf(&s1buf, "%.2f\t%f\n", x, math.Sin(x))
+		fmt.Fprintf(&s2buf, "%.2f\t%f\n", x, 2*math.Sin(x))
 	}
 
 	// read in data sets
