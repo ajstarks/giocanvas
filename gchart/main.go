@@ -84,7 +84,7 @@ func yr(yrange string, dmin, dmax float64) (float64, float64, float64) {
 }
 
 // gchart draws a chart
-func gchart(s string, w, h int, data chart.ChartBox, opts chartOptions) {
+func gchart(w, h int, data chart.ChartBox, opts chartOptions) {
 	width := float32(w)
 	height := float32(h)
 	appsize := app.Size(unit.Dp(width), unit.Dp(height))
@@ -321,6 +321,6 @@ func main() {
 		os.Exit(3)
 	}
 	// make the chart
-	go gchart("charts", width, height, data, opts)
+	go gchart(width, height, data, opts)
 	app.Main()
 }
