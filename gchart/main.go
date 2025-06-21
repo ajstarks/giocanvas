@@ -167,7 +167,7 @@ func gchart(w, h int, data chart.ChartBox, opts chartOptions) {
 				data.Title = opts.chartitle
 			}
 			if opts.showtitle && len(data.Title) > 0 {
-				data.CTitle(canvas, opts.textsize*2, opts.ty)
+				data.CTitle(canvas, opts.textsize*1.5, opts.ty)
 			}
 
 			e.Frame(canvas.Context.Ops)
@@ -215,7 +215,7 @@ Options     Default               Description
 -linewidth   0.25                 line width
 -ls          2                    line spacing
 -piesize     20                   pie chart radius
--textsize    1.5                  text size
+-textsize    1.0                  text size
 .....................................................................
 -chartitle   ""                   chart title
 -ty          5                    title position relative to the top
@@ -254,7 +254,7 @@ func main() {
 	flag.Float64Var(&opts.linewidth, "linewidth", 0.25, "line width")
 	flag.Float64Var(&opts.linespacing, "ls", opts.barwidth*4, "line spacing")
 	flag.Float64Var(&opts.piesize, "piesize", 20, "pie chart radius")
-	flag.Float64Var(&opts.textsize, "textsize", 1.5, "text size")
+	flag.Float64Var(&opts.textsize, "textsize", 1.0, "text size")
 	flag.Float64Var(&opts.minvalue, "min", -1, "text size")
 	flag.Float64Var(&opts.maxvalue, "max", -1, "text size")
 	// canvas sizes

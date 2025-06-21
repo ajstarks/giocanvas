@@ -266,7 +266,7 @@ func (c *ChartBox) Pie(canvas *gc.Canvas, r float64) {
 	sum := datasum(c.Data)
 	a1 := 0.0
 	labelr := pr + 10
-	ts := pr / 10
+	ts := pr / 20
 	for _, d := range c.Data {
 		fillcolor := gc.ColorLookup(d.note)
 		pct := (d.value / sum)
@@ -314,7 +314,7 @@ func (c *ChartBox) Lego(canvas *gc.Canvas, size float64) {
 		x = px
 		y = py
 	}
-	y -= step * 2
+	y -= step * 1.5
 	for _, d := range c.Data {
 		pct := (d.value / sum) * 100
 		v := int(math.Round(pct))
