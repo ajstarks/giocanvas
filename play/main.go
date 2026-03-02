@@ -128,6 +128,25 @@ func play(w *app.Window, showgrid bool) error {
 			canvas.Square(colx, 45, 10, tcolor)
 			canvas.Coord(colx, 45, subsize, "center", labelcolor)
 
+			// Text
+			var tx1, tx2, tx3, ss, top float32
+			top = 90
+			tx1 = colx - 5
+			tx2 = colx
+			tx3 = colx + 5
+			ss = subsize * .6
+			canvas.CText(colx, top+5, labelsize, "Text", labelcolor)
+			canvas.Text(tx1, top, subsize, "hello", labelcolor)
+			canvas.CText(tx2, top, subsize, "hello", labelcolor)
+			canvas.EText(tx3, top, subsize, "hello", labelcolor)
+
+			canvas.Square(tx1, top, ss, labelcolor)
+			canvas.Square(tx2, top, ss, labelcolor)
+			canvas.Square(tx3, top, ss, labelcolor)
+			canvas.CText(tx1, top-2, ss, "begin", labelcolor)
+			canvas.CText(tx2, top-2, ss, "center", labelcolor)
+			canvas.CText(tx3, top-2, ss, "end", labelcolor)
+
 			// Image
 			canvas.TextMid(colx, 30, labelsize, "Image", labelcolor)
 			canvas.Image("earth.jpg", colx, 15, 1000, 1000, 15)

@@ -35,7 +35,7 @@ deck
 		bx=10
 		by=90
 		bs=2
-		vline 10 0 100 0.1 "red" 50
+		vline 10 0 100 0.2 "blue" 50
 		list bx by bs
 			li "one"
 			li "two"
@@ -67,6 +67,9 @@ deck
 			li "four"
 		elist
 
+		
+		curve 85 90 95 97 95 90 0.3 "red"
+		
 		
 	eslide
 edeck

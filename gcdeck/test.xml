@@ -1032,6 +1032,6 @@
 <text type="block" xp="20" yp="10" wp="15" sp="1.5" >This is text wrapped at a specified width (15% of the canvas width)</text>
 <line xp1="10" yp1="70" xp2="25" yp2="65" sp="0.2" color="red"/>
 <line xp1="20" yp1="70" xp2="35" yp2="75" sp="0.2" color="blue"/>
-<image name="earth.jpg" xp="90" yp="20" width="20" height="0"/>
+<image name="earth.jpg" xp="90" yp="20" width="10" height="0"/>
 </slide>
 </deck>
