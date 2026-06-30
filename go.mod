@@ -5,7 +5,7 @@ go 1.24.0
 toolchain go1.24.3
 
 require (
-	gioui.org v0.10.0
+	gioui.org v0.10.1
 	github.com/ajstarks/deck v0.0.0-20230623153652-ebe7b794a4b1
 	github.com/disintegration/gift v1.2.1
 )
