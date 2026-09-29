@@ -3,14 +3,15 @@ module github.com/ajstarks/giocanvas
 go 1.25.0
 
 require (
-	gioui.org v0.10.2
+	gioui.org v0.10.3
 	github.com/ajstarks/deck v0.0.0-20230623153652-ebe7b794a4b1
 	github.com/disintegration/gift v1.2.1
 )
 
 require (
 	gioui.org/shader v1.0.9 // indirect
-	github.com/go-text/typesetting v0.3.4 // indirect
+	github.com/go-text/typesetting v0.3.5 // indirect
+	github.com/godbus/dbus/v5 v5.2.2 // indirect
 	golang.org/x/exp/shiny v0.0.0-20250408133849-7e4ce0ab07d0 // indirect
 	golang.org/x/image v0.45.0 // indirect
 	golang.org/x/net v0.58.0 // indirect
